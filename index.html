@@ -2,14 +2,425 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=./tuglife_sim.html">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TugLife Sim</title>
-    <script>
-        window.location.replace('./tuglife_sim.html');
-    </script>
+    <title>TugLife Sim | Apresentação</title>
+    <style>
+        :root {
+            --bg: #071019;
+            --panel: rgba(11, 24, 35, 0.82);
+            --line: rgba(0, 188, 212, 0.28);
+            --text: #e7f7fb;
+            --muted: #8fb3bf;
+            --accent: #00bcd4;
+            --accent-2: #ff9800;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top, rgba(0, 188, 212, 0.14), transparent 28%),
+                linear-gradient(180deg, #071019 0%, #0b1621 50%, #050b11 100%);
+            overflow: hidden;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            position: relative;
+        }
+
+        .hero::before,
+        .hero::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(18px);
+            opacity: 0.35;
+            pointer-events: none;
+        }
+
+        .hero::before {
+            width: 280px;
+            height: 280px;
+            background: rgba(0, 188, 212, 0.18);
+            top: 8%;
+            left: 8%;
+        }
+
+        .hero::after {
+            width: 220px;
+            height: 220px;
+            background: rgba(255, 152, 0, 0.14);
+            bottom: 10%;
+            right: 10%;
+        }
+
+        .shell {
+            width: min(980px, 100%);
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 22px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        .intro {
+            padding: 34px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 18px;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 34px;
+            height: 1px;
+            background: var(--accent);
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            line-height: 0.95;
+            letter-spacing: 0.03em;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 1.02rem;
+            line-height: 1.7;
+            color: var(--muted);
+            max-width: 58ch;
+        }
+
+        .meta {
+            margin-top: 26px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .meta-box {
+            padding: 14px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .meta-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            color: #7e9aa6;
+            margin-bottom: 6px;
+            letter-spacing: 0.08em;
+        }
+
+        .meta-value {
+            font-family: "Courier New", monospace;
+            font-size: 1rem;
+            color: var(--text);
+            font-weight: bold;
+        }
+
+        .cta-row {
+            margin-top: 28px;
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .cta {
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 220px;
+            padding: 15px 22px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.96rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .cta-primary {
+            color: #041017;
+            background: linear-gradient(135deg, var(--accent) 0%, #62e6f5 100%);
+            box-shadow: 0 10px 24px rgba(0, 188, 212, 0.25);
+        }
+
+        .cta-secondary {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .cta:hover {
+            transform: translateY(-1px);
+        }
+
+        .preview {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .preview-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--muted);
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .water-stage {
+            position: relative;
+            flex: 1;
+            min-height: 360px;
+            border-radius: 18px;
+            overflow: hidden;
+            background:
+                linear-gradient(180deg, rgba(27, 58, 74, 0.28), rgba(5, 14, 22, 0.9)),
+                radial-gradient(circle at 50% 10%, rgba(118, 196, 225, 0.12), transparent 30%);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .water-stage::before {
+            content: "";
+            position: absolute;
+            inset: auto -20% 0 -20%;
+            height: 60%;
+            background:
+                repeating-linear-gradient(
+                    180deg,
+                    rgba(0, 188, 212, 0.08) 0px,
+                    rgba(0, 188, 212, 0.08) 2px,
+                    transparent 2px,
+                    transparent 18px
+                );
+            opacity: 0.55;
+            transform: perspective(500px) rotateX(65deg);
+        }
+
+        .boat {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 180px;
+            height: 320px;
+            transform: translate(-50%, -50%) rotate(-8deg);
+            filter: drop-shadow(0 20px 22px rgba(0, 0, 0, 0.35));
+        }
+
+        .boat-hull {
+            position: absolute;
+            left: 50%;
+            top: 48%;
+            width: 118px;
+            height: 230px;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(180deg, #ffb24d 0%, #ff9321 45%, #c85f0f 100%);
+            clip-path: polygon(50% 0%, 84% 8%, 100% 32%, 100% 88%, 78% 100%, 22% 100%, 0% 88%, 0% 32%, 16% 8%);
+            border: 2px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .boat-deck {
+            position: absolute;
+            left: 50%;
+            top: 52%;
+            width: 86px;
+            height: 180px;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(180deg, #0b1f2d 0%, #15394a 100%);
+            clip-path: polygon(50% 0%, 82% 10%, 100% 32%, 100% 90%, 76% 100%, 24% 100%, 0% 90%, 0% 32%, 18% 10%);
+        }
+
+        .boat-cabin {
+            position: absolute;
+            left: 50%;
+            top: 46%;
+            width: 56px;
+            height: 66px;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(180deg, #f7fbfd 0%, #cfd8dc 100%);
+            border-radius: 10px 10px 6px 6px;
+            border: 2px solid rgba(11, 31, 45, 0.35);
+        }
+
+        .boat-cabin::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 18px;
+            width: 34px;
+            height: 14px;
+            transform: translateX(-50%);
+            border-radius: 4px;
+            background: rgba(7, 16, 25, 0.78);
+        }
+
+        .vector {
+            position: absolute;
+            left: 50%;
+            top: 72%;
+            width: 4px;
+            transform-origin: center top;
+            border-radius: 999px;
+        }
+
+        .vector::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -10px;
+            width: 0;
+            height: 0;
+            transform: translateX(-50%);
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+        }
+
+        .vector.port {
+            height: 58px;
+            margin-left: -38px;
+            background: linear-gradient(180deg, #7ce6ff 0%, #00bcd4 100%);
+            transform: translateX(-50%) rotate(-28deg);
+        }
+
+        .vector.port::after {
+            border-top: 12px solid #00bcd4;
+        }
+
+        .vector.starboard {
+            height: 72px;
+            margin-left: 38px;
+            background: linear-gradient(180deg, #ffd180 0%, #ff9800 100%);
+            transform: translateX(-50%) rotate(18deg);
+        }
+
+        .vector.starboard::after {
+            border-top: 12px solid #ff9800;
+        }
+
+        .vector.resultant {
+            top: 32%;
+            height: 96px;
+            background: linear-gradient(180deg, #98ffa8 0%, #4caf50 100%);
+            transform: translateX(-50%) rotate(-4deg);
+        }
+
+        .vector.resultant::after {
+            border-top: 12px solid #4caf50;
+        }
+
+        .author {
+            margin-top: 20px;
+            font-size: 0.92rem;
+            color: var(--muted);
+        }
+
+        .author strong {
+            color: var(--text);
+        }
+
+        @media (max-width: 900px) {
+            .shell {
+                grid-template-columns: 1fr;
+            }
+
+            .meta {
+                grid-template-columns: 1fr;
+            }
+
+            .water-stage {
+                min-height: 300px;
+            }
+
+            .boat {
+                transform: translate(-50%, -50%) rotate(-4deg) scale(0.88);
+            }
+        }
+    </style>
 </head>
 <body>
-    <p>Abrindo <a href="./tuglife_sim.html">TugLife Sim</a>...</p>
+    <main class="hero">
+        <div class="shell">
+            <section class="card intro">
+                <div class="eyebrow">Simulação Naval</div>
+                <h1>TugLife Sim</h1>
+                <p class="subtitle">
+                    Plataforma interativa de operação de rebocador com sistemas FO/LO, recebimento de água e óleo,
+                    propulsão azimutal, lógica de intertravamentos e visual 3D orientado por resultante vetorial.
+                </p>
+
+                <div class="meta">
+                    <div class="meta-box">
+                        <div class="meta-label">Base</div>
+                        <div class="meta-value">Damen ASD 2411</div>
+                    </div>
+                    <div class="meta-box">
+                        <div class="meta-label">Módulos</div>
+                        <div class="meta-value">UI + Física + 3D</div>
+                    </div>
+                    <div class="meta-box">
+                        <div class="meta-label">Visual</div>
+                        <div class="meta-value">Three.js</div>
+                    </div>
+                </div>
+
+                <div class="cta-row">
+                    <a class="cta cta-primary" href="./tuglife_sim.html">Acessar Simulador</a>
+                    <a class="cta cta-secondary" href="https://github.com/Jbvix/tuglife-sim" target="_blank" rel="noreferrer">Ver Projeto no GitHub</a>
+                </div>
+
+                <p class="author">Autor: <strong>Jossian Brito</strong></p>
+            </section>
+
+            <aside class="card preview">
+                <div class="preview-top">
+                    <span>Visual de Conceito</span>
+                    <span>Inclinação + Vetores</span>
+                </div>
+                <div class="water-stage">
+                    <div class="vector resultant"></div>
+                    <div class="boat">
+                        <div class="boat-hull"></div>
+                        <div class="boat-deck"></div>
+                        <div class="boat-cabin"></div>
+                    </div>
+                    <div class="vector port"></div>
+                    <div class="vector starboard"></div>
+                </div>
+            </aside>
+        </div>
+    </main>
 </body>
 </html>
