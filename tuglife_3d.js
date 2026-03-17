@@ -214,8 +214,8 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             ps: new THREE.ArrowHelper(new THREE.Vector3(0, 0, -1), new THREE.Vector3(-0.92, 0.12, 2.75), 1.1, 0x7cdeff, 0.35, 0.2),
             sb: new THREE.ArrowHelper(new THREE.Vector3(0, 0, -1), new THREE.Vector3(0.92, 0.12, 2.75), 1.1, 0xffb74d, 0.35, 0.2)
         };
-        tugGroup.add(thrusterHelpers.ps);
-        tugGroup.add(thrusterHelpers.sb);
+        tugGroup.add(registerProceduralPart(thrusterHelpers.ps));
+        tugGroup.add(registerProceduralPart(thrusterHelpers.sb));
 
         const resultantHelper = new THREE.ArrowHelper(
             new THREE.Vector3(0, 0, -1),
@@ -225,7 +225,7 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             0.5,
             0.26
         );
-        tugGroup.add(resultantHelper);
+        tugGroup.add(registerProceduralPart(resultantHelper));
 
         function createRope() {
             const geometry = new THREE.BufferGeometry();
@@ -273,6 +273,7 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             }
 
             setModelStatus('CARREGANDO GLTF', '#7cdeff');
+            setProceduralVisibility(false);
             const loader = new window.GLTFLoader();
             const normalizedPath = `${modelConfig.path}`.replace(/\\/g, '/');
             const lastSlash = normalizedPath.lastIndexOf('/');
@@ -285,7 +286,8 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
                 (gltf) => {
                     externalModel = gltf.scene || gltf.scenes?.[0];
                     if (!externalModel) {
-                        setModelStatus('GLTF INVÁLIDO', '#ff8a80');
+                        setModelStatus('GLTF INVALIDO', '#ff8a80');
+                        setProceduralVisibility(true);
                         return;
                     }
 
@@ -333,7 +335,7 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
                 (error) => {
                     const errorMessage = error?.message || error?.target?.statusText || 'erro ao carregar';
                     const isFileProtocol = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
-                    setModelStatus(isFileProtocol ? 'GLTF BLOQUEADO EM FILE://' : 'FALLBACK PADRÃO', '#ffb74d');
+                    setModelStatus(isFileProtocol ? 'GLTF BLOQUEADO EM FILE://' : 'FALLBACK PADRAO', '#ffb74d');
                     setProceduralVisibility(true);
                     console.error('Falha ao carregar modelo GLTF:', errorMessage, error);
                 }
