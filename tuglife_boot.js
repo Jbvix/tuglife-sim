@@ -4,7 +4,7 @@
 window.gameState = gameState;
 window.calculateStabilityIndicators = calculateStabilityIndicators;
 window.tuglife3dModelConfig = {
-    path: 'rastar_3200_tugboat/scene.gltf',
+    path: 'assets/models/scene.gltf',
     scale: 1,
     targetLength: 8.4,
     autoFit: true,
