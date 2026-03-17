@@ -1,3 +1,4 @@
+(() => {
 const {
 	AnimationClip,
 	Bone,
@@ -4726,3 +4727,4 @@ function addPrimitiveAttributes( geometry, primitiveDef, parser ) {
 }
 
 window.GLTFLoader = GLTFLoader;
+})();
