@@ -1,0 +1,525 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TugLife Sim - Simulador 2D ASD 2411</title>
+    
+    <!--
+    =============================================================================
+    PROJETO: TugLife Sim - Simulador 2D de Montagem e Operação de Rebocador
+    BASE: Damen ASD Tug 2411
+    AUTOR: Jossian Brito
+    ANO: 2026
+    DATA: 17 de Março de 2026
+    HORA: 09:35 AM (GMT-3)
+    VERSÃO: 0.9.1-beta (Fase 5 - Código Consolidado com Motor de Física)
+    =============================================================================
+    GAME DESIGN DOCUMENT (GDD) & MANUAL DO USUÁRIO:
+    
+    1. VISÃO GERAL: Simulador mobile-first. Base Damen ASD 2411.
+    
+    2. ARQUITETURA E LÓGICA (Boas Práticas):
+       - Padrão: MVC (Model-View-Controller).
+       - Modal UI: Implementação de um modal dinâmico único (DRY).
+       - Intertravamento de Embraiagem (Clutch Interlock): O Z-Drive só pode ser 
+         acoplado/desacoplado se o MCP estiver estritamente em IDLE (<= 650 RPM).
+       - Física Aplicada (Game Loop): Cálculos em tempo real de Consumo Específico (Ce)
+         dependente da carga, termodinâmica e pressão de óleo de acordo com o estado.
+    
+    3. FUNCIONALIDADES ATUAIS:
+       - Planta Interativa (Modais de Inspeção).
+       - Operação de Bunkering e Transferência de Combustível.
+       - Paralelismo de Geradores (QEP) e Barramento.
+       - Arranque a Frio dos MCPs e Acoplamento dos Z-Drives.
+    =============================================================================
+    -->
+
+    <link rel="stylesheet" href="tuglife_sim.css">
+</head>
+<body>
+
+    <!-- OVERLAY DO MODAL DE INSPEÇÃO -->
+    <div id="info-modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span class="modal-title" id="modal-title">EQUIPAMENTO</span>
+                <button class="close-btn" onclick="closeModal()" aria-label="Fechar painel">&times;</button>
+            </div>
+            <div id="modal-content">
+                <!-- Conteúdo dinâmico será injetado pelo JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- BANNER DE ALARME GLOBAL -->
+    <div id="global-alarm-banner" onclick="clearAlarm()">ALARME</div>
+
+    <!-- MAIN VIEWPORT -->
+    <div id="main-display">
+        
+        <!-- =========================================================
+             TELA 1: PLANTA BAIXA INTERATIVA (CASCO)
+             ========================================================= -->
+        <div id="screen-build" class="screen active">
+            <div class="screen-title">PM - Damen ASD 2411 (Toque para Inspecionar)</div>
+            <div class="hull-container">
+                <div class="slot type-winch area-winch" onclick="openModal('winch','winch')">
+                    GUINCHO PROA<br>
+                    <span id="ui-winch-status" style="font-size:0.55rem;color:#aaa;">PARADO</span>
+                    <span id="ui-winch-press" style="font-size:0.45rem;color:#888;">0 bar</span>
+                </div>
+                <div class="slot type-hyd area-tk-hyd" onclick="openModal('tank','tk_hyd')">
+                    <div class="slot-fill" id="fill-tk_hyd"></div>
+                    TK HID<br>
+                    <span class="capacity" id="cap-tk_hyd">0.20</span>
+                </div>
+                <div class="slot type-chiller area-chiller" onclick="openModal('chiller','chiller')">
+                    AC PROA<br>
+                    <span id="ui-chiller-status" style="font-size:0.55rem;color:#aaa;">OFF</span>
+                    <span id="ui-chiller-temp" style="font-size:0.5rem;color:#00bcd4;">--°C</span>
+                </div>
+                <div class="slot area-manifold" onclick="openModal('manifold', 'manifold')">MANIFOLD</div>
+                <div class="slot type-tank area-tk02" onclick="openModal('tank', 'tk02')"><div class="slot-fill" id="fill-tk02"></div>TK 02 FW<br><span class="capacity" id="cap-tk02">0.0</span></div>
+
+                <div class="slot type-tank area-tk06" onclick="openModal('tank', 'tk06')"><div class="slot-fill" id="fill-tk06"></div>TK 06 BB<br><span class="capacity" id="cap-tk06">0.0</span></div>
+                <div class="slot type-engine area-mca-ps" id="ui-mca-ps-hull" onclick="openModal('mca','mca_ps')">
+                    MCA 1 BB<br>
+                    <span id="ui-mca-ps-rpm" style="font-size:0.55rem;color:#aaa;">OFF</span>
+                    <span id="ui-mca-ps-carter-hull" style="color:#ffc107;font-size:0.45rem;">LO:0%</span>
+                </div>
+                <div class="slot type-engine area-mca-sb" id="ui-mca-sb-hull" onclick="openModal('mca','mca_sb')">
+                    MCA 2 BE<br>
+                    <span id="ui-mca-sb-rpm" style="font-size:0.55rem;color:#aaa;">OFF</span>
+                    <span id="ui-mca-sb-carter-hull" style="color:#ffc107;font-size:0.45rem;">LO:0%</span>
+                </div>
+                <div class="slot type-tank area-tk07" onclick="openModal('tank', 'tk07')"><div class="slot-fill" id="fill-tk07"></div>TK 07 BE<br><span class="capacity" id="cap-tk07">0.0</span></div>
+
+                <div class="slot type-tank area-tk04" onclick="openModal('tank', 'tk04')"><div class="slot-fill" id="fill-tk04"></div>HDR 04<br><span class="capacity" id="cap-tk04">0.0</span></div>
+                <div class="slot type-tank area-tk05" onclick="openModal('tank', 'tk05')"><div class="slot-fill" id="fill-tk05"></div>HDR 05<br><span class="capacity" id="cap-tk05">0.0</span></div>
+                <div class="slot type-overflow area-tk03" onclick="openModal('tank', 'tk03')"><div class="slot-fill" id="fill-tk03"></div>TK 03 OF<br><span class="capacity" id="cap-tk03">0.0</span></div>
+
+                <div class="slot type-engine area-mcp-ps" id="ui-mcp-ps-hull" onclick="openModal('mcp', 'mcp_ps')">MCP BB<br><span class="capacity" id="ui-mcp-ps-rpm-hull">OFF</span><span class="capacity" id="ui-mcp-ps-carter-hull" style="color:#ffc107;font-size:0.5rem;">LO:0%</span></div>
+                <div class="slot type-engine area-mcp-sb" id="ui-mcp-sb-hull" onclick="openModal('mcp', 'mcp_sb')">MCP BE<br><span class="capacity" id="ui-mcp-sb-rpm-hull">OFF</span><span class="capacity" id="ui-mcp-sb-carter-hull" style="color:#ffc107;font-size:0.5rem;">LO:0%</span></div>
+
+                <div class="slot type-tank area-tk11" onclick="openModal('tank', 'tk11')"><div class="slot-fill" id="fill-tk11"></div>TK 11 BB<br><span class="capacity" id="cap-tk11">0.0</span></div>
+                <div class="slot type-tank area-tk13" onclick="openModal('tank', 'tk13')"><div class="slot-fill" id="fill-tk13"></div>DO 13<br><span class="capacity" id="cap-tk13">0.0</span></div>
+                <div class="slot type-tank area-tk14" onclick="openModal('tank', 'tk14')"><div class="slot-fill" id="fill-tk14"></div>BILGE 14<br><span class="capacity" id="cap-tk14">0.0</span></div>
+                <div class="slot type-tank area-tk12" onclick="openModal('tank', 'tk12')"><div class="slot-fill" id="fill-tk12"></div>TK 12 BE<br><span class="capacity" id="cap-tk12">0.0</span></div>
+
+                <div class="slot type-lo area-tk15" onclick="openModal('tank', 'tk15')"><div class="slot-fill" id="fill-tk15"></div><span style="color:#ffc107; font-weight:bold;">TK 15 LO</span><span class="capacity" id="cap-tk15" style="color:#ffc107; font-size:0.6rem; margin-left:6px;">1.0 m³</span></div>
+
+                <div class="slot type-propeller area-zd-ps" id="ui-zd-ps-hull" onclick="openModal('zdrive','zd_ps')">
+                    Z-DRIVE BB<br>
+                    <span id="ui-zd-ps-hull-status" style="font-size:0.55rem;color:#aaa;">FREE</span>
+                    <span id="ui-zd-ps-hull-az" style="font-size:0.45rem;color:#ce93d8;">0°</span>
+                </div>
+                <div class="slot type-propeller area-zd-sb" id="ui-zd-sb-hull" onclick="openModal('zdrive','zd_sb')">
+                    Z-DRIVE BE<br>
+                    <span id="ui-zd-sb-hull-status" style="font-size:0.55rem;color:#aaa;">FREE</span>
+                    <span id="ui-zd-sb-hull-az" style="font-size:0.45rem;color:#ce93d8;">0°</span>
+                </div>
+            </div>
+            <button class="quick-panel-btn" onclick="openModal('stability','vessel')">PAINEL DE BANDA E TRIM</button>
+        </div>
+
+        <!-- =========================================================
+             TELA 2: RECEBIMENTO DE ÁGUA / ÓLEO
+             ========================================================= -->
+        <div id="screen-bunkering" class="screen">
+            <div class="screen-title">Recebimento de Água / Óleo</div>
+            <div class="control-panel">
+                <div class="busbar-status dead" style="font-size: 1rem;">Caminhão-Tanque: <span id="ui-truck-vol">50.0</span> m³</div>
+                <button id="btn-connect-hose" class="control-btn">LIGAR MANGOTE</button>
+                <div id="bunker-controls" style="display:none; margin-top: 15px;">
+                    <label class="panel-label">Tanque de Armazenamento:</label>
+                    <select id="select-bunker-tank" class="control-select">
+                        <option value="">-- Selecione o Tanque --</option>
+                        <option value="tk06">TK 06 FO BB (23.8 m³)</option>
+                        <option value="tk07">TK 07 FO BE (23.8 m³)</option>
+                        <option value="tk11">TK 11 AFT BB (11.4 m³)</option>
+                        <option value="tk12">TK 12 AFT BE (14.5 m³)</option>
+                    </select>
+                    <button id="btn-pump-bunker" class="control-btn" disabled>INICIAR BOMBA</button>
+                </div>
+            </div>
+            <button id="btn-toggle-water-panel" class="quick-panel-btn">PAINEL DE RECEBIMENTO DE ÁGUA</button>
+            <div id="water-panel" class="control-panel water-panel" style="display:none;">
+                <div class="water-panel-header">
+                    <span class="water-panel-title">RECEBIMENTO DE ÁGUA DOCE</span>
+                    <span class="water-panel-badge">HIDRÔMETRO</span>
+                </div>
+                <div class="meter-grid" style="grid-template-columns:1fr 1fr; margin-top:10px;">
+                    <div class="meter">
+                        <div id="ui-water-hydrometer" class="meter-val" style="color:var(--accent-blue);">0.00 m³</div>
+                        <div class="meter-label">TOTALIZADO</div>
+                    </div>
+                    <div class="meter">
+                        <div id="ui-water-truck-vol" class="meter-val" style="color:#90caf9;">20.0</div>
+                        <div class="meter-label">CAMINHÃO m³</div>
+                    </div>
+                </div>
+                <div class="system-strip" style="margin-top:8px;">
+                    <span class="system-strip-title">HIDRÔMETRO DE LINHA</span>
+                    <span id="ui-water-flow" class="system-strip-value">0.20 m³/t</span>
+                    <span class="system-strip-badge" style="background:rgba(0,188,212,0.15); color:var(--accent-blue);">FW</span>
+                </div>
+                <button id="btn-connect-water-hose" class="control-btn" style="margin-top:10px;">LIGAR MANGOTE DE ÁGUA</button>
+                <div id="water-controls" style="display:none; margin-top: 15px;">
+                    <label class="panel-label">Tanque de Destino:</label>
+                    <select id="select-water-tank" class="control-select">
+                        <option value="tk02">TK 02 FW (8.8 m³)</option>
+                    </select>
+                    <button id="btn-pump-water" class="control-btn" disabled>INICIAR BOMBA DE ÁGUA</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- =========================================================
+             TELA 3: FO/LO (Transferência Interna)
+             ========================================================= -->
+        <div id="screen-fuel" class="screen">
+            <div class="screen-title">Sistema de FO/LO (Transferência)</div>
+
+            <!-- PURIFICADOR DE OD -->
+            <div class="control-panel">
+                <div style="border-bottom:1px solid #333; padding-bottom:8px; margin-bottom:12px;">
+                    <span style="font-size:0.9rem; color:var(--accent-orange); font-weight:bold;">&#9881; PURIFICADOR DE ÓLEO DIESEL (OD)</span>
+                </div>
+                <label class="panel-label">Origem (Armazenamento):</label>
+                <select id="select-transfer-source" class="control-select">
+                    <option value="">-- Selecione Origem --</option>
+                    <option value="tk06">TK 06 FO BB</option>
+                    <option value="tk07">TK 07 FO BE</option>
+                    <option value="tk11">TK 11 AFT BB</option>
+                    <option value="tk12">TK 12 AFT BE</option>
+                </select>
+                <label class="panel-label">Destino (Header / Serviço):</label>
+                <select id="select-transfer-dest" class="control-select">
+                    <option value="">-- Selecione Destino --</option>
+                    <option value="tk04">TK 04 HDR BB (Alimenta Motores BB)</option>
+                    <option value="tk05">TK 05 HDR BE (Alimenta Motores BE)</option>
+                </select>
+                <label class="panel-label">Válvula de Caudal:</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:15px;">
+                    <button class="aux-btn active" id="btn-flow-low"  onclick="setFlowRate(this)" data-rate="0.05" data-mode="LOW" >LOW<br><small style="font-weight:normal;">0.05 m³/t</small></button>
+                    <button class="aux-btn"        id="btn-flow-med"  onclick="setFlowRate(this)" data-rate="0.10" data-mode="MED" >MED<br><small style="font-weight:normal;">0.10 m³/t</small></button>
+                    <button class="aux-btn"        id="btn-flow-high" onclick="setFlowRate(this)" data-rate="0.20" data-mode="HIGH">HIGH<br><small style="font-weight:normal;">0.20 m³/t</small></button>
+                </div>
+                <button id="btn-pump-transfer" class="control-btn" disabled>PURIFICADOR OD - INICIAR</button>
+            </div>
+
+            <!-- VÁLVULA CROSS-FEED HDR 04 <-> HDR 05 -->
+            <div class="control-panel" style="padding:15px 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <span style="font-size:0.85rem; color:#aaa; font-weight:bold;">VLV COMUNICAÇÃO HDR 04 &harr; HDR 05</span>
+                    <span id="ui-crossfeed-status" style="font-size:0.75rem; padding:2px 8px; border-radius:10px; background:#333; color:#888;">FECHADA</span>
+                </div>
+                <button id="btn-crossfeed-valve" class="control-btn" style="margin-bottom:0; padding:10px;">ABRIR VÁLVULA CROSS-FEED</button>
+            </div>
+
+            <!-- TK03 OVERFLOW -->
+            <div class="control-panel" style="border-color:rgba(244,67,54,0.4); padding:15px 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <span style="color:var(--accent-red); font-weight:bold; font-size:0.9rem;">&#9888; TK 03 - OVERFLOW</span>
+                    <span id="ui-tk03-alarm-badge" style="display:none; font-size:0.75rem; padding:2px 8px; border-radius:10px; background:rgba(244,67,54,0.3); color:var(--accent-red); animation:blink 1s infinite;">ALARME</span>
+                </div>
+                <div style="background:#333; height:18px; border-radius:4px; overflow:hidden; margin-bottom:6px; position:relative;">
+                    <div id="ui-tk03-bar" style="height:100%; width:0%; background:var(--accent-red); border-radius:4px; transition:width 0.5s;"></div>
+                    <div style="position:absolute; top:0; left:50%; height:100%; width:2px; background:rgba(255,152,0,0.6);"></div>
+                    <div style="position:absolute; top:0; left:80%; height:100%; width:2px; background:rgba(244,67,54,0.8);"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:12px;">
+                    <span style="color:#888;">Vol: <span id="ui-tk03-vol" style="font-family:monospace; color:var(--accent-red);">0.00 m³</span></span>
+                    <span style="color:#888;">Nível: <span id="ui-tk03-pct" style="font-family:monospace; color:var(--accent-red);">0.0%</span></span>
+                    <span style="color:#888;">Máx: 2.0 m³</span>
+                </div>
+                <button id="btn-transfer-tk03-purifier" class="control-btn" style="margin-bottom:0; padding:10px; background:#2a0a00; border-color:var(--accent-red);">TRANSFERIR TK03 PARA HDR</button>
+            </div>
+        </div>
+
+        <!-- =========================================================
+             TELA 4: ELÉTRICA (QEP)
+             ========================================================= -->
+        <div id="screen-power" class="screen">
+            <div class="screen-title">Quadro Elétrico Principal</div>
+            <div class="control-panel" style="padding: 10px 20px;">
+                <div id="ui-busbar-status" class="busbar-status dead">DEAD BUS (0V)</div>
+            </div>
+
+            <div class="control-panel">
+                <!-- MCA Bombordo -->
+                <div class="generator-box">
+                    <div class="gen-header"><span class="gen-title">MCA 1 (BOMBORDO)</span><span id="ui-mca-ps-status" class="gen-status">OFF</span></div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+                        <!-- BLOCO MOTOR -->
+                        <div style="border:1px solid rgba(255,152,0,0.35); border-radius:6px; padding:8px;">
+                            <div style="font-size:0.7rem; color:#ff9800; text-align:center; margin-bottom:6px; font-weight:bold;">&#9881; MOTOR</div>
+                            <div class="meter-grid" style="grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px;">
+                                <div class="meter"><div id="ui-mca-ps-rpm-meter" class="meter-val" style="color:#888; font-size:1rem;">0</div><div class="meter-label">RPM</div></div>
+                                <div class="meter"><div id="ui-mca-ps-oil-meter" class="meter-val" style="color:#888; font-size:1rem;">0.0</div><div class="meter-label">OIL BAR</div></div>
+                            </div>
+                            <div style="display:flex; gap:6px;">
+                                <div class="carter-meter" style="flex:1;"><div class="carter-meter-bar" id="ui-mca-ps-carter-bar" style="height:0%;"></div><div id="ui-mca-ps-carter-val" class="meter-val" style="font-size:0.85rem;">0.000</div><div class="meter-label">CARTER</div></div>
+                                <div class="carter-meter" style="flex:1;"><div class="carter-meter-bar" id="ui-mca-ps-carter-bar2" style="height:0%;"></div><div id="ui-mca-ps-carter-pct" class="meter-val" style="font-size:0.85rem;">0%</div><div class="meter-label">NÍVEL LO</div></div>
+                            </div>
+                        </div>
+                        <!-- BLOCO GERADOR - MCA PS -->
+                        <div style="border:1px solid rgba(0,188,212,0.35); border-radius:6px; padding:8px;">
+                            <div style="font-size:0.7rem; color:#00bcd4; text-align:center; margin-bottom:6px; font-weight:bold;">&#9889; GERADOR</div>
+                            <div class="meter-grid" style="grid-template-columns:1fr 1fr 1fr; gap:6px; margin-bottom:6px;">
+                                <div class="meter"><div id="ui-mca-ps-v-meter" class="meter-val" style="color:#888; font-size:0.9rem;">0</div><div class="meter-label">VOLTS</div></div>
+                                <div class="meter"><div id="ui-mca-ps-hz-meter" class="meter-val" style="color:#888; font-size:0.9rem;">0.0</div><div class="meter-label">HZ</div></div>
+                                <div class="meter"><div id="ui-mca-ps-pf-meter" class="meter-val" style="color:#888; font-size:0.9rem;">0.00</div><div class="meter-label">FP</div></div>
+                            </div>
+                            <div class="meter-grid" style="grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px;">
+                                <div class="meter"><div id="ui-mca-ps-kw-meter" class="meter-val" style="color:#888; font-size:0.9rem;">0</div><div class="meter-label">kW</div></div>
+                                <div class="meter"><div id="ui-mca-ps-a-meter" class="meter-val" style="color:#888; font-size:0.9rem;">0</div><div class="meter-label">A</div></div>
+                            </div>
+                            <button id="btn-mca-ps-fill-carter" class="aux-btn" style="width:100%; background:#1a1100; border-color:#8a6000; color:#ffc107; font-size:0.7rem; padding:6px;">ENCHER CARTER</button>
+                        </div>
+                    </div>
+                    <button id="btn-mca-ps-start" class="control-btn" style="padding:10px;">ARRANQUE</button>
+                    <button id="btn-mca-ps-breaker" class="breaker-btn" disabled>DISJUNTOR: ABERTO</button>
+                </div>
+
+                <!-- MCA Estibordo -->
+                <div class="generator-box">
+                    <div class="gen-header"><span class="gen-title">MCA 2 (ESTIBORDO)</span><span id="ui-mca-sb-status" class="gen-status">OFF</span></div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+                        <!-- BLOCO MOTOR -->
+                        <div style="border:1px solid rgba(255,152,0,0.35); border-radius:6px; padding:8px;">
+                            <div style="font-size:0.7rem; color:#ff9800; text-align:center; margin-bottom:6px; font-weight:bold;">&#9881; MOTOR</div>
+                            <div class="meter-grid" style="grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px;">
+                                <div class="meter"><div id="ui-mca-sb-rpm-meter" class="meter-val" style="color:#888; font-size:1rem;">0</div><div class="meter-label">RPM</div></div>
+                                <div class="meter"><div id="ui-mca-sb-oil-meter" class="meter-val" style="color:#888; font-size:1rem;">0.0</div><div class="meter-label">OIL BAR</div></div>
+                            </div>
+                            <div style="display:flex; gap:6px;">
+                                <div class="carter-meter" style="flex:1;"><div class="carter-meter-bar" id="ui-mca-sb-carter-bar" style="height:0%;"></div><div id="ui-mca-sb-carter-val" class="meter-val" style="font-size:0.85rem;">0.000</div><div class="meter-label">CARTER</div></div>
+                                <div class="carter-meter" style="flex:1;"><div class="carter-meter-bar" id="ui-mca-sb-carter-bar2" style="height:0%;"></div><div id="ui-mca-sb-carter-pct" class="meter-val" style="font-size:0.85rem;">0%</div><div class="meter-label">NÍVEL LO</div></div>
+                            </div>
+                        </div>
+                        <!-- BLOCO GERADOR - MCA SB -->
+                        <div style="border:1px solid rgba(0,188,212,0.35); border-radius:6px; padding:8px;">
+                            <div style="font-size:0.7rem; color:#00bcd4; text-align:center; margin-bottom:6px; font-weight:bold;">&#9889; GERADOR</div>
+                            <div class="meter-grid" style="grid-template-columns:1fr 1fr 1fr; gap:6px; margin-bottom:6px;">
+                                <div class="meter"><div id="ui-mca-sb-v-meter" class="meter-val" style="color:#888; font-size:0.9rem;">0</div><div class="meter-label">VOLTS</div></div>
+                                <div class="meter"><div id="ui-mca-sb-hz-meter" class="meter-val" style="color:#888; font-size:0.9rem;">0.0</div><div class="meter-label">HZ</div></div>
+                                <div class="meter"><div id="ui-mca-sb-pf-meter" class="meter-val" style="color:#888; font-size:0.9rem;">0.00</div><div class="meter-label">FP</div></div>
+                            </div>
+                            <div class="meter-grid" style="grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px;">
+                                <div class="meter"><div id="ui-mca-sb-kw-meter" class="meter-val" style="color:#888; font-size:0.9rem;">0</div><div class="meter-label">kW</div></div>
+                                <div class="meter"><div id="ui-mca-sb-a-meter" class="meter-val" style="color:#888; font-size:0.9rem;">0</div><div class="meter-label">A</div></div>
+                            </div>
+                            <button id="btn-mca-sb-fill-carter" class="aux-btn" style="width:100%; background:#1a1100; border-color:#8a6000; color:#ffc107; font-size:0.7rem; padding:6px;">ENCHER CARTER</button>
+                        </div>
+                    </div>
+                    <button id="btn-mca-sb-start" class="control-btn" style="padding:10px;">ARRANQUE</button>
+                    <button id="btn-mca-sb-breaker" class="breaker-btn" disabled>DISJUNTOR: ABERTO</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- =========================================================
+             TELA 5: PROPULSÃO E Z-DRIVE
+             ========================================================= -->
+        <div id="screen-propulsion" class="screen">
+            <div class="screen-title">Propulsão Principal</div>
+            <div class="control-panel">
+                <!-- MCP Bombordo -->
+                <div class="generator-box" style="border-color: var(--accent-orange);">
+                    <div class="gen-header"><span class="gen-title" style="color:var(--accent-orange);">MCP BB</span><span id="ui-mcp-ps-status" class="gen-status">OFF</span></div>
+                    <div class="aux-grid">
+                        <button id="btn-mcp-ps-lube" class="aux-btn">LUBRIFICAÇÃO</button>
+                        <button id="btn-mcp-ps-cool" class="aux-btn">ÁGUA CIRC.</button>
+                    </div>
+                    <div class="meter-grid">
+                        <div class="meter"><div id="ui-mcp-ps-rpm" class="meter-val" style="color:#888;">0</div><div class="meter-label">RPM</div></div>
+                        <div class="meter"><div id="ui-mcp-ps-oil" class="meter-val" style="color:#888;">0.0</div><div class="meter-label">OIL BAR</div></div>
+                        <div class="meter"><div id="ui-mcp-ps-temp" class="meter-val" style="color:#888;">30</div><div class="meter-label">COOL °C</div></div>
+                    </div>
+                    <!-- BBA Hidráulica Acoplada -->
+                    <div class="system-strip">
+                        <span style="font-size:0.75rem; color:#2196f3; font-weight:bold;">&#9881; BBA HIDRÁULICA</span>
+                        <span id="ui-mcp-ps-hyd-press" class="system-strip-value">0 bar</span>
+                        <span id="ui-mcp-ps-hyd-status" class="system-strip-badge">OFF</span>
+                    </div>
+                    <div class="fluid-grid">
+                        <div class="carter-meter"><div class="carter-meter-bar" id="ui-mcp-ps-carter-bar" style="height:0%;"></div><div id="ui-mcp-ps-carter-val" class="meter-val" style="font-size:1rem;">0.000</div><div class="meter-label">CARTER m³</div></div>
+                        <div class="carter-meter"><div class="carter-meter-bar" id="ui-mcp-ps-carter-bar2" style="height:0%;"></div><div id="ui-mcp-ps-carter-pct" class="meter-val" style="font-size:1rem;">0%</div><div class="meter-label">NÍVEL LO</div></div>
+                        <div class="fluid-card" style="display:flex; align-items:center; justify-content:center;">
+                            <button id="btn-mcp-ps-fill-carter" class="aux-btn" style="width:100%; background:#1a1100; border-color:#8a6000; color:#ffc107; font-size:0.7rem;">ENCHER<br>CARTER</button>
+                        </div>
+                    </div>
+                    <button id="btn-mcp-ps-start" class="control-btn" style="padding:10px; margin-bottom:0;" disabled>PARTIR MCP</button>
+                    <div class="telegraph-container">
+                        <div class="panel-label" style="text-align:center;">TELÉGRAFO - <span id="telegraph-ps-val" style="color:var(--accent-orange); font-weight:bold;">STOP</span></div>
+                        <input type="range" id="telegraph-ps" class="telegraph-slider" min="0" max="100" value="0" disabled>
+                    </div>
+                    <button id="btn-clutch-ps" class="control-btn clutch-btn" disabled>ACOPLAR Z-DRIVE</button>
+                    <!-- Z-Drive BB Sub-Panel -->
+                    <div style="margin-top:12px; border:1px solid rgba(156,39,176,0.4); border-radius:6px; padding:12px; background:#0d0014;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <span style="font-size:0.85rem; color:#ce93d8; font-weight:bold;">&#9875; Z-DRIVE BB</span>
+                            <span id="ui-zd-ps-status" class="gen-status">FREE</span>
+                        </div>
+                        <div class="prop-visual">
+                            <div id="ui-zd-ps-prop-disc" class="prop-disc"></div>
+                            <div id="ui-zd-ps-prop-flow" class="prop-flow">Propulsor parado</div>
+                        </div>
+                        <div class="meter-grid" style="grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:10px;">
+                            <div class="meter"><div id="ui-zd-ps-prop-rpm" class="meter-val" style="color:#888; font-size:1rem;">0</div><div class="meter-label">PROP RPM</div></div>
+                            <div class="meter"><div id="ui-zd-ps-thrust" class="meter-val" style="color:#888; font-size:1rem;">0</div><div class="meter-label">THRUST %</div></div>
+                            <div class="meter"><div id="ui-zd-ps-az-meter" class="meter-val" style="color:#888; font-size:1rem;">0°</div><div class="meter-label">AZIMUTE</div></div>
+                        </div>
+                        <div style="margin-bottom:8px;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#888; margin-bottom:4px;">
+                                <span>GOVERNO AZIMUTE</span>
+                                <span id="ui-zd-ps-azimuth-val" style="color:#ce93d8;">0°</span>
+                            </div>
+                            <input type="range" id="azimuth-ps" min="0" max="359" value="0" style="width:100%; accent-color:#9c27b0;" oninput="zdAzimuth('ps',this.value)" disabled>
+                        </div>
+                        <div style="display:flex; gap:6px;">
+                            <div style="flex:1; background:#0a0a00; border:1px solid rgba(255,193,7,0.3); border-radius:4px; padding:6px; text-align:center;">
+                                <div style="font-size:0.6rem; color:#8a7000;">LO CAIXA ENG.</div>
+                                <div id="ui-zd-ps-gbox-lo" style="font-size:0.8rem; color:#ffc107; font-family:monospace;">100%</div>
+                            </div>
+                            <div style="flex:1; background:#00040a; border:1px solid rgba(33,150,243,0.3); border-radius:4px; padding:6px; text-align:center;">
+                                <div style="font-size:0.6rem; color:#0d47a1;">HYD GOVERNO</div>
+                                <div id="ui-zd-ps-steer-hyd" style="font-size:0.8rem; color:#2196f3; font-family:monospace;">100%</div>
+                            </div>
+                            <div style="flex:1; background:#06110b; border:1px solid rgba(76,175,80,0.3); border-radius:4px; padding:6px; text-align:center;">
+                                <div style="font-size:0.6rem; color:#2e7d32;">PROPULSOR</div>
+                                <div id="ui-zd-ps-prop-state" style="font-size:0.8rem; color:#4caf50; font-family:monospace;">STOP</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MCP Estibordo -->
+                <div class="generator-box" style="border-color: var(--accent-orange);">
+                    <div class="gen-header"><span class="gen-title" style="color:var(--accent-orange);">MCP BE</span><span id="ui-mcp-sb-status" class="gen-status">OFF</span></div>
+                    <div class="aux-grid">
+                        <button id="btn-mcp-sb-lube" class="aux-btn">LUBRIFICAÇÃO</button>
+                        <button id="btn-mcp-sb-cool" class="aux-btn">ÁGUA CIRC.</button>
+                    </div>
+                    <div class="meter-grid">
+                        <div class="meter"><div id="ui-mcp-sb-rpm" class="meter-val" style="color:#888;">0</div><div class="meter-label">RPM</div></div>
+                        <div class="meter"><div id="ui-mcp-sb-oil" class="meter-val" style="color:#888;">0.0</div><div class="meter-label">OIL BAR</div></div>
+                        <div class="meter"><div id="ui-mcp-sb-temp" class="meter-val" style="color:#888;">30</div><div class="meter-label">COOL °C</div></div>
+                    </div>
+                    <!-- BBA Hidráulica Acoplada -->
+                    <div class="system-strip">
+                        <span style="font-size:0.75rem; color:#2196f3; font-weight:bold;">&#9881; BBA HIDRÁULICA</span>
+                        <span id="ui-mcp-sb-hyd-press" class="system-strip-value">0 bar</span>
+                        <span id="ui-mcp-sb-hyd-status" class="system-strip-badge">OFF</span>
+                    </div>
+                    <div class="fluid-grid">
+                        <div class="carter-meter"><div class="carter-meter-bar" id="ui-mcp-sb-carter-bar" style="height:0%;"></div><div id="ui-mcp-sb-carter-val" class="meter-val" style="font-size:1rem;">0.000</div><div class="meter-label">CARTER m³</div></div>
+                        <div class="carter-meter"><div class="carter-meter-bar" id="ui-mcp-sb-carter-bar2" style="height:0%;"></div><div id="ui-mcp-sb-carter-pct" class="meter-val" style="font-size:1rem;">0%</div><div class="meter-label">NÍVEL LO</div></div>
+                        <div class="fluid-card" style="display:flex; align-items:center; justify-content:center;">
+                            <button id="btn-mcp-sb-fill-carter" class="aux-btn" style="width:100%; background:#1a1100; border-color:#8a6000; color:#ffc107; font-size:0.7rem;">ENCHER<br>CARTER</button>
+                        </div>
+                    </div>
+                    <button id="btn-mcp-sb-start" class="control-btn" style="padding:10px; margin-bottom:0;" disabled>PARTIR MCP</button>
+                    <div class="telegraph-container">
+                        <div class="panel-label" style="text-align:center;">TELÉGRAFO - <span id="telegraph-sb-val" style="color:var(--accent-orange); font-weight:bold;">STOP</span></div>
+                        <input type="range" id="telegraph-sb" class="telegraph-slider" min="0" max="100" value="0" disabled>
+                    </div>
+                    <button id="btn-clutch-sb" class="control-btn clutch-btn" disabled>ACOPLAR Z-DRIVE</button>
+                    <!-- Z-Drive BE Sub-Panel -->
+                    <div style="margin-top:12px; border:1px solid rgba(156,39,176,0.4); border-radius:6px; padding:12px; background:#0d0014;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <span style="font-size:0.85rem; color:#ce93d8; font-weight:bold;">&#9875; Z-DRIVE BE</span>
+                            <span id="ui-zd-sb-status" class="gen-status">FREE</span>
+                        </div>
+                        <div class="prop-visual">
+                            <div id="ui-zd-sb-prop-disc" class="prop-disc"></div>
+                            <div id="ui-zd-sb-prop-flow" class="prop-flow">Propulsor parado</div>
+                        </div>
+                        <div class="meter-grid" style="grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:10px;">
+                            <div class="meter"><div id="ui-zd-sb-prop-rpm" class="meter-val" style="color:#888; font-size:1rem;">0</div><div class="meter-label">PROP RPM</div></div>
+                            <div class="meter"><div id="ui-zd-sb-thrust" class="meter-val" style="color:#888; font-size:1rem;">0</div><div class="meter-label">THRUST %</div></div>
+                            <div class="meter"><div id="ui-zd-sb-az-meter" class="meter-val" style="color:#888; font-size:1rem;">0°</div><div class="meter-label">AZIMUTE</div></div>
+                        </div>
+                        <div style="margin-bottom:8px;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#888; margin-bottom:4px;">
+                                <span>GOVERNO AZIMUTE</span>
+                                <span id="ui-zd-sb-azimuth-val" style="color:#ce93d8;">0°</span>
+                            </div>
+                            <input type="range" id="azimuth-sb" min="0" max="359" value="0" style="width:100%; accent-color:#9c27b0;" oninput="zdAzimuth('sb',this.value)" disabled>
+                        </div>
+                        <div style="display:flex; gap:6px;">
+                            <div style="flex:1; background:#0a0a00; border:1px solid rgba(255,193,7,0.3); border-radius:4px; padding:6px; text-align:center;">
+                                <div style="font-size:0.6rem; color:#8a7000;">LO CAIXA ENG.</div>
+                                <div id="ui-zd-sb-gbox-lo" style="font-size:0.8rem; color:#ffc107; font-family:monospace;">100%</div>
+                            </div>
+                            <div style="flex:1; background:#00040a; border:1px solid rgba(33,150,243,0.3); border-radius:4px; padding:6px; text-align:center;">
+                                <div style="font-size:0.6rem; color:#0d47a1;">HYD GOVERNO</div>
+                                <div id="ui-zd-sb-steer-hyd" style="font-size:0.8rem; color:#2196f3; font-family:monospace;">100%</div>
+                            </div>
+                            <div style="flex:1; background:#06110b; border:1px solid rgba(76,175,80,0.3); border-radius:4px; padding:6px; text-align:center;">
+                                <div style="font-size:0.6rem; color:#2e7d32;">PROPULSOR</div>
+                                <div id="ui-zd-sb-prop-state" style="font-size:0.8rem; color:#4caf50; font-family:monospace;">STOP</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =========================================================
+             TELA 6: VISUAL 3D
+             ========================================================= -->
+        <div id="screen-visual3d" class="screen">
+            <div class="screen-title">Visual 3D do Rebocador</div>
+            <div class="three-d-panel">
+                <div class="three-d-stage" id="three-d-stage"></div>
+                <div class="three-d-hud">
+                    <div class="three-d-card">
+                        <div class="three-d-card-label">Velocidade</div>
+                        <div class="three-d-card-value" id="ui-3d-speed">0.00 kn</div>
+                    </div>
+                    <div class="three-d-card">
+                        <div class="three-d-card-label">Rumo</div>
+                        <div class="three-d-card-value" id="ui-3d-heading">000°</div>
+                    </div>
+                    <div class="three-d-card">
+                        <div class="three-d-card-label">Resultante</div>
+                        <div class="three-d-card-value" id="ui-3d-resultant">0.0 kN</div>
+                    </div>
+                    <div class="three-d-card">
+                        <div class="three-d-card-label">Inclinação</div>
+                        <div class="three-d-card-value" id="ui-3d-attitude">Banda ADR / Trim ADR</div>
+                    </div>
+                </div>
+                <div class="three-d-legend">
+                    Use as manetes na tela Motores para testar a propulsão. A movimentação usa a resultante vetorial dos dois Z-Drives.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVEGAÇÃO INFERIOR -->
+    <div id="bottom-nav">
+        <button class="nav-btn active" data-target="build"><span class="nav-icon">&#x1F3D7;</span>Planta</button>
+        <button class="nav-btn" data-target="bunkering"><span class="nav-icon">&#x26FD;</span>Recebimento</button>
+        <button class="nav-btn" data-target="fuel"><span class="nav-icon">&#x1F6E2;</span>FO/LO</button>
+        <button class="nav-btn" data-target="power"><span class="nav-icon">&#x26A1;</span>QEP</button>
+        <button class="nav-btn" data-target="propulsion"><span class="nav-icon">&#x2699;</span>Motores</button>
+        <button class="nav-btn" data-target="visual3d"><span class="nav-icon">&#x1F6A2;</span>Visual 3D</button>
+    </div>
+
+    <!-- =====================================================================
+         LÓGICA JAVASCRIPT MODULAR
+         ===================================================================== -->
+    <script src="tuglife_state.js"></script>
+    <script src="tuglife_utils.js"></script>
+    <script src="tuglife_render.js"></script>
+    <script src="tuglife_controls.js"></script>
+    <script src="tuglife_physics.js"></script>
+    <script src="tuglife_boot.js"></script>
+    <script src="three.global.js"></script>
+    <script src="tuglife_3d.js"></script>
+</body>
+</html>
