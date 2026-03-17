@@ -11,7 +11,7 @@ window.tuglife3dModelConfig = {
     rotationXDeg: 0,
     rotationYDeg: 0,
     rotationZDeg: 0,
-    offset: { x: 0, y: 0.02, z: 0 }
+    offset: { x: 0, y: -0.22, z: 0 }
 };
 
 bindEventListeners();

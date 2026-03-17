@@ -37,7 +37,7 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             })
         );
         water.rotation.x = -Math.PI / 2;
-        water.position.y = 0.08;
+        water.position.y = 0.14;
         scene.add(water);
 
         const waterUnderlay = new THREE.Mesh(
@@ -49,8 +49,20 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             })
         );
         waterUnderlay.rotation.x = -Math.PI / 2;
-        waterUnderlay.position.y = -0.28;
+        waterUnderlay.position.y = -0.2;
         scene.add(waterUnderlay);
+
+        const harborWater = new THREE.Mesh(
+            new THREE.CircleGeometry(18, 48),
+            new THREE.MeshBasicMaterial({
+                color: 0x1b6f8b,
+                transparent: true,
+                opacity: 0.26
+            })
+        );
+        harborWater.rotation.x = -Math.PI / 2;
+        harborWater.position.y = 0.12;
+        scene.add(harborWater);
 
         const grid = new THREE.GridHelper(160, 48, 0x315968, 0x12303d);
         grid.position.y = 0.1;
@@ -229,7 +241,7 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
 
         function createRope() {
             const geometry = new THREE.BufferGeometry();
-            geometry.setAttribute('position', new THREE.Float32BufferAttribute(new Array(18).fill(0), 3));
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(new Array(36).fill(0), 3));
             const line = new THREE.Line(
                 geometry,
                 new THREE.LineBasicMaterial({ color: 0xf6dfb4, transparent: true, opacity: 0.95 })
@@ -389,14 +401,19 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             renderer.setSize(width, height, false);
         }
 
-        function setRopeGeometry(line, start, end, sag) {
+        function setRopeGeometry(line, start, end, sag, elapsed, tension) {
             const positions = [];
-            for (let i = 0; i < 6; i++) {
-                const t = i / 5;
+            const segmentCount = 12;
+            const distance = start.distanceTo(end);
+            const ropeSag = sag + distance * 0.03 + (1 - tension) * 0.18;
+            for (let i = 0; i < segmentCount; i++) {
+                const t = i / (segmentCount - 1);
+                const sideSway = Math.sin(elapsed * 1.7 + t * Math.PI * 2.2) * 0.03 * (1 - tension);
+                const verticalDrop = Math.sin(t * Math.PI) * ropeSag;
                 positions.push(
                     THREE.MathUtils.lerp(start.x, end.x, t),
-                    THREE.MathUtils.lerp(start.y, end.y, t) - Math.sin(t * Math.PI) * sag,
-                    THREE.MathUtils.lerp(start.z, end.z, t)
+                    THREE.MathUtils.lerp(start.y, end.y, t) - verticalDrop,
+                    THREE.MathUtils.lerp(start.z, end.z, t) + sideSway
                 );
             }
             line.geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
@@ -513,7 +530,7 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             const baseHeel = THREE.MathUtils.degToRad(parseFloat(stability.heelDeg || 0)) * heelSign * 0.45;
             const baseTrim = THREE.MathUtils.degToRad(parseFloat(stability.trimDeg || 0)) * trimSign * 0.35;
 
-            tugGroup.position.set(vessel.x, 0.02, vessel.z);
+            tugGroup.position.set(vessel.x, -0.03, vessel.z);
             tugGroup.rotation.y = vessel.yaw;
             tugGroup.rotation.z = THREE.MathUtils.lerp(tugGroup.rotation.z, baseHeel + maneuverHeel, 0.08);
             tugGroup.rotation.x = THREE.MathUtils.lerp(tugGroup.rotation.x, baseTrim + Math.sin(elapsed * 1.7) * 0.02, 0.08);
@@ -538,17 +555,22 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             wave.needsUpdate = true;
             water.geometry.computeVertexNormals();
             waterUnderlay.material.opacity = 0.48 + Math.sin(elapsed * 0.8) * 0.04;
+            harborWater.material.opacity = 0.22 + Math.sin(elapsed * 0.9) * 0.03;
 
-            const forePoint = new THREE.Vector3(0, 1.05, -4.35).applyMatrix4(tugGroup.matrixWorld);
-            const aftPoint = new THREE.Vector3(0, 1.0, 3.85).applyMatrix4(tugGroup.matrixWorld);
+            const forePoint = new THREE.Vector3(-1.65, 1.18, -2.9).applyMatrix4(tugGroup.matrixWorld);
+            const aftPoint = new THREE.Vector3(-1.55, 1.0, 2.45).applyMatrix4(tugGroup.matrixWorld);
             const bollardForePoint = new THREE.Vector3(-4.2, 1.66, -4.7);
             const bollardAftPoint = new THREE.Vector3(-4.2, 1.66, 4.7);
+            const foreDistance = forePoint.distanceTo(bollardForePoint);
+            const aftDistance = aftPoint.distanceTo(bollardAftPoint);
+            const foreTension = THREE.MathUtils.clamp(1 - foreDistance / 8, 0.15, 0.95);
+            const aftTension = THREE.MathUtils.clamp(1 - aftDistance / 8, 0.15, 0.95);
 
             foreRope.visible = window.gameState.visual3d.mooringConnected;
             aftRope.visible = window.gameState.visual3d.mooringConnected;
             if (window.gameState.visual3d.mooringConnected) {
-                setRopeGeometry(foreRope, forePoint, bollardForePoint, 0.24);
-                setRopeGeometry(aftRope, aftPoint, bollardAftPoint, 0.2);
+                setRopeGeometry(foreRope, forePoint, bollardForePoint, 0.18, elapsed, foreTension);
+                setRopeGeometry(aftRope, aftPoint, bollardAftPoint, 0.14, elapsed, aftTension);
             }
 
             const target = new THREE.Vector3(vessel.x - 0.2, 1.0, vessel.z);
