@@ -8,7 +8,7 @@ window.tuglife3dModelConfig = {
     scale: 1,
     targetLength: 8.4,
     autoFit: true,
-    rotationXDeg: 90,
+    rotationXDeg: 0,
     rotationYDeg: 0,
     rotationZDeg: 0,
     offset: { x: 0, y: 0.02, z: 0 }
