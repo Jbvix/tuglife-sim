@@ -496,9 +496,10 @@
                 <div class="three-d-actions">
                     <button id="btn-3d-mooring" class="control-btn three-d-btn">DESCONECTAR CABOS</button>
                     <span class="three-d-mooring-status" id="ui-3d-mooring-status">AMARRADO NO CAIS</span>
+                    <span class="three-d-mooring-status" id="ui-3d-model-status">MODELO PADRÃO</span>
                 </div>
                 <div class="three-d-legend">
-                    Use as manetes na tela Motores para testar a propulsão. Arraste para orbitar a câmera e use a roda do mouse para zoom.
+                    Use as manetes na tela Motores para testar a propulsão. Arraste para orbitar a câmera e use a roda do mouse para zoom. Para usar um modelo externo, adicione o arquivo em <code>assets/models/tugboat.glb</code>.
                 </div>
             </div>
         </div>
@@ -524,6 +525,7 @@
     <script src="tuglife_physics.js"></script>
     <script src="tuglife_boot.js"></script>
     <script src="three.global.js"></script>
+    <script src="GLTFLoader.global.js"></script>
     <script src="tuglife_3d.js"></script>
 </body>
 </html>

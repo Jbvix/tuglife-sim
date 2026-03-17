@@ -105,6 +105,12 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
         tugShadow.rotation.x = -Math.PI / 2;
         tugShadow.position.y = -0.18;
         tugGroup.add(tugShadow);
+        const proceduralParts = [];
+
+        function registerProceduralPart(part) {
+            proceduralParts.push(part);
+            return part;
+        }
 
         const hullMaterial = new THREE.MeshStandardMaterial({ color: 0xcf851c, roughness: 0.5, metalness: 0.1 });
         const superstructureMaterial = new THREE.MeshStandardMaterial({ color: 0xd9ebf3, roughness: 0.34, metalness: 0.03 });
@@ -112,53 +118,53 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
 
         const hullMain = new THREE.Mesh(new THREE.BoxGeometry(3.4, 1.15, 6.2), hullMaterial);
         hullMain.position.set(0, 0.62, -0.15);
-        tugGroup.add(hullMain);
+        tugGroup.add(registerProceduralPart(hullMain));
 
         const bowBlock = new THREE.Mesh(new THREE.BoxGeometry(2.8, 1.15, 1.25), hullMaterial);
         bowBlock.position.set(0, 0.62, -3.82);
         bowBlock.rotation.y = Math.PI / 4;
-        tugGroup.add(bowBlock);
+        tugGroup.add(registerProceduralPart(bowBlock));
 
         const sternBlock = new THREE.Mesh(new THREE.BoxGeometry(3.05, 1.05, 1.75), hullMaterial);
         sternBlock.position.set(0, 0.58, 3.05);
-        tugGroup.add(sternBlock);
+        tugGroup.add(registerProceduralPart(sternBlock));
 
         const gunwale = new THREE.Mesh(new THREE.BoxGeometry(3.55, 0.14, 7.9), darkMaterial);
         gunwale.position.set(0, 1.23, -0.12);
-        tugGroup.add(gunwale);
+        tugGroup.add(registerProceduralPart(gunwale));
 
         const aftDeck = new THREE.Mesh(new THREE.BoxGeometry(2.45, 0.16, 2.0), darkMaterial);
         aftDeck.position.set(0, 1.32, 2.55);
-        tugGroup.add(aftDeck);
+        tugGroup.add(registerProceduralPart(aftDeck));
 
         const cabin = new THREE.Mesh(new THREE.BoxGeometry(2.05, 1.5, 2.25), superstructureMaterial);
         cabin.position.set(0, 1.92, -0.55);
-        tugGroup.add(cabin);
+        tugGroup.add(registerProceduralPart(cabin));
 
         const wheelhouse = new THREE.Mesh(new THREE.BoxGeometry(1.55, 0.68, 1.5), darkMaterial);
         wheelhouse.position.set(0, 2.27, -0.55);
-        tugGroup.add(wheelhouse);
+        tugGroup.add(registerProceduralPart(wheelhouse));
 
         const mast = new THREE.Mesh(
             new THREE.CylinderGeometry(0.05, 0.07, 1.75, 10),
             new THREE.MeshStandardMaterial({ color: 0xcfd8dc, roughness: 0.34, metalness: 0.24 })
         );
         mast.position.set(0.04, 3.05, -0.25);
-        tugGroup.add(mast);
+        tugGroup.add(registerProceduralPart(mast));
 
         const funnel = new THREE.Mesh(
             new THREE.CylinderGeometry(0.22, 0.25, 0.7, 18),
             new THREE.MeshStandardMaterial({ color: 0x10181d, roughness: 0.6, metalness: 0.18 })
         );
         funnel.position.set(-0.95, 1.78, 1.7);
-        tugGroup.add(funnel);
+        tugGroup.add(registerProceduralPart(funnel));
 
         const waterline = new THREE.Mesh(
             new THREE.BoxGeometry(3.48, 0.08, 7.8),
             new THREE.MeshBasicMaterial({ color: 0xcfe7f3 })
         );
         waterline.position.set(0, 0.18, -0.05);
-        tugGroup.add(waterline);
+        tugGroup.add(registerProceduralPart(waterline));
 
         function createThruster(color) {
             const thruster = new THREE.Group();
@@ -201,8 +207,8 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
         const starboardThruster = createThruster(0x5b3e1e);
         portThruster.group.position.set(-0.92, -0.02, 2.75);
         starboardThruster.group.position.set(0.92, -0.02, 2.75);
-        tugGroup.add(portThruster.group);
-        tugGroup.add(starboardThruster.group);
+        tugGroup.add(registerProceduralPart(portThruster.group));
+        tugGroup.add(registerProceduralPart(starboardThruster.group));
 
         const thrusterHelpers = {
             ps: new THREE.ArrowHelper(new THREE.Vector3(0, 0, -1), new THREE.Vector3(-0.92, 0.12, 2.75), 1.1, 0x7cdeff, 0.35, 0.2),
@@ -241,8 +247,87 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             resultant: document.getElementById('ui-3d-resultant'),
             attitude: document.getElementById('ui-3d-attitude'),
             mooringStatus: document.getElementById('ui-3d-mooring-status'),
-            mooringButton: document.getElementById('btn-3d-mooring')
+            mooringButton: document.getElementById('btn-3d-mooring'),
+            modelStatus: document.getElementById('ui-3d-model-status')
         };
+
+        const modelConfig = window.tuglife3dModelConfig || {};
+        let externalModel = null;
+
+        function setModelStatus(text, color) {
+            if (!hud.modelStatus) return;
+            hud.modelStatus.textContent = text;
+            if (color) hud.modelStatus.style.color = color;
+        }
+
+        function setProceduralVisibility(visible) {
+            proceduralParts.forEach((part) => {
+                part.visible = visible;
+            });
+        }
+
+        function loadExternalModel() {
+            if (!window.GLTFLoader || !modelConfig.path) {
+                setModelStatus('MODELO PADRÃO', '#8aa3af');
+                return;
+            }
+
+            setModelStatus('CARREGANDO GLB', '#7cdeff');
+            const loader = new window.GLTFLoader();
+            loader.load(
+                modelConfig.path,
+                (gltf) => {
+                    externalModel = gltf.scene || gltf.scenes?.[0];
+                    if (!externalModel) {
+                        setModelStatus('GLB INVÁLIDO', '#ff8a80');
+                        return;
+                    }
+
+                    externalModel.traverse((node) => {
+                        if (node.isMesh) {
+                            node.castShadow = false;
+                            node.receiveShadow = true;
+                        }
+                    });
+
+                    const fitBox = new THREE.Box3().setFromObject(externalModel);
+                    const fitSize = fitBox.getSize(new THREE.Vector3());
+                    const dominantLength = Math.max(fitSize.x, fitSize.y, fitSize.z) || 1;
+                    const autoFitScale = modelConfig.autoFit === false
+                        ? 1
+                        : (modelConfig.targetLength || 8.4) / dominantLength;
+                    const scale = (modelConfig.scale || 1) * autoFitScale;
+                    const offset = modelConfig.offset || { x: 0, y: 0, z: 0 };
+                    externalModel.scale.set(scale, scale, scale);
+                    externalModel.rotation.set(
+                        THREE.MathUtils.degToRad(modelConfig.rotationXDeg || 0),
+                        THREE.MathUtils.degToRad(modelConfig.rotationYDeg || 0),
+                        THREE.MathUtils.degToRad(modelConfig.rotationZDeg || 0)
+                    );
+
+                    const alignedBox = new THREE.Box3().setFromObject(externalModel);
+                    const alignedCenter = alignedBox.getCenter(new THREE.Vector3());
+                    const alignedMin = alignedBox.min.clone();
+
+                    externalModel.position.set(
+                        (offset.x || 0) - alignedCenter.x,
+                        (offset.y || 0) - alignedMin.y,
+                        (offset.z || 0) - alignedCenter.z
+                    );
+                    tugGroup.add(externalModel);
+
+                    setProceduralVisibility(false);
+                    setModelStatus('MODELO GLTF ATIVO', '#9ed8b0');
+                },
+                undefined,
+                () => {
+                    setModelStatus('FALLBACK PADRÃO', '#ffb74d');
+                    setProceduralVisibility(true);
+                }
+            );
+        }
+
+        loadExternalModel();
 
         const vessel = window.gameState.visual3d.vessel;
         const orbit = {
