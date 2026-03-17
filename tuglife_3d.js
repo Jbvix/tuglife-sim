@@ -166,6 +166,15 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
         };
 
         const vessel = window.gameState.visual3d.vessel;
+        const orbit = {
+            yaw: 0.9,
+            pitch: 0.52,
+            distance: 12.5,
+            dragging: false,
+            pointerId: null,
+            lastX: 0,
+            lastY: 0
+        };
 
         if (hud.mooringButton) {
             hud.mooringButton.addEventListener('click', () => {
@@ -214,6 +223,46 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             line.geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
             line.geometry.attributes.position.needsUpdate = true;
         }
+
+        function updateOrbitFromInput(dx, dy) {
+            orbit.yaw -= dx * 0.008;
+            orbit.pitch = THREE.MathUtils.clamp(orbit.pitch - dy * 0.006, 0.18, 1.22);
+        }
+
+        stage.addEventListener('pointerdown', (event) => {
+            orbit.dragging = true;
+            orbit.pointerId = event.pointerId;
+            orbit.lastX = event.clientX;
+            orbit.lastY = event.clientY;
+            if (stage.setPointerCapture) stage.setPointerCapture(event.pointerId);
+        });
+
+        stage.addEventListener('pointermove', (event) => {
+            if (!orbit.dragging || orbit.pointerId !== event.pointerId) return;
+            updateOrbitFromInput(event.clientX - orbit.lastX, event.clientY - orbit.lastY);
+            orbit.lastX = event.clientX;
+            orbit.lastY = event.clientY;
+        });
+
+        function endDrag(event) {
+            if (orbit.pointerId !== event.pointerId) return;
+            orbit.dragging = false;
+            orbit.pointerId = null;
+            if (stage.releasePointerCapture) {
+                try {
+                    stage.releasePointerCapture(event.pointerId);
+                } catch (error) {
+                    // Ignore release errors when the pointer is already detached.
+                }
+            }
+        }
+
+        stage.addEventListener('pointerup', endDrag);
+        stage.addEventListener('pointercancel', endDrag);
+        stage.addEventListener('wheel', (event) => {
+            event.preventDefault();
+            orbit.distance = THREE.MathUtils.clamp(orbit.distance + event.deltaY * 0.01, 6, 24);
+        }, { passive: false });
 
         function getThrusterState(side) {
             const mcp = window.gameState.machinery[`mcp_${side}`];
@@ -316,10 +365,12 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
                 setRopeGeometry(aftRope, aftPoint, bollardAftPoint, 0.24);
             }
 
-            camera.position.x = vessel.x + Math.sin(vessel.yaw + 0.9) * 12.5;
-            camera.position.z = vessel.z + Math.cos(vessel.yaw + 0.9) * 12.5;
-            camera.position.y = 8.4;
-            camera.lookAt(vessel.x - 0.6, 1.1, vessel.z);
+            const target = new THREE.Vector3(vessel.x - 0.2, 1.15, vessel.z);
+            const horizontalDistance = Math.cos(orbit.pitch) * orbit.distance;
+            camera.position.x = target.x + Math.sin(orbit.yaw) * horizontalDistance;
+            camera.position.z = target.z + Math.cos(orbit.yaw) * horizontalDistance;
+            camera.position.y = target.y + Math.sin(orbit.pitch) * orbit.distance;
+            camera.lookAt(target);
 
             const speed = Math.sqrt(vessel.vx * vessel.vx + vessel.vz * vessel.vz) * 1.94;
             const headingDeg = ((THREE.MathUtils.radToDeg(vessel.yaw) % 360) + 360) % 360;
