@@ -268,18 +268,24 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
 
         function loadExternalModel() {
             if (!window.GLTFLoader || !modelConfig.path) {
-                setModelStatus('MODELO PADRÃO', '#8aa3af');
+                setModelStatus('SEM GLTFLOADER', '#8aa3af');
                 return;
             }
 
-            setModelStatus('CARREGANDO GLB', '#7cdeff');
+            setModelStatus('CARREGANDO GLTF', '#7cdeff');
             const loader = new window.GLTFLoader();
+            const normalizedPath = `${modelConfig.path}`.replace(/\\/g, '/');
+            const lastSlash = normalizedPath.lastIndexOf('/');
+            const resourcePath = lastSlash >= 0 ? normalizedPath.slice(0, lastSlash + 1) : '';
+            const fileName = lastSlash >= 0 ? normalizedPath.slice(lastSlash + 1) : normalizedPath;
+            loader.setPath(resourcePath);
+            loader.setResourcePath(resourcePath);
             loader.load(
-                modelConfig.path,
+                fileName,
                 (gltf) => {
                     externalModel = gltf.scene || gltf.scenes?.[0];
                     if (!externalModel) {
-                        setModelStatus('GLB INVÁLIDO', '#ff8a80');
+                        setModelStatus('GLTF INVÁLIDO', '#ff8a80');
                         return;
                     }
 
@@ -319,10 +325,17 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
                     setProceduralVisibility(false);
                     setModelStatus('MODELO GLTF ATIVO', '#9ed8b0');
                 },
-                undefined,
-                () => {
-                    setModelStatus('FALLBACK PADRÃO', '#ffb74d');
+                (event) => {
+                    if (!event || !event.total) return;
+                    const progress = Math.round((event.loaded / event.total) * 100);
+                    setModelStatus(`CARREGANDO ${progress}%`, '#7cdeff');
+                },
+                (error) => {
+                    const errorMessage = error?.message || error?.target?.statusText || 'erro ao carregar';
+                    const isFileProtocol = typeof window !== 'undefined' && window.location && window.location.protocol === 'file:';
+                    setModelStatus(isFileProtocol ? 'GLTF BLOQUEADO EM FILE://' : 'FALLBACK PADRÃO', '#ffb74d');
                     setProceduralVisibility(true);
+                    console.error('Falha ao carregar modelo GLTF:', errorMessage, error);
                 }
             );
         }
