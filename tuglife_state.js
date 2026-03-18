@@ -219,3 +219,16 @@ const VESSEL_HYDROSTATICS = {
         oh32: 0.86
     }
 };
+
+VESSEL_HYDROSTATICS.fixedEquipment = [
+    { name: 'Superestrutura', mass: 28, side: 'center', longitudinal: 'fore', yArm: -3.3 },
+    { name: 'MCP BB', mass: 18, side: 'port', longitudinal: 'aft', yArm: 1.9 },
+    { name: 'MCP BE', mass: 18, side: 'starboard', longitudinal: 'aft', yArm: 1.9 },
+    { name: 'MCA BB', mass: 4.5, side: 'port', longitudinal: 'mid', yArm: -0.8 },
+    { name: 'MCA BE', mass: 4.5, side: 'starboard', longitudinal: 'mid', yArm: -0.8 },
+    { name: 'Z-Drive BB', mass: 9, side: 'port', longitudinal: 'aft', yArm: 4.9 },
+    { name: 'Z-Drive BE', mass: 9, side: 'starboard', longitudinal: 'aft', yArm: 4.9 },
+    { name: 'Guincho de Proa', mass: 5.5, side: 'center', longitudinal: 'fore', yArm: -5.6 },
+    { name: 'QEP e cablagem', mass: 8, side: 'center', longitudinal: 'mid', yArm: -0.6 },
+    { name: 'Conves e acessorios', mass: 12, side: 'center', longitudinal: 'mid', yArm: 0.0 }
+];
