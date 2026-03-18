@@ -194,18 +194,19 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 @media (min-width: 1280px) {
     #main-display.desktop-layout {
         width: 100%;
-        max-width: 1500px;
+        max-width: 1420px;
+        height: calc(100dvh - 70px - 20px);
         margin: 0 auto;
-        padding: 14px;
+        padding: 10px 14px 12px;
         display: grid;
-        grid-template-columns: minmax(280px, 338px) minmax(680px, 840px) minmax(280px, 338px);
-        gap: 14px;
-        align-items: start;
+        grid-template-columns: minmax(270px, 320px) minmax(600px, 720px) minmax(270px, 320px);
+        gap: 12px;
+        align-items: stretch;
         overflow: hidden;
     }
 
     #main-display.desktop-layout .screen {
-        height: auto;
+        height: 100%;
         min-height: 0;
         width: 100%;
         overflow-y: hidden;
@@ -214,22 +215,23 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 
     #main-display.desktop-layout .desktop-core {
         grid-column: 2;
-        align-self: start;
+        align-self: stretch;
         position: sticky;
         top: 0;
         width: 100%;
-        max-width: 840px;
+        max-width: 720px;
+        height: fit-content;
         justify-self: center;
     }
 
     #main-display.desktop-layout .desktop-side-panel {
-        align-self: start;
+        align-self: stretch;
         background: rgba(10, 18, 24, 0.78);
         border: 1px solid rgba(0, 188, 212, 0.2);
         border-radius: 18px;
         padding: 8px 0 14px;
         box-shadow: 0 20px 40px rgba(0,0,0,0.22);
-        max-height: calc(100dvh - 108px);
+        height: 100%;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: thin;
@@ -267,7 +269,7 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 
     #main-display.desktop-layout .desktop-core .hull-container,
     #main-display.desktop-layout .desktop-core .quick-panel-btn {
-        max-width: 840px;
+        max-width: 720px;
         width: 100%;
     }
 
@@ -349,8 +351,8 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 }
 @media (min-width: 1280px) and (max-width: 1460px) {
     #main-display.desktop-layout {
-        max-width: 1400px;
-        grid-template-columns: minmax(246px, 292px) minmax(620px, 740px) minmax(246px, 292px);
+        max-width: 1320px;
+        grid-template-columns: minmax(238px, 284px) minmax(560px, 660px) minmax(238px, 284px);
         gap: 12px;
     }
 
@@ -363,7 +365,7 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
     #main-display.desktop-layout .desktop-core,
     #main-display.desktop-layout .desktop-core .hull-container,
     #main-display.desktop-layout .desktop-core .quick-panel-btn {
-        max-width: 740px;
+        max-width: 660px;
     }
 
     #main-display.desktop-layout .desktop-side-panel .three-d-stage {
