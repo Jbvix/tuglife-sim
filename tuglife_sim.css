@@ -52,7 +52,7 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
         "tk06     tk03     tk03     tk07"
         "mcp-ps   mcp-ps   mcp-sb   mcp-sb"
         "tk11     tk13     tk14     tk12"
-        "tk15     tk15     tk15     tk15"
+        "tk15     tk15     tk16     tk16"
         "zd-ps    zd-ps    zd-sb    zd-sb";
 }
 
@@ -71,6 +71,7 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 .area-mcp-ps { grid-area: mcp-ps; } .area-mcp-sb { grid-area: mcp-sb; }
 .area-tk11 { grid-area: tk11; } .area-tk13 { grid-area: tk13; } .area-tk14 { grid-area: tk14; } .area-tk12 { grid-area: tk12; }
 .area-tk15 { grid-area: tk15; }
+.area-tk16 { grid-area: tk16; }
 .area-winch { grid-area: winch; } .area-tk-hyd { grid-area: tk-hyd; } .area-chiller { grid-area: chiller; }
 .slot.type-winch { border-color: rgba(156,39,176,0.5); background: rgba(156,39,176,0.05); }
 .slot.type-hyd { border-color: rgba(33,150,243,0.5); background: rgba(33,150,243,0.05); }

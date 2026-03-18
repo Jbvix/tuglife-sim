@@ -427,9 +427,10 @@ function renderView() {
 
         const perc = (tank.vol / tank.max) * 100;
         fillLayer.style.height = `${perc}%`;
-        capText.innerText = key === 'tk15' ? `${tank.vol.toFixed(2)} m³` : `${tank.vol.toFixed(1)}`;
+        capText.innerText = ['tk15', 'tk16'].includes(key) ? `${tank.vol.toFixed(2)} m³` : `${tank.vol.toFixed(1)}`;
 
         if (key === 'tk15') fillLayer.style.backgroundColor = perc >= 90 ? "rgba(244,67,54,0.5)" : "rgba(255,193,7,0.35)";
+        else if (key === 'tk16') fillLayer.style.backgroundColor = perc >= 90 ? "rgba(244,67,54,0.5)" : "rgba(255,183,77,0.35)";
         else if (key === 'tk03') fillLayer.style.backgroundColor = perc >= 80 ? "rgba(244,67,54,0.6)" : "rgba(255,152,0,0.4)";
         else fillLayer.style.backgroundColor = perc >= 90 ? "rgba(244, 67, 54, 0.5)" : "rgba(0, 188, 212, 0.25)";
     }
