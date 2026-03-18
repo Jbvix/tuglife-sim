@@ -42,8 +42,9 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
     width: 95%; max-width: 450px; height: auto; min-height: 80%;
     border: 3px solid var(--accent-blue); border-radius: 50% 50% 20px 20px / 15% 15% 10px 10px;
     background-color: #1a252c; padding: 50px 15px 15px 15px; display: grid; flex-shrink: 0;
-    grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto auto auto auto auto auto auto auto auto auto; gap: 6px;
+    grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto auto auto auto auto auto auto auto auto auto auto auto; gap: 6px;
     grid-template-areas:
+        "peak-fwd peak-fwd peak-fwd peak-fwd"
         "winch    tk-hyd   chiller  chiller"
         "manifold manifold manifold manifold"
         "tk02     tk02     tk02     tk02"
@@ -51,8 +52,10 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
         "tk06     tk04     tk05     tk07"
         "tk06     tk03     tk03     tk07"
         "mcp-ps   mcp-ps   mcp-sb   mcp-sb"
+        "tk11     tk-od    tk-od    tk12"
         "tk11     tk13     tk14     tk12"
         "tk15     tk15     tk16     tk16"
+        "peak-aft peak-aft peak-aft peak-aft"
         "zd-ps    zd-ps    zd-sb    zd-sb";
 }
 
@@ -65,13 +68,12 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 .slot.type-propeller { border-color: rgba(156, 39, 176, 0.4); }
 
 .area-manifold { grid-area: manifold; background-color: rgba(76, 175, 80, 0.1); border-color: var(--accent-green); color: var(--accent-green);}
-.area-tk02 { grid-area: tk02; } .area-tk06 { grid-area: tk06; } .area-tk07 { grid-area: tk07; }
+.area-peak-fwd { grid-area: peak-fwd; } .area-tk02 { grid-area: tk02; } .area-tk06 { grid-area: tk06; } .area-tk07 { grid-area: tk07; }
 .area-mca-ps { grid-area: mca-ps; } .area-mca-sb { grid-area: mca-sb; }
 .area-tk04 { grid-area: tk04; } .area-tk05 { grid-area: tk05; } .area-tk03 { grid-area: tk03; }
 .area-mcp-ps { grid-area: mcp-ps; } .area-mcp-sb { grid-area: mcp-sb; }
-.area-tk11 { grid-area: tk11; } .area-tk13 { grid-area: tk13; } .area-tk14 { grid-area: tk14; } .area-tk12 { grid-area: tk12; }
-.area-tk15 { grid-area: tk15; }
-.area-tk16 { grid-area: tk16; }
+.area-tk11 { grid-area: tk11; } .area-tk-od { grid-area: tk-od; } .area-tk13 { grid-area: tk13; } .area-tk14 { grid-area: tk14; } .area-tk12 { grid-area: tk12; }
+.area-tk15 { grid-area: tk15; } .area-tk16 { grid-area: tk16; } .area-peak-aft { grid-area: peak-aft; }
 .area-winch { grid-area: winch; } .area-tk-hyd { grid-area: tk-hyd; } .area-chiller { grid-area: chiller; }
 .slot.type-winch { border-color: rgba(156,39,176,0.5); background: rgba(156,39,176,0.05); }
 .slot.type-hyd { border-color: rgba(33,150,243,0.5); background: rgba(33,150,243,0.05); }
@@ -79,6 +81,8 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 .area-zd-ps { grid-area: zd-ps; } .area-zd-sb { grid-area: zd-sb; }
 .slot.type-lo { border-color: rgba(255, 193, 7, 0.5); min-height: 36px; flex-direction: row; gap: 8px; justify-content: center; align-items: center; }
 .slot.type-overflow { border-color: rgba(244, 67, 54, 0.5); background: rgba(244,67,54,0.05); }
+.slot.type-ballast { border-color: rgba(33, 150, 243, 0.45); background: rgba(33,150,243,0.08); }
+.slot.type-od { border-color: rgba(255, 152, 0, 0.45); background: rgba(255,152,0,0.08); }
 .slot.type-engine { min-height: 44px; }
 .carter-meter { background: #1a1100; border: 1px inset #8a6000; padding: 8px; text-align: center; border-radius: 4px; position: relative; overflow: hidden; flex: 1; }
 .carter-meter-bar { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(255,193,7,0.3); transition: height 0.5s; }

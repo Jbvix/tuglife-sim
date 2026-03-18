@@ -1,5 +1,5 @@
 /**
- * Estado global da aplicação e constantes de simulação.
+ * Estado global da aplicacao e constantes de simulacao.
  */
 const gameState = {
     currentTab: 'build',
@@ -12,20 +12,48 @@ const gameState = {
     modal: { isOpen: false, type: null, entityKey: null },
     bunker: {
         truckVolume: 30.0,
+        selectedTruck: 'truck01',
         hoseConnected: false,
         selectedTank: null,
         selectedCompartment: 'c1',
         isPumping: false,
         flowRate: 0.5,
         alarmLevel: 'NONE',
-        compartments: [
-            { id: 'c1', label: 'TQ 1', vol: 5.0, max: 5.0 },
-            { id: 'c2', label: 'TQ 2', vol: 5.0, max: 5.0 },
-            { id: 'c3', label: 'TQ 3', vol: 5.0, max: 5.0 },
-            { id: 'c4', label: 'TQ 4', vol: 5.0, max: 5.0 },
-            { id: 'c5', label: 'TQ 5', vol: 5.0, max: 5.0 },
-            { id: 'c6', label: 'TQ 6', vol: 5.0, max: 5.0 }
-        ]
+        trucks: {
+            truck01: {
+                label: 'Caminhao 01',
+                compartments: [
+                    { id: 'c1', label: 'TQ 1', vol: 5.0, max: 5.0 },
+                    { id: 'c2', label: 'TQ 2', vol: 5.0, max: 5.0 },
+                    { id: 'c3', label: 'TQ 3', vol: 5.0, max: 5.0 },
+                    { id: 'c4', label: 'TQ 4', vol: 5.0, max: 5.0 },
+                    { id: 'c5', label: 'TQ 5', vol: 5.0, max: 5.0 },
+                    { id: 'c6', label: 'TQ 6', vol: 5.0, max: 5.0 }
+                ]
+            },
+            truck02: {
+                label: 'Caminhao 02',
+                compartments: [
+                    { id: 'c1', label: 'TQ 1', vol: 5.0, max: 5.0 },
+                    { id: 'c2', label: 'TQ 2', vol: 5.0, max: 5.0 },
+                    { id: 'c3', label: 'TQ 3', vol: 5.0, max: 5.0 },
+                    { id: 'c4', label: 'TQ 4', vol: 5.0, max: 5.0 },
+                    { id: 'c5', label: 'TQ 5', vol: 5.0, max: 5.0 },
+                    { id: 'c6', label: 'TQ 6', vol: 5.0, max: 5.0 }
+                ]
+            },
+            truck03: {
+                label: 'Caminhao 03',
+                compartments: [
+                    { id: 'c1', label: 'TQ 1', vol: 5.0, max: 5.0 },
+                    { id: 'c2', label: 'TQ 2', vol: 5.0, max: 5.0 },
+                    { id: 'c3', label: 'TQ 3', vol: 5.0, max: 5.0 },
+                    { id: 'c4', label: 'TQ 4', vol: 5.0, max: 5.0 },
+                    { id: 'c5', label: 'TQ 5', vol: 5.0, max: 5.0 },
+                    { id: 'c6', label: 'TQ 6', vol: 5.0, max: 5.0 }
+                ]
+            }
+        }
     },
     loReceiving: {
         drumVolume: 0.2,
@@ -69,18 +97,21 @@ const gameState = {
         }
     },
     tanks: {
-        tk02: { name: "TK 02 Água Doce", type: 'fw', max: 8.8, vol: 0 },
+        tk_peak_fwd: { name: "PEAK VANTE LASTRO", type: 'ballast', max: 30.0, vol: 0 },
+        tk02: { name: "TK 02 Agua Doce", type: 'fw', max: 15.0, vol: 0 },
         tk06: { name: "TK 06 FO Armazenamento BB", type: 'fo', max: 23.8, vol: 0 },
         tk07: { name: "TK 07 FO Armazenamento BE", type: 'fo', max: 23.8, vol: 0 },
-        tk04: { name: "HDR 04 FO Serviço BB", type: 'fo_hdr', max: 2.8, vol: 0 },
-        tk05: { name: "HDR 05 FO Serviço BE", type: 'fo_hdr', max: 2.8, vol: 0 },
+        tk04: { name: "HDR 04 FO Servico BB", type: 'fo_hdr', max: 2.8, vol: 0 },
+        tk05: { name: "HDR 05 FO Servico BE", type: 'fo_hdr', max: 2.8, vol: 0 },
         tk03: { name: "TK 03 FO Transbordo (Overflow)", type: 'overflow', max: 2.0, vol: 0 },
-        tk11: { name: "TK 11 FO Armaz. Ré BB", type: 'fo', max: 11.4, vol: 0 },
-        tk12: { name: "TK 12 FO Armaz. Ré BE", type: 'fo', max: 14.5, vol: 0 },
-        tk13: { name: "TK 13 Óleo Sujo (Dirty Oil)", type: 'do', max: 4.8, vol: 0 },
-        tk14: { name: "TK 14 Água de Porão (Bilge)", type: 'bilge', max: 4.8, vol: 0 },
+        tk11: { name: "TK 11 FO Armaz. Re BB", type: 'fo', max: 11.4, vol: 0 },
+        tk12: { name: "TK 12 FO Armaz. Re BE", type: 'fo', max: 14.5, vol: 0 },
+        tk_od_center: { name: "TK CENTRAL OD", type: 'od', max: 30.0, vol: 0 },
+        tk13: { name: "TK 13 Oleo Sujo (Dirty Oil)", type: 'do', max: 4.8, vol: 0 },
+        tk14: { name: "TK 14 Agua de Porao (Bilge)", type: 'bilge', max: 4.8, vol: 0 },
         tk15: { name: "TK 15 OL15W40 Armazenamento", type: 'lo_15w40', max: 2.0, vol: 1.4 },
         tk16: { name: "TK 16 OL150 Z-Drive", type: 'lo_150', max: 4.0, vol: 3.6 },
+        tk_peak_aft: { name: "PEAK RE LASTRO", type: 'ballast', max: 35.0, vol: 0 },
         tk_hyd: { name: "TK HID OH32", type: 'oh32', max: 0.6, vol: 0.52 }
     },
     machinery: {

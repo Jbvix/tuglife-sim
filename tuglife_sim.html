@@ -64,6 +64,7 @@
         <div id="screen-build" class="screen active">
             <div class="screen-title">PM - Damen ASD 2411 (Toque para Inspecionar)</div>
             <div class="hull-container">
+                <div class="slot type-ballast area-peak-fwd" onclick="openModal('tank', 'tk_peak_fwd')"><div class="slot-fill" id="fill-tk_peak_fwd"></div>PEAK VANTE LASTRO<br><span class="capacity" id="cap-tk_peak_fwd">0.0</span></div>
                 <div class="slot type-winch area-winch" onclick="openModal('winch','winch')">
                     GUINCHO PROA<br>
                     <span id="ui-winch-status" style="font-size:0.55rem;color:#aaa;">PARADO</span>
@@ -102,6 +103,7 @@
                 <div class="slot type-engine area-mcp-ps" id="ui-mcp-ps-hull" onclick="openModal('mcp', 'mcp_ps')">MCP BB<br><span class="capacity" id="ui-mcp-ps-rpm-hull">OFF</span><span class="capacity" id="ui-mcp-ps-carter-hull" style="color:#ffc107;font-size:0.5rem;">LO:0%</span></div>
                 <div class="slot type-engine area-mcp-sb" id="ui-mcp-sb-hull" onclick="openModal('mcp', 'mcp_sb')">MCP BE<br><span class="capacity" id="ui-mcp-sb-rpm-hull">OFF</span><span class="capacity" id="ui-mcp-sb-carter-hull" style="color:#ffc107;font-size:0.5rem;">LO:0%</span></div>
 
+                <div class="slot type-od area-tk-od" onclick="openModal('tank', 'tk_od_center')"><div class="slot-fill" id="fill-tk_od_center"></div>TK CENTRAL OD<br><span class="capacity" id="cap-tk_od_center">0.0</span></div>
                 <div class="slot type-tank area-tk11" onclick="openModal('tank', 'tk11')"><div class="slot-fill" id="fill-tk11"></div>TK 11 BB<br><span class="capacity" id="cap-tk11">0.0</span></div>
                 <div class="slot type-tank area-tk13" onclick="openModal('tank', 'tk13')"><div class="slot-fill" id="fill-tk13"></div>DO 13<br><span class="capacity" id="cap-tk13">0.0</span></div>
                 <div class="slot type-tank area-tk14" onclick="openModal('tank', 'tk14')"><div class="slot-fill" id="fill-tk14"></div>BILGE 14<br><span class="capacity" id="cap-tk14">0.0</span></div>
@@ -109,6 +111,7 @@
 
                 <div class="slot type-lo area-tk15" onclick="openModal('tank', 'tk15')"><div class="slot-fill" id="fill-tk15"></div><span style="color:#ffc107; font-weight:bold;">TK 15 OL15W40</span><span class="capacity" id="cap-tk15" style="color:#ffc107; font-size:0.6rem; margin-left:6px;">1.40 m³</span></div>
                 <div class="slot type-lo area-tk16" onclick="openModal('tank', 'tk16')"><div class="slot-fill" id="fill-tk16"></div><span style="color:#ffb74d; font-weight:bold;">TK 16 OL150</span><span class="capacity" id="cap-tk16" style="color:#ffb74d; font-size:0.6rem; margin-left:6px;">3.60 m³</span></div>
+                <div class="slot type-ballast area-peak-aft" onclick="openModal('tank', 'tk_peak_aft')"><div class="slot-fill" id="fill-tk_peak_aft"></div>PEAK RÉ LASTRO<br><span class="capacity" id="cap-tk_peak_aft">0.0</span></div>
 
                 <div class="slot type-propeller area-zd-ps" id="ui-zd-ps-hull" onclick="openModal('zdrive','zd_ps')">
                     Z-DRIVE BB<br>
@@ -130,7 +133,12 @@
         <div id="screen-bunkering" class="screen">
             <div class="screen-title">Recebimento de Água / Óleo</div>
             <div class="control-panel">
-                <div class="busbar-status dead" style="font-size: 1rem;">Caminhão-Tanque: <span id="ui-truck-vol">50.0</span> m³</div>
+                <div class="aux-grid" style="margin-bottom:10px;">
+                    <button id="btn-truck01" class="aux-btn active">CAMINHÃO 01</button>
+                    <button id="btn-truck02" class="aux-btn">CAMINHÃO 02</button>
+                    <button id="btn-truck03" class="aux-btn">CAMINHÃO 03</button>
+                </div>
+                <div class="busbar-status dead" style="font-size: 1rem;"><span id="ui-truck-label">Caminhão 01</span>: <span id="ui-truck-vol">30.0</span> m³</div>
                 <div id="truck-compartments" class="aux-grid" style="margin-bottom:10px;">
                     <button id="btn-bunker-c1" class="aux-btn">TQ 1<br><small id="ui-bunker-c1">5.0 m³</small></button>
                     <button id="btn-bunker-c2" class="aux-btn">TQ 2<br><small id="ui-bunker-c2">5.0 m³</small></button>
@@ -206,7 +214,7 @@
                 <div id="water-controls" style="display:none; margin-top: 15px;">
                     <label class="panel-label">Tanque de Destino:</label>
                     <select id="select-water-tank" class="control-select">
-                        <option value="tk02">TK 02 FW (8.8 m³)</option>
+                        <option value="tk02">TK 02 FW (15.0 m³)</option>
                     </select>
                     <button id="btn-pump-water" class="control-btn" disabled>INICIAR BOMBA DE ÁGUA</button>
                 </div>

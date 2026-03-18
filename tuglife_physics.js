@@ -172,16 +172,17 @@ function updateChillerPhysics() {
 
 function runSimulationTick() {
     let stateChanged = false;
+    syncBunkerTruckVolume();
 
     if (gameState.bunker.isPumping && gameState.bunker.selectedTank) {
         const tk = gameState.tanks[gameState.bunker.selectedTank];
-        const selectedCompartment = gameState.bunker.compartments.find(item => item.id === gameState.bunker.selectedCompartment);
+        const selectedCompartment = getBunkerCompartments().find(item => item.id === gameState.bunker.selectedCompartment);
 
         if (selectedCompartment && selectedCompartment.vol > 0 && tk.vol < tk.max) {
             const trans = Math.min(gameState.bunker.flowRate, selectedCompartment.vol, tk.max - tk.vol);
             tk.vol += trans;
             selectedCompartment.vol -= trans;
-            gameState.bunker.truckVolume = gameState.bunker.compartments.reduce((sum, compartment) => sum + compartment.vol, 0);
+            syncBunkerTruckVolume();
             stateChanged = true;
 
             const pct = (tk.vol / tk.max) * 100;

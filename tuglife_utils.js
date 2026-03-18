@@ -1,5 +1,5 @@
 /**
- * Utilitários compartilhados.
+ * Utilitarios compartilhados.
  */
 function getMcpSide(mcpKey) {
     return mcpKey === 'mcp_ps' ? 'ps' : 'sb';
@@ -13,15 +13,32 @@ function getHydraulicPumpState(mcp) {
     return mcp.hydraulicPumpCoupled && mcp.status === 'RUNNING' ? 'ON' : 'OFF';
 }
 
+function getSelectedBunkerTruck() {
+    return gameState.bunker.trucks[gameState.bunker.selectedTruck];
+}
+
+function getBunkerCompartments() {
+    return getSelectedBunkerTruck()?.compartments || [];
+}
+
+function syncBunkerTruckVolume() {
+    gameState.bunker.truckVolume = getBunkerCompartments().reduce((sum, compartment) => sum + compartment.vol, 0);
+    return gameState.bunker.truckVolume;
+}
+
 function calculateStabilityIndicators() {
     const tankMap = [
+        { key: 'tk_peak_fwd', side: 'center', longitudinal: 'fore' },
         { key: 'tk06', side: 'port', longitudinal: 'mid' },
         { key: 'tk07', side: 'starboard', longitudinal: 'mid' },
         { key: 'tk04', side: 'port', longitudinal: 'mid' },
         { key: 'tk05', side: 'starboard', longitudinal: 'mid' },
         { key: 'tk11', side: 'port', longitudinal: 'aft' },
         { key: 'tk12', side: 'starboard', longitudinal: 'aft' },
+        { key: 'tk_od_center', side: 'center', longitudinal: 'mid' },
         { key: 'tk15', side: 'center', longitudinal: 'mid' },
+        { key: 'tk16', side: 'center', longitudinal: 'aft' },
+        { key: 'tk_peak_aft', side: 'center', longitudinal: 'aft' },
         { key: 'tk_hyd', side: 'center', longitudinal: 'fore' },
         { key: 'tk02', side: 'center', longitudinal: 'fore' },
         { key: 'tk03', side: 'center', longitudinal: 'mid' }

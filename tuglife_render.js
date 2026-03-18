@@ -202,7 +202,7 @@ function renderView() {
         }
     }
 
-    gameState.bunker.truckVolume = gameState.bunker.compartments.reduce((sum, compartment) => sum + compartment.vol, 0);
+    syncBunkerTruckVolume();
 
     const alarmBanner = document.getElementById('global-alarm-banner');
     if (gameState.isAlarmActive) {
@@ -213,7 +213,13 @@ function renderView() {
     }
 
     document.getElementById('ui-truck-vol').innerText = gameState.bunker.truckVolume.toFixed(1);
-    gameState.bunker.compartments.forEach(compartment => {
+    document.getElementById('ui-truck-label').innerText = getSelectedBunkerTruck()?.label || 'Caminhao';
+    ['truck01', 'truck02', 'truck03'].forEach(truckKey => {
+        const truckButton = document.getElementById(`btn-${truckKey}`);
+        if (!truckButton) return;
+        truckButton.classList.toggle('active', gameState.bunker.selectedTruck === truckKey);
+    });
+    getBunkerCompartments().forEach(compartment => {
         const button = document.getElementById(`btn-bunker-${compartment.id}`);
         const valueEl = document.getElementById(`ui-bunker-${compartment.id}`);
         if (!button || !valueEl) return;
@@ -223,7 +229,7 @@ function renderView() {
         button.disabled = compartment.vol <= 0;
     });
 
-    const selectedCompartment = gameState.bunker.compartments.find(item => item.id === gameState.bunker.selectedCompartment) || gameState.bunker.compartments[0];
+    const selectedCompartment = getBunkerCompartments().find(item => item.id === gameState.bunker.selectedCompartment) || getBunkerCompartments()[0];
     if (selectedCompartment) {
         document.getElementById('ui-bunker-compartment-label').innerText = selectedCompartment.label;
         document.getElementById('ui-bunker-compartment-vol').innerText = `${selectedCompartment.vol.toFixed(1)} m³`;

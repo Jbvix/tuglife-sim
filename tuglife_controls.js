@@ -43,7 +43,7 @@ function toggleLoDrumPanel() {
 }
 
 function selectBunkerCompartment(compartmentId) {
-    const compartment = gameState.bunker.compartments.find(item => item.id === compartmentId);
+    const compartment = getBunkerCompartments().find(item => item.id === compartmentId);
     if (!compartment) return;
 
     gameState.bunker.selectedCompartment = compartmentId;
@@ -52,6 +52,16 @@ function selectBunkerCompartment(compartmentId) {
         gameState.bunker.isPumping = false;
     }
 
+    renderView();
+}
+
+function selectBunkerTruck(truckKey) {
+    if (!gameState.bunker.trucks[truckKey]) return;
+
+    gameState.bunker.selectedTruck = truckKey;
+    gameState.bunker.selectedCompartment = 'c1';
+    gameState.bunker.isPumping = false;
+    syncBunkerTruckVolume();
     renderView();
 }
 
@@ -310,6 +320,15 @@ function bindEventListeners() {
 
         button.addEventListener('click', () => {
             selectBunkerCompartment(compartmentId);
+        });
+    });
+
+    ['truck01', 'truck02', 'truck03'].forEach(truckKey => {
+        const truckButton = document.getElementById(`btn-${truckKey}`);
+        if (!truckButton) return;
+
+        truckButton.addEventListener('click', () => {
+            selectBunkerTruck(truckKey);
         });
     });
 
