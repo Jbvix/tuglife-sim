@@ -34,6 +34,12 @@ const gameState = {
                 fore: { dockAnchorId: 'dock_fore' },
                 aft: { dockAnchorId: 'dock_aft' }
             }
+        },
+        driveControls: {
+            panelOpen: false,
+            enabled: false,
+            ps: { rpm: 0, azimuth: 0 },
+            sb: { rpm: 0, azimuth: 0 }
         }
     },
     tanks: {

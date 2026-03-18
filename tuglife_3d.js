@@ -271,9 +271,22 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             heading: document.getElementById('ui-3d-heading'),
             resultant: document.getElementById('ui-3d-resultant'),
             attitude: document.getElementById('ui-3d-attitude'),
+            vectorDirection: document.getElementById('ui-3d-vector-direction'),
             mooringStatus: document.getElementById('ui-3d-mooring-status'),
             modelStatus: document.getElementById('ui-3d-model-status'),
             anchorPanelButton: document.getElementById('btn-3d-anchor-panel'),
+            drivePanelButton: document.getElementById('btn-3d-drive-panel'),
+            drivePanel: document.getElementById('three-d-drive-panel'),
+            driveEnableButton: document.getElementById('btn-3d-drive-enable'),
+            driveStatus: document.getElementById('ui-3d-drive-status'),
+            psRpmSlider: document.getElementById('slider-3d-ps-rpm'),
+            psAzSlider: document.getElementById('slider-3d-ps-az'),
+            sbRpmSlider: document.getElementById('slider-3d-sb-rpm'),
+            sbAzSlider: document.getElementById('slider-3d-sb-az'),
+            psRpmValue: document.getElementById('ui-3d-ps-rpm-val'),
+            psAzValue: document.getElementById('ui-3d-ps-az-val'),
+            sbRpmValue: document.getElementById('ui-3d-sb-rpm-val'),
+            sbAzValue: document.getElementById('ui-3d-sb-az-val'),
             anchorPanel: document.getElementById('three-d-anchor-panel'),
             anchorPointSelect: document.getElementById('select-3d-anchor-point'),
             anchorXSlider: document.getElementById('slider-3d-anchor-x'),
@@ -289,6 +302,7 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
         const modelConfig = window.tuglife3dModelConfig || {};
         let externalModel = null;
         const mooringState = window.gameState.visual3d.mooring;
+        const driveControls = window.gameState.visual3d.driveControls;
         const raycaster = new THREE.Raycaster();
         const pointer = new THREE.Vector2();
         const anchorMeshes = [];
@@ -299,6 +313,7 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
         };
         let anchorPanelOpen = false;
         let anchorPanelDirty = false;
+        let drivePanelOpen = false;
 
         function getConnectedLineCount() {
             return Object.values(mooringState.lines).filter((line) => Boolean(line.dockAnchorId)).length;
@@ -425,6 +440,48 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             if (anchorPanelOpen) updateAnchorSliderValues();
         }
 
+        function updateDrivePanelValues() {
+            if (hud.psRpmSlider) hud.psRpmSlider.value = driveControls.ps.rpm;
+            if (hud.psAzSlider) hud.psAzSlider.value = driveControls.ps.azimuth;
+            if (hud.sbRpmSlider) hud.sbRpmSlider.value = driveControls.sb.rpm;
+            if (hud.sbAzSlider) hud.sbAzSlider.value = driveControls.sb.azimuth;
+            if (hud.psRpmValue) hud.psRpmValue.textContent = `${driveControls.ps.rpm}`;
+            if (hud.psAzValue) hud.psAzValue.textContent = `${driveControls.ps.azimuth}°`;
+            if (hud.sbRpmValue) hud.sbRpmValue.textContent = `${driveControls.sb.rpm}`;
+            if (hud.sbAzValue) hud.sbAzValue.textContent = `${driveControls.sb.azimuth}°`;
+        }
+
+        function toggleDrivePanel(forceOpen) {
+            drivePanelOpen = typeof forceOpen === 'boolean' ? forceOpen : !drivePanelOpen;
+            if (hud.drivePanel) hud.drivePanel.style.display = drivePanelOpen ? 'block' : 'none';
+            if (hud.drivePanelButton) hud.drivePanelButton.textContent = drivePanelOpen ? 'FECHAR PROPULSÃO 3D' : 'PAINEL DE PROPULSÃO 3D';
+            if (drivePanelOpen) updateDrivePanelValues();
+        }
+
+        function setDriveReadinessStatus() {
+            const readiness = window.getOperationalReadiness();
+            if (!hud.driveStatus || !hud.driveEnableButton) return readiness;
+            hud.driveStatus.textContent = readiness.ready ? 'LIBERADO' : 'BLOQUEADO';
+            hud.driveStatus.style.color = readiness.ready ? '#9ed8b0' : '#ffb74d';
+            hud.driveEnableButton.disabled = !readiness.ready;
+            hud.driveEnableButton.textContent = driveControls.enabled ? 'DESATIVAR CONTROLES 3D' : 'ATIVAR CONTROLES 3D';
+            return readiness;
+        }
+
+        function updateDriveDirectionLabel(localX, localZ, resultant) {
+            if (!hud.vectorDirection) return;
+            if (resultant < 0.05) {
+                hud.vectorDirection.textContent = 'SEM EMPUXO';
+                return;
+            }
+
+            const heading = (Math.atan2(localX, -localZ) * 180 / Math.PI + 360) % 360;
+            const lateral = localX > 0.2 ? 'BE' : localX < -0.2 ? 'BB' : '';
+            const longitudinal = localZ < -0.2 ? 'AVANTE' : localZ > 0.2 ? 'A RÉ' : '';
+            const label = [longitudinal, lateral].filter(Boolean).join(' / ') || `${heading.toFixed(0)}°`;
+            hud.vectorDirection.textContent = label;
+        }
+
         function getDockAnchorPoint(anchorId) {
             if (anchorId === 'dock_fore') return dockAnchorMarkers.fore.getWorldPosition(new THREE.Vector3());
             if (anchorId === 'dock_aft') return dockAnchorMarkers.aft.getWorldPosition(new THREE.Vector3());
@@ -481,6 +538,35 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             hud.anchorPanelButton.addEventListener('click', () => toggleAnchorPanel());
         }
 
+        if (hud.drivePanelButton) {
+            hud.drivePanelButton.addEventListener('click', () => toggleDrivePanel());
+        }
+
+        if (hud.driveEnableButton) {
+            hud.driveEnableButton.addEventListener('click', () => {
+                const readiness = setDriveReadinessStatus();
+                if (!readiness.ready) {
+                    driveControls.enabled = false;
+                    return;
+                }
+                driveControls.enabled = !driveControls.enabled;
+                setDriveReadinessStatus();
+            });
+        }
+
+        [
+            ['psRpmSlider', 'ps', 'rpm'],
+            ['psAzSlider', 'ps', 'azimuth'],
+            ['sbRpmSlider', 'sb', 'rpm'],
+            ['sbAzSlider', 'sb', 'azimuth']
+        ].forEach(([hudKey, side, field]) => {
+            if (!hud[hudKey]) return;
+            hud[hudKey].addEventListener('input', () => {
+                driveControls[side][field] = parseInt(hud[hudKey].value, 10);
+                updateDrivePanelValues();
+            });
+        });
+
         if (hud.anchorPointSelect) {
             hud.anchorPointSelect.addEventListener('change', () => {
                 updateAnchorSliderValues();
@@ -506,6 +592,8 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
 
         updateAnchorSliderValues();
         updateAnchorPanelStatus('SALVO', '#9ed8b0');
+        updateDrivePanelValues();
+        setDriveReadinessStatus();
 
         function setModelStatus(text, color) {
             if (!hud.modelStatus) return;
@@ -707,13 +795,19 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
         function getThrusterState(side) {
             const mcp = window.gameState.machinery[`mcp_${side}`];
             const zd = window.gameState.machinery[`zd_${side}`];
-            const active = mcp.status === 'RUNNING' && mcp.clutchEngaged && zd.gearboxLO.vol > 0;
             const localOrigin = side === 'ps' ? new THREE.Vector3(-0.92, 0.12, 2.75) : new THREE.Vector3(0.92, 0.12, 2.75);
-            const thrust = active ? zd.thrust / 100 : 0;
-            const azimuthRad = THREE.MathUtils.degToRad(zd.azimuth);
+            const readiness = window.getOperationalReadiness();
+            const controlSource = driveControls.enabled && readiness.ready ? driveControls[side] : null;
+            const active = controlSource
+                ? controlSource.rpm > 0
+                : (mcp.status === 'RUNNING' && mcp.clutchEngaged && zd.gearboxLO.vol > 0 && readiness.ready);
+            const thrust = controlSource ? Math.min(controlSource.rpm / 1800, 1) : active ? zd.thrust / 100 : 0;
+            const rpm = controlSource ? controlSource.rpm : zd.propRpm;
+            const azimuth = controlSource ? controlSource.azimuth : zd.azimuth;
+            const azimuthRad = THREE.MathUtils.degToRad(azimuth);
             const localDirection = new THREE.Vector3(Math.sin(azimuthRad), 0, -Math.cos(azimuthRad)).normalize();
 
-            return { active, thrust, origin: localOrigin, direction: localDirection };
+            return { active, thrust, origin: localOrigin, direction: localDirection, rpm, azimuth, readiness };
         }
 
         function updatePhysics(dt) {
@@ -726,7 +820,7 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             let torque = 0;
 
             thrusters.forEach((thruster, index) => {
-                const magnitude = thruster.thrust * 3.2;
+                const magnitude = thruster.thrust * 3.8;
                 forceX += thruster.direction.x * magnitude;
                 forceZ += thruster.direction.z * magnitude;
                 torque += thruster.origin.x * (thruster.direction.z * magnitude) - thruster.origin.z * (thruster.direction.x * magnitude);
@@ -832,6 +926,8 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
 
             const speed = Math.sqrt(vessel.vx * vessel.vx + vessel.vz * vessel.vz) * 1.94;
             const headingDeg = ((THREE.MathUtils.radToDeg(vessel.yaw) % 360) + 360) % 360;
+            const readiness = setDriveReadinessStatus();
+            updateDriveDirectionLabel(state.localX, state.localZ, state.resultant);
             if (hud.speed) hud.speed.textContent = `${speed.toFixed(2)} kn`;
             if (hud.heading) hud.heading.textContent = `${headingDeg.toFixed(0).padStart(3, '0')}°`;
             if (hud.resultant) hud.resultant.textContent = `${(state.resultant * 10).toFixed(1)} kN`;
@@ -841,6 +937,9 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
                 if (mooringState.selectedTugLine) {
                     hud.mooringStatus.textContent = `SELECIONE O CABEÇO DO CAIS (${mooringState.selectedTugLine === 'fore' ? 'PROA' : 'POPA'})`;
                     hud.mooringStatus.style.color = '#7cdeff';
+                } else if (!readiness.ready) {
+                    hud.mooringStatus.textContent = `BLOQUEADO: ${readiness.blockers[0] || 'sistema indisponível'}`;
+                    hud.mooringStatus.style.color = '#ffb74d';
                 } else if (connectedCount === 2) {
                     hud.mooringStatus.textContent = 'AMARRADO PROA E POPA';
                     hud.mooringStatus.style.color = '#9ed8b0';

@@ -65,3 +65,50 @@ function calculateStabilityIndicators() {
         aftVolume: accum.aft.toFixed(2)
     };
 }
+
+function getOperationalReadiness() {
+    const requiredTankKeys = ['tk02', 'tk04', 'tk05', 'tk06', 'tk07', 'tk11', 'tk12'];
+    const tankPercentages = requiredTankKeys.map((key) => {
+        const tank = gameState.tanks[key];
+        return { key, pct: getPercentage(tank.vol, tank.max) };
+    });
+
+    const lowTanks = tankPercentages.filter((item) => item.pct < 60).map((item) => item.key.toUpperCase());
+    const generatorReady = MCA_KEYS.some((key) => {
+        const gen = gameState.machinery[key];
+        return gen.status === 'RUNNING' && gen.breakerClosed;
+    });
+
+    const mcpReady = MCP_KEYS.every((key) => {
+        const mcp = gameState.machinery[key];
+        return mcp.status === 'RUNNING'
+            && mcp.preLubeOn
+            && mcp.coolingOn
+            && mcp.clutchEngaged
+            && mcp.oilPress >= 4;
+    });
+
+    const zDriveReady = ZD_SIDES.every((side) => {
+        const zd = gameState.machinery[`zd_${side}`];
+        return zd.gearboxLO.vol >= zd.gearboxLO.max * 0.6
+            && zd.steeringHyd.vol >= zd.steeringHyd.max * 0.6
+            && zd.propState !== 'TRIP';
+    });
+
+    const ready = generatorReady && gameState.power.isLive && mcpReady && zDriveReady && lowTanks.length === 0;
+    const blockers = [];
+
+    if (!generatorReady) blockers.push('gerador');
+    if (!gameState.power.isLive) blockers.push('QEP desenergizado');
+    if (!mcpReady) blockers.push('MCP BB/BE');
+    if (!zDriveReady) blockers.push('propulsores BB/BE');
+    if (lowTanks.length) blockers.push(`tanques < 60%: ${lowTanks.join(', ')}`);
+
+    return {
+        ready,
+        blockers,
+        generatorReady,
+        mcpReady,
+        zDriveReady
+    };
+}
