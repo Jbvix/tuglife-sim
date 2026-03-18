@@ -172,6 +172,7 @@ function updateChillerPhysics() {
 
 function runSimulationTick() {
     let stateChanged = false;
+    const tkCentralOd = gameState.tanks.tk_od_center;
     syncBunkerTruckVolume();
     syncWaterTruckVolume();
 
@@ -267,7 +268,7 @@ function runSimulationTick() {
     }
 
     const tk03 = gameState.tanks.tk03;
-    ['tk06', 'tk07', 'tk11', 'tk12', 'tk04', 'tk05'].forEach(key => {
+    ['tk06', 'tk07', 'tk11', 'tk12'].forEach(key => {
         const tk = gameState.tanks[key];
         if (tk.vol > tk.max) {
             const excess = tk.vol - tk.max;
@@ -276,6 +277,39 @@ function runSimulationTick() {
             stateChanged = true;
         }
     });
+
+    ['tk04', 'tk05'].forEach(key => {
+        const tk = gameState.tanks[key];
+        if (tk.vol > tk.max) {
+            const excess = tk.vol - tk.max;
+            tk.vol = tk.max;
+
+            if (tkCentralOd.vol < tkCentralOd.max) {
+                const recirculated = Math.min(excess, tkCentralOd.max - tkCentralOd.vol);
+                tkCentralOd.vol += recirculated;
+
+                const remainder = excess - recirculated;
+                if (remainder > 0) {
+                    tk03.vol = Math.min(tk03.max, tk03.vol + remainder);
+                }
+            } else {
+                tk03.vol = Math.min(tk03.max, tk03.vol + excess);
+            }
+
+            stateChanged = true;
+        }
+    });
+
+    if (tk03.vol > 0 && tkCentralOd.vol < tkCentralOd.max) {
+        const gravityTransferRate = 0.08;
+        const gravityTransfer = Math.min(gravityTransferRate, tk03.vol, tkCentralOd.max - tkCentralOd.vol);
+
+        if (gravityTransfer > 0) {
+            tk03.vol -= gravityTransfer;
+            tkCentralOd.vol += gravityTransfer;
+            stateChanged = true;
+        }
+    }
 
     const tk03Pct = (tk03.vol / tk03.max) * 100;
     if (tk03.vol >= tk03.max) {
