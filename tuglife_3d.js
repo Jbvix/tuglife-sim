@@ -278,8 +278,10 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             anchorPointSelect: document.getElementById('select-3d-anchor-point'),
             anchorXSlider: document.getElementById('slider-3d-anchor-x'),
             anchorYSlider: document.getElementById('slider-3d-anchor-y'),
+            anchorZSlider: document.getElementById('slider-3d-anchor-z'),
             anchorXValue: document.getElementById('ui-3d-anchor-x-val'),
             anchorYValue: document.getElementById('ui-3d-anchor-y-val'),
+            anchorZValue: document.getElementById('ui-3d-anchor-z-val'),
             anchorSaveButton: document.getElementById('btn-3d-anchor-save'),
             anchorSaveStatus: document.getElementById('ui-3d-anchor-save-status')
         };
@@ -292,8 +294,8 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
         const anchorMeshes = [];
         const anchorStorageKey = 'tuglife_anchor_positions_v1';
         const defaultTugAnchorPositions = {
-            fore: { x: 1.62, y: 1.18, z: -2.05 },
-            aft: { x: -1.34, y: 1.14, z: 1.98 }
+            fore: { x: 1.62, y: -2.05, z: 1.18 },
+            aft: { x: -1.34, y: 1.98, z: 1.14 }
         };
         let anchorPanelOpen = false;
         let anchorPanelDirty = false;
@@ -356,8 +358,8 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
 
         const tugAnchorPositions = readStoredAnchorPositions();
         const tugAnchorMarkers = {
-            fore: makeAnchorPoint(tugGroup, new THREE.Vector3(tugAnchorPositions.fore.x, tugAnchorPositions.fore.y, tugAnchorPositions.fore.z), 'tug_fore', 'fore', 'tug', 0x4dd9ff),
-            aft: makeAnchorPoint(tugGroup, new THREE.Vector3(tugAnchorPositions.aft.x, tugAnchorPositions.aft.y, tugAnchorPositions.aft.z), 'tug_aft', 'aft', 'tug', 0x7cff8d)
+            fore: makeAnchorPoint(tugGroup, new THREE.Vector3(tugAnchorPositions.fore.x, tugAnchorPositions.fore.z, tugAnchorPositions.fore.y), 'tug_fore', 'fore', 'tug', 0x4dd9ff),
+            aft: makeAnchorPoint(tugGroup, new THREE.Vector3(tugAnchorPositions.aft.x, tugAnchorPositions.aft.z, tugAnchorPositions.aft.y), 'tug_aft', 'aft', 'tug', 0x7cff8d)
         };
         const dockAnchorMarkers = {
             fore: makeAnchorPoint(scene, new THREE.Vector3(-4.2, 1.8, -4.7), 'dock_fore', 'fore', 'dock', 0xffd36e),
@@ -380,16 +382,19 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             if (!marker) return;
             if (hud.anchorXSlider) hud.anchorXSlider.value = marker.position.x.toFixed(2);
             if (hud.anchorYSlider) hud.anchorYSlider.value = marker.position.z.toFixed(2);
+            if (hud.anchorZSlider) hud.anchorZSlider.value = marker.position.y.toFixed(2);
             if (hud.anchorXValue) hud.anchorXValue.textContent = marker.position.x.toFixed(2);
             if (hud.anchorYValue) hud.anchorYValue.textContent = marker.position.z.toFixed(2);
+            if (hud.anchorZValue) hud.anchorZValue.textContent = marker.position.y.toFixed(2);
         }
 
         function setSelectedAnchorMarkerPosition() {
             const lineKey = getSelectedAnchorKey();
             const marker = tugAnchorMarkers[lineKey];
-            if (!marker || !hud.anchorXSlider || !hud.anchorYSlider) return;
+            if (!marker || !hud.anchorXSlider || !hud.anchorYSlider || !hud.anchorZSlider) return;
             marker.position.x = parseFloat(hud.anchorXSlider.value);
             marker.position.z = parseFloat(hud.anchorYSlider.value);
+            marker.position.y = parseFloat(hud.anchorZSlider.value);
             anchorPanelDirty = true;
             updateAnchorSliderValues();
             updateAnchorPanelStatus('ALTERADO', '#ffd36e');
@@ -399,13 +404,13 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             const payload = {
                 fore: {
                     x: tugAnchorMarkers.fore.position.x,
-                    y: tugAnchorMarkers.fore.position.y,
-                    z: tugAnchorMarkers.fore.position.z
+                    y: tugAnchorMarkers.fore.position.z,
+                    z: tugAnchorMarkers.fore.position.y
                 },
                 aft: {
                     x: tugAnchorMarkers.aft.position.x,
-                    y: tugAnchorMarkers.aft.position.y,
-                    z: tugAnchorMarkers.aft.position.z
+                    y: tugAnchorMarkers.aft.position.z,
+                    z: tugAnchorMarkers.aft.position.y
                 }
             };
             window.localStorage.setItem(anchorStorageKey, JSON.stringify(payload));
@@ -489,6 +494,10 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
 
         if (hud.anchorYSlider) {
             hud.anchorYSlider.addEventListener('input', setSelectedAnchorMarkerPosition);
+        }
+
+        if (hud.anchorZSlider) {
+            hud.anchorZSlider.addEventListener('input', setSelectedAnchorMarkerPosition);
         }
 
         if (hud.anchorSaveButton) {
