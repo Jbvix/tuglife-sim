@@ -195,13 +195,14 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
     #main-display.desktop-layout {
         width: 100%;
         max-width: 1500px;
-        height: calc(100dvh - 70px - 20px);
+        height: calc(100dvh - 70px);
         margin: 0 auto;
-        padding: 4px 12px 12px;
+        padding: 0 12px 8px;
         display: grid;
         grid-template-columns: minmax(300px, 380px) minmax(420px, 500px) minmax(300px, 380px);
         gap: 10px;
         align-items: stretch;
+        justify-content: center;
         overflow: hidden;
     }
 
@@ -215,7 +216,7 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 
     #main-display.desktop-layout .desktop-core {
         grid-column: 2;
-        align-self: stretch;
+        align-self: center;
         position: sticky;
         top: 0;
         width: 100%;
@@ -225,13 +226,14 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
     }
 
     #main-display.desktop-layout .desktop-side-panel {
-        align-self: stretch;
+        align-self: center;
+        justify-self: center;
         background: rgba(10, 18, 24, 0.78);
         border: 1px solid rgba(0, 188, 212, 0.2);
         border-radius: 18px;
         padding: 0 0 12px;
         box-shadow: 0 20px 40px rgba(0,0,0,0.22);
-        height: 100%;
+        height: calc(100dvh - 78px);
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: thin;
@@ -260,6 +262,11 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
         font-size: 1rem;
         margin-top: 0;
         margin-bottom: 8px;
+    }
+
+    #main-display.desktop-layout .desktop-core .screen-title {
+        margin-top: 0;
+        margin-bottom: 6px;
     }
 
     #main-display.desktop-layout .desktop-side-panel .panel-label,
