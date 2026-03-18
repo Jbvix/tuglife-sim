@@ -133,10 +133,10 @@ const gameState = {
         tk_hyd: { name: "TK HID OH32", type: 'oh32', max: 0.6, vol: 0 }
     },
     machinery: {
-        mca_ps: { name: "MCA 1 (BOMBORDO)", status: 'OFF', rpm: 0, v: 0, hz: 0, breakerClosed: false, fuelSource: 'tk04', consumption: 0.01, oilPress: 0, coolTemp: 30, carter: { vol: 0, max: 0.015 }, loConsumption: 0.00005, current: 0, power: 0, powerFactor: 0.85 },
-        mca_sb: { name: "MCA 2 (ESTIBORDO)", status: 'OFF', rpm: 0, v: 0, hz: 0, breakerClosed: false, fuelSource: 'tk05', consumption: 0.01, oilPress: 0, coolTemp: 30, carter: { vol: 0, max: 0.015 }, loConsumption: 0.00005, current: 0, power: 0, powerFactor: 0.85 },
-        mcp_ps: { name: "MCP BB (Motor Principal)", status: 'OFF', rpm: 0, targetRpm: 0, telegraph: 0, preLubeOn: false, coolingOn: false, oilPress: 0, coolTemp: 30, fuelSource: 'tk04', clutchEngaged: false, carter: { vol: 0, max: 0.8 }, loConsumption: 0.0015, hydraulicPressure: 0, hydraulicPumpCoupled: true },
-        mcp_sb: { name: "MCP BE (Motor Principal)", status: 'OFF', rpm: 0, targetRpm: 0, telegraph: 0, preLubeOn: false, coolingOn: false, oilPress: 0, coolTemp: 30, fuelSource: 'tk05', clutchEngaged: false, carter: { vol: 0, max: 0.8 }, loConsumption: 0.0015, hydraulicPressure: 0, hydraulicPumpCoupled: true },
+        mca_ps: { name: "MCA 1 (BOMBORDO)", status: 'OFF', rpm: 0, v: 0, hz: 0, breakerClosed: false, fuelSource: 'tk04', consumption: 0.01, oilPress: 0, coolTemp: 30, carter: { vol: 0, max: 0.015 }, loConsumption: 0.0000033333, current: 0, power: 0, powerFactor: 0.85 },
+        mca_sb: { name: "MCA 2 (ESTIBORDO)", status: 'OFF', rpm: 0, v: 0, hz: 0, breakerClosed: false, fuelSource: 'tk05', consumption: 0.01, oilPress: 0, coolTemp: 30, carter: { vol: 0, max: 0.015 }, loConsumption: 0.0000033333, current: 0, power: 0, powerFactor: 0.85 },
+        mcp_ps: { name: "MCP BB (Motor Principal)", status: 'OFF', rpm: 0, targetRpm: 0, telegraph: 0, preLubeOn: false, coolingOn: false, oilPress: 0, coolTemp: 30, fuelSource: 'tk04', clutchEngaged: false, carter: { vol: 0, max: 0.8 }, loConsumption: 0.0001666667, hydraulicPressure: 0, hydraulicPumpCoupled: true },
+        mcp_sb: { name: "MCP BE (Motor Principal)", status: 'OFF', rpm: 0, targetRpm: 0, telegraph: 0, preLubeOn: false, coolingOn: false, oilPress: 0, coolTemp: 30, fuelSource: 'tk05', clutchEngaged: false, carter: { vol: 0, max: 0.8 }, loConsumption: 0.0001666667, hydraulicPressure: 0, hydraulicPumpCoupled: true },
         winch: { isActive: false, direction: 'STOP', hydReservoir: { vol: 0.4, max: 0.4 } },
         chiller: { isOn: false, setTemp: 22, actualTemp: 30, power: 0 },
         zd_ps: { name: "Z-Drive BB", status: 'FREE', azimuth: 0, propRpm: 0, thrust: 0, gearboxLO: { vol: 1.65, max: 1.8 }, steeringHyd: { vol: 0.055, max: 0.06 }, propState: 'STOP', propFlow: 'Parado' },
