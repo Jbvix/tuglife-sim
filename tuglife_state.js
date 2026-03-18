@@ -4,6 +4,10 @@
 const gameState = {
     currentTab: 'build',
     desktopPanelSide: 'left',
+    desktopPanels: {
+        left: 'bunkering',
+        right: 'fuel'
+    },
     isAlarmActive: false,
     activeAlarmMessage: "",
     modal: { isOpen: false, type: null, entityKey: null },

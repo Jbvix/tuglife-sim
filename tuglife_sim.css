@@ -194,12 +194,12 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 @media (min-width: 1280px) {
     #main-display.desktop-layout {
         width: 100%;
-        max-width: 1800px;
+        max-width: 1720px;
         margin: 0 auto;
-        padding: 16px;
+        padding: 14px;
         display: grid;
-        grid-template-columns: minmax(320px, 420px) minmax(560px, 760px) minmax(320px, 420px);
-        gap: 16px;
+        grid-template-columns: minmax(280px, 360px) minmax(620px, 1fr) minmax(280px, 360px);
+        gap: 14px;
         align-items: start;
         overflow: auto;
     }
@@ -224,7 +224,7 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
         background: rgba(10, 18, 24, 0.78);
         border: 1px solid rgba(0, 188, 212, 0.2);
         border-radius: 18px;
-        padding: 8px 0 16px;
+        padding: 8px 0 14px;
         box-shadow: 0 20px 40px rgba(0,0,0,0.22);
     }
 
@@ -234,19 +234,45 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
     #main-display.desktop-layout .desktop-side-panel .control-panel,
     #main-display.desktop-layout .desktop-side-panel .three-d-panel,
     #main-display.desktop-layout .desktop-side-panel .quick-panel-btn {
-        width: calc(100% - 24px);
+        width: calc(100% - 18px);
         max-width: none;
     }
 
     #main-display.desktop-layout .desktop-side-panel .screen-title {
         text-align: left;
-        width: calc(100% - 24px);
+        width: calc(100% - 18px);
+        font-size: 1rem;
+    }
+
+    #main-display.desktop-layout .desktop-side-panel .panel-label,
+    #main-display.desktop-layout .desktop-side-panel .meter-label,
+    #main-display.desktop-layout .desktop-side-panel .system-strip-title,
+    #main-display.desktop-layout .desktop-side-panel .gen-title {
+        white-space: nowrap;
+    }
+
+    #main-display.desktop-layout .desktop-side-panel .control-btn,
+    #main-display.desktop-layout .desktop-side-panel .control-select,
+    #main-display.desktop-layout .desktop-side-panel .aux-btn {
+        font-size: 0.92rem;
     }
 
     #main-display.desktop-layout .desktop-core .hull-container,
     #main-display.desktop-layout .desktop-core .quick-panel-btn {
         max-width: 100%;
         width: 100%;
+    }
+}
+@media (min-width: 1280px) and (max-width: 1460px) {
+    #main-display.desktop-layout {
+        grid-template-columns: minmax(260px, 320px) minmax(560px, 1fr) minmax(260px, 320px);
+        gap: 12px;
+    }
+
+    #main-display.desktop-layout .desktop-side-panel .control-btn,
+    #main-display.desktop-layout .desktop-side-panel .control-select,
+    #main-display.desktop-layout .desktop-side-panel .aux-btn {
+        font-size: 0.88rem;
     }
 }
 @media (max-width: 720px) {

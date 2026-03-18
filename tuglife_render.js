@@ -186,16 +186,15 @@ function renderView() {
         const buildScreen = document.getElementById('screen-build');
         buildScreen.classList.add('active', 'desktop-core');
 
-        if (gameState.currentTab !== 'build') {
-            const selectedScreen = document.getElementById(selectedScreenId);
-            if (selectedScreen) {
-                selectedScreen.classList.add(
-                    'active',
-                    'desktop-side-panel',
-                    gameState.desktopPanelSide === 'left' ? 'desktop-side-left' : 'desktop-side-right'
-                );
-            }
-        }
+        ['left', 'right'].forEach(side => {
+            const panelTab = gameState.desktopPanels[side];
+            if (!panelTab || panelTab === 'build') return;
+
+            const panelScreen = document.getElementById(`screen-${panelTab}`);
+            if (!panelScreen) return;
+
+            panelScreen.classList.add('active', 'desktop-side-panel', side === 'left' ? 'desktop-side-left' : 'desktop-side-right');
+        });
     } else {
         const activeScreen = document.getElementById(selectedScreenId);
         if (activeScreen) {

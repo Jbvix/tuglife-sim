@@ -238,10 +238,16 @@ function zdAzimuth(side, val) {
 }
 
 function handleTabSelection(targetTab) {
-    const shouldAlternateSide = targetTab !== 'build' && targetTab !== gameState.currentTab;
+    if (targetTab !== 'build') {
+        const existingSide = Object.entries(gameState.desktopPanels).find(([, panelTab]) => panelTab === targetTab)?.[0];
 
-    if (shouldAlternateSide) {
-        gameState.desktopPanelSide = gameState.desktopPanelSide === 'left' ? 'right' : 'left';
+        if (!existingSide) {
+            const replacementSide = gameState.desktopPanelSide;
+            gameState.desktopPanels[replacementSide] = targetTab;
+            gameState.desktopPanelSide = replacementSide === 'left' ? 'right' : 'left';
+        } else {
+            gameState.desktopPanelSide = existingSide === 'left' ? 'right' : 'left';
+        }
     }
 
     gameState.currentTab = targetTab;
