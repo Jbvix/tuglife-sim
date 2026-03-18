@@ -494,8 +494,31 @@
                     </div>
                 </div>
                 <div class="three-d-actions">
+                    <button id="btn-3d-anchor-panel" class="control-btn three-d-btn three-d-config-btn">AJUSTAR PONTOS DO TUG</button>
                     <span class="three-d-mooring-status" id="ui-3d-mooring-status">AMARRADO NO CAIS</span>
                     <span class="three-d-mooring-status" id="ui-3d-model-status">MODELO PADRÃO</span>
+                </div>
+                <div id="three-d-anchor-panel" class="three-d-anchor-panel" style="display:none;">
+                    <div class="three-d-anchor-header">
+                        <span class="three-d-anchor-title">CALIBRAR PONTO DE CONEXÃO</span>
+                        <span id="ui-3d-anchor-save-status" class="three-d-anchor-save-status">NÃO SALVO</span>
+                    </div>
+                    <label class="panel-label" for="select-3d-anchor-point">Ponto do Tugboat:</label>
+                    <select id="select-3d-anchor-point" class="control-select three-d-select">
+                        <option value="fore">Proa</option>
+                        <option value="aft">Popa</option>
+                    </select>
+                    <div class="three-d-anchor-slider-row">
+                        <div class="three-d-anchor-slider-label">X lateral</div>
+                        <div id="ui-3d-anchor-x-val" class="three-d-anchor-slider-value">0.00</div>
+                    </div>
+                    <input id="slider-3d-anchor-x" class="telegraph-slider three-d-anchor-slider" type="range" min="-3.00" max="3.00" step="0.01" value="0">
+                    <div class="three-d-anchor-slider-row">
+                        <div class="three-d-anchor-slider-label">Y longitudinal</div>
+                        <div id="ui-3d-anchor-y-val" class="three-d-anchor-slider-value">0.00</div>
+                    </div>
+                    <input id="slider-3d-anchor-y" class="telegraph-slider three-d-anchor-slider" type="range" min="-4.50" max="4.50" step="0.01" value="0">
+                    <button id="btn-3d-anchor-save" class="control-btn three-d-save-btn">SALVAR POSIÇÃO</button>
                 </div>
                 <div class="three-d-legend">
                     Use as manetes na tela Motores para testar a propulsão. Arraste para orbitar a câmera e use a roda do mouse para zoom. Clique no cabeço de proa ou popa do rebocador e depois em um cabeço do cais para amarrar. Clique em um ponto já conectado para soltar.

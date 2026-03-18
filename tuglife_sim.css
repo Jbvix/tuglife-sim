@@ -175,9 +175,21 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 .three-d-card-value { font-family:'Courier New', monospace; font-size:1rem; color:#dff8ff; font-weight:bold; }
 .three-d-actions { display:flex; align-items:center; gap:12px; margin-top:12px; flex-wrap:wrap; }
 .three-d-btn { width:auto; min-width:240px; margin-bottom:0; background:linear-gradient(180deg, rgba(244,67,54,0.18), rgba(244,67,54,0.08)); border-color:rgba(244,67,54,0.4); color:#ffd8d8; }
+.three-d-config-btn { background:linear-gradient(180deg, rgba(0,188,212,0.18), rgba(0,188,212,0.08)); border-color:rgba(0,188,212,0.38); color:#d9fbff; min-width:220px; }
 .three-d-mooring-status { font-size:0.85rem; color:#9ed8b0; font-weight:bold; letter-spacing:0.04em; }
+.three-d-anchor-panel { margin-top:12px; padding:14px; border-radius:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); }
+.three-d-anchor-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
+.three-d-anchor-title { color:var(--accent-blue); font-weight:bold; letter-spacing:0.04em; }
+.three-d-anchor-save-status { font-size:0.75rem; color:#ffcc80; font-weight:bold; }
+.three-d-select { max-width:220px; margin-bottom:12px; }
+.three-d-anchor-slider-row { display:flex; align-items:center; justify-content:space-between; margin:8px 0 4px; gap:12px; }
+.three-d-anchor-slider-label { font-size:0.8rem; color:#8aa3af; }
+.three-d-anchor-slider-value { font-family:'Courier New', monospace; font-weight:bold; color:#dff8ff; }
+.three-d-anchor-slider { margin-top:0; margin-bottom:8px; }
+.three-d-save-btn { width:auto; min-width:220px; margin-top:10px; margin-bottom:0; background:linear-gradient(180deg, rgba(76,175,80,0.2), rgba(76,175,80,0.08)); border-color:rgba(76,175,80,0.35); color:#dcffe0; }
 .three-d-legend { margin-top:10px; color:#8aa3af; font-size:0.82rem; line-height:1.4; }
 @media (max-width: 720px) {
     .three-d-stage { height:320px; }
     .three-d-hud { grid-template-columns:1fr 1fr; }
+    .three-d-anchor-header { align-items:flex-start; flex-direction:column; }
 }

@@ -272,7 +272,16 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             resultant: document.getElementById('ui-3d-resultant'),
             attitude: document.getElementById('ui-3d-attitude'),
             mooringStatus: document.getElementById('ui-3d-mooring-status'),
-            modelStatus: document.getElementById('ui-3d-model-status')
+            modelStatus: document.getElementById('ui-3d-model-status'),
+            anchorPanelButton: document.getElementById('btn-3d-anchor-panel'),
+            anchorPanel: document.getElementById('three-d-anchor-panel'),
+            anchorPointSelect: document.getElementById('select-3d-anchor-point'),
+            anchorXSlider: document.getElementById('slider-3d-anchor-x'),
+            anchorYSlider: document.getElementById('slider-3d-anchor-y'),
+            anchorXValue: document.getElementById('ui-3d-anchor-x-val'),
+            anchorYValue: document.getElementById('ui-3d-anchor-y-val'),
+            anchorSaveButton: document.getElementById('btn-3d-anchor-save'),
+            anchorSaveStatus: document.getElementById('ui-3d-anchor-save-status')
         };
 
         const modelConfig = window.tuglife3dModelConfig || {};
@@ -281,6 +290,13 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
         const raycaster = new THREE.Raycaster();
         const pointer = new THREE.Vector2();
         const anchorMeshes = [];
+        const anchorStorageKey = 'tuglife_anchor_positions_v1';
+        const defaultTugAnchorPositions = {
+            fore: { x: 1.62, y: 1.18, z: -2.05 },
+            aft: { x: -1.34, y: 1.14, z: 1.98 }
+        };
+        let anchorPanelOpen = false;
+        let anchorPanelDirty = false;
 
         function getConnectedLineCount() {
             return Object.values(mooringState.lines).filter((line) => Boolean(line.dockAnchorId)).length;
@@ -316,14 +332,93 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             return marker;
         }
 
+        function readStoredAnchorPositions() {
+            try {
+                const raw = window.localStorage.getItem(anchorStorageKey);
+                if (!raw) return JSON.parse(JSON.stringify(defaultTugAnchorPositions));
+                const parsed = JSON.parse(raw);
+                return {
+                    fore: {
+                        x: Number(parsed?.fore?.x ?? defaultTugAnchorPositions.fore.x),
+                        y: Number(parsed?.fore?.y ?? defaultTugAnchorPositions.fore.y),
+                        z: Number(parsed?.fore?.z ?? defaultTugAnchorPositions.fore.z)
+                    },
+                    aft: {
+                        x: Number(parsed?.aft?.x ?? defaultTugAnchorPositions.aft.x),
+                        y: Number(parsed?.aft?.y ?? defaultTugAnchorPositions.aft.y),
+                        z: Number(parsed?.aft?.z ?? defaultTugAnchorPositions.aft.z)
+                    }
+                };
+            } catch (error) {
+                return JSON.parse(JSON.stringify(defaultTugAnchorPositions));
+            }
+        }
+
+        const tugAnchorPositions = readStoredAnchorPositions();
         const tugAnchorMarkers = {
-            fore: makeAnchorPoint(tugGroup, new THREE.Vector3(1.62, 1.18, -2.05), 'tug_fore', 'fore', 'tug', 0x4dd9ff),
-            aft: makeAnchorPoint(tugGroup, new THREE.Vector3(-1.34, 1.14, 1.98), 'tug_aft', 'aft', 'tug', 0x7cff8d)
+            fore: makeAnchorPoint(tugGroup, new THREE.Vector3(tugAnchorPositions.fore.x, tugAnchorPositions.fore.y, tugAnchorPositions.fore.z), 'tug_fore', 'fore', 'tug', 0x4dd9ff),
+            aft: makeAnchorPoint(tugGroup, new THREE.Vector3(tugAnchorPositions.aft.x, tugAnchorPositions.aft.y, tugAnchorPositions.aft.z), 'tug_aft', 'aft', 'tug', 0x7cff8d)
         };
         const dockAnchorMarkers = {
             fore: makeAnchorPoint(scene, new THREE.Vector3(-4.2, 1.8, -4.7), 'dock_fore', 'fore', 'dock', 0xffd36e),
             aft: makeAnchorPoint(scene, new THREE.Vector3(-4.2, 1.8, 4.7), 'dock_aft', 'aft', 'dock', 0xffd36e)
         };
+
+        function updateAnchorPanelStatus(text, color) {
+            if (!hud.anchorSaveStatus) return;
+            hud.anchorSaveStatus.textContent = text;
+            if (color) hud.anchorSaveStatus.style.color = color;
+        }
+
+        function getSelectedAnchorKey() {
+            return hud.anchorPointSelect ? hud.anchorPointSelect.value : 'fore';
+        }
+
+        function updateAnchorSliderValues() {
+            const lineKey = getSelectedAnchorKey();
+            const marker = tugAnchorMarkers[lineKey];
+            if (!marker) return;
+            if (hud.anchorXSlider) hud.anchorXSlider.value = marker.position.x.toFixed(2);
+            if (hud.anchorYSlider) hud.anchorYSlider.value = marker.position.z.toFixed(2);
+            if (hud.anchorXValue) hud.anchorXValue.textContent = marker.position.x.toFixed(2);
+            if (hud.anchorYValue) hud.anchorYValue.textContent = marker.position.z.toFixed(2);
+        }
+
+        function setSelectedAnchorMarkerPosition() {
+            const lineKey = getSelectedAnchorKey();
+            const marker = tugAnchorMarkers[lineKey];
+            if (!marker || !hud.anchorXSlider || !hud.anchorYSlider) return;
+            marker.position.x = parseFloat(hud.anchorXSlider.value);
+            marker.position.z = parseFloat(hud.anchorYSlider.value);
+            anchorPanelDirty = true;
+            updateAnchorSliderValues();
+            updateAnchorPanelStatus('ALTERADO', '#ffd36e');
+        }
+
+        function saveAnchorPositions() {
+            const payload = {
+                fore: {
+                    x: tugAnchorMarkers.fore.position.x,
+                    y: tugAnchorMarkers.fore.position.y,
+                    z: tugAnchorMarkers.fore.position.z
+                },
+                aft: {
+                    x: tugAnchorMarkers.aft.position.x,
+                    y: tugAnchorMarkers.aft.position.y,
+                    z: tugAnchorMarkers.aft.position.z
+                }
+            };
+            window.localStorage.setItem(anchorStorageKey, JSON.stringify(payload));
+            anchorPanelDirty = false;
+            updateAnchorPanelStatus('SALVO', '#9ed8b0');
+        }
+
+        function toggleAnchorPanel(forceOpen) {
+            anchorPanelOpen = typeof forceOpen === 'boolean' ? forceOpen : !anchorPanelOpen;
+            if (hud.anchorPanel) hud.anchorPanel.style.display = anchorPanelOpen ? 'block' : 'none';
+            if (hud.anchorPanelButton) hud.anchorPanelButton.textContent = anchorPanelOpen ? 'FECHAR AJUSTE DO TUG' : 'AJUSTAR PONTOS DO TUG';
+            if (anchorPanelOpen) updateAnchorSliderValues();
+        }
 
         function getDockAnchorPoint(anchorId) {
             if (anchorId === 'dock_fore') return dockAnchorMarkers.fore.getWorldPosition(new THREE.Vector3());
@@ -353,6 +448,9 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
         function handleAnchorSelection(anchorData) {
             if (anchorData.anchorType === 'tug') {
                 const lineKey = anchorData.lineKey;
+                if (hud.anchorPointSelect) hud.anchorPointSelect.value = lineKey;
+                updateAnchorSliderValues();
+                updateAnchorPanelStatus(anchorPanelDirty ? 'ALTERADO' : 'SALVO', anchorPanelDirty ? '#ffd36e' : '#9ed8b0');
                 if (mooringState.lines[lineKey].dockAnchorId) {
                     mooringState.lines[lineKey].dockAnchorId = null;
                     if (mooringState.selectedTugLine === lineKey) mooringState.selectedTugLine = null;
@@ -373,6 +471,32 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
 
             syncMooringFlag();
         }
+
+        if (hud.anchorPanelButton) {
+            hud.anchorPanelButton.addEventListener('click', () => toggleAnchorPanel());
+        }
+
+        if (hud.anchorPointSelect) {
+            hud.anchorPointSelect.addEventListener('change', () => {
+                updateAnchorSliderValues();
+                updateAnchorPanelStatus(anchorPanelDirty ? 'ALTERADO' : 'SALVO', anchorPanelDirty ? '#ffd36e' : '#9ed8b0');
+            });
+        }
+
+        if (hud.anchorXSlider) {
+            hud.anchorXSlider.addEventListener('input', setSelectedAnchorMarkerPosition);
+        }
+
+        if (hud.anchorYSlider) {
+            hud.anchorYSlider.addEventListener('input', setSelectedAnchorMarkerPosition);
+        }
+
+        if (hud.anchorSaveButton) {
+            hud.anchorSaveButton.addEventListener('click', saveAnchorPositions);
+        }
+
+        updateAnchorSliderValues();
+        updateAnchorPanelStatus('SALVO', '#9ed8b0');
 
         function setModelStatus(text, color) {
             if (!hud.modelStatus) return;
