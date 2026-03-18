@@ -12,7 +12,9 @@ window.tuglife3dModelConfig = {
     rotationXDeg: 0,
     rotationYDeg: 0,
     rotationZDeg: 0,
-    offset: { x: 0, y: -0.42, z: 0 }
+    offset: { x: 0, y: -0.42, z: 0 },
+    heelVisualSign: 1,
+    trimVisualSign: -1
 };
 
 bindEventListeners();
