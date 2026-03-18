@@ -3,10 +3,9 @@
  */
 const gameState = {
     currentTab: 'build',
-    desktopPanelSide: 'left',
     desktopPanels: {
         left: 'bunkering',
-        right: 'fuel'
+        right: 'propulsion'
     },
     isAlarmActive: false,
     activeAlarmMessage: "",

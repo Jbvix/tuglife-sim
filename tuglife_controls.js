@@ -239,14 +239,13 @@ function zdAzimuth(side, val) {
 
 function handleTabSelection(targetTab) {
     if (targetTab !== 'build') {
-        const existingSide = Object.entries(gameState.desktopPanels).find(([, panelTab]) => panelTab === targetTab)?.[0];
+        const leftTabs = ['bunkering', 'fuel', 'power'];
+        const rightTabs = ['propulsion', 'visual3d'];
 
-        if (!existingSide) {
-            const replacementSide = gameState.desktopPanelSide;
-            gameState.desktopPanels[replacementSide] = targetTab;
-            gameState.desktopPanelSide = replacementSide === 'left' ? 'right' : 'left';
-        } else {
-            gameState.desktopPanelSide = existingSide === 'left' ? 'right' : 'left';
+        if (leftTabs.includes(targetTab)) {
+            gameState.desktopPanels.left = targetTab;
+        } else if (rightTabs.includes(targetTab)) {
+            gameState.desktopPanels.right = targetTab;
         }
     }
 
