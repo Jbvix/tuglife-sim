@@ -174,7 +174,17 @@ const VESSEL_HYDROSTATICS = {
         lightshipMeters: 3.35,
         fullLoadMeters: 4.45,
         visualOffsetLightship: -0.08,
-        visualOffsetFullLoad: -0.52
+        visualOffsetFullLoad: -0.62
+    },
+    response: {
+        heelGain: 26,
+        trimGain: 44,
+        maxHeelDeg: 7,
+        maxTrimDeg: 9,
+        visualHeelGain: 0.68,
+        visualTrimGain: 0.78,
+        draftCurveExponent: 0.9,
+        visualDraftCurveExponent: 0.82
     },
     fluidDensities: {
         fw: 1.0,

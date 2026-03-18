@@ -149,13 +149,17 @@ function calculateVesselHydrostatics() {
     const baseMassTonnes = accum.fixedMass;
     const fullLoadMassTonnes = baseMassTonnes + maxTankFluidMass + maxMachineryFluidMass;
     const loadRatio = Math.max(0, Math.min(1, (accum.totalMass - baseMassTonnes) / Math.max(1, fullLoadMassTonnes - baseMassTonnes)));
+    const draftRatio = Math.pow(loadRatio, VESSEL_HYDROSTATICS.response.draftCurveExponent);
+    const visualDraftRatio = Math.pow(loadRatio, VESSEL_HYDROSTATICS.response.visualDraftCurveExponent);
     const draftMeters = VESSEL_HYDROSTATICS.draft.lightshipMeters
-        + (VESSEL_HYDROSTATICS.draft.fullLoadMeters - VESSEL_HYDROSTATICS.draft.lightshipMeters) * loadRatio;
+        + (VESSEL_HYDROSTATICS.draft.fullLoadMeters - VESSEL_HYDROSTATICS.draft.lightshipMeters) * draftRatio;
     const visualOffset = VESSEL_HYDROSTATICS.draft.visualOffsetLightship
-        + (VESSEL_HYDROSTATICS.draft.visualOffsetFullLoad - VESSEL_HYDROSTATICS.draft.visualOffsetLightship) * loadRatio;
+        + (VESSEL_HYDROSTATICS.draft.visualOffsetFullLoad - VESSEL_HYDROSTATICS.draft.visualOffsetLightship) * visualDraftRatio;
 
-    const heelBase = accum.totalMass > 0 ? ((accum.starboardMass - accum.portMass) / accum.totalMass) * 18 : 0;
-    const trimBase = accum.totalMass > 0 ? ((accum.aftMass - accum.foreMass) / accum.totalMass) * 30 : 0;
+    const rawHeel = accum.totalMass > 0 ? ((accum.starboardMass - accum.portMass) / accum.totalMass) * VESSEL_HYDROSTATICS.response.heelGain : 0;
+    const rawTrim = accum.totalMass > 0 ? ((accum.aftMass - accum.foreMass) / accum.totalMass) * VESSEL_HYDROSTATICS.response.trimGain : 0;
+    const heelBase = Math.max(-VESSEL_HYDROSTATICS.response.maxHeelDeg, Math.min(VESSEL_HYDROSTATICS.response.maxHeelDeg, rawHeel));
+    const trimBase = Math.max(-VESSEL_HYDROSTATICS.response.maxTrimDeg, Math.min(VESSEL_HYDROSTATICS.response.maxTrimDeg, rawTrim));
     const heelDirection = heelBase > 0.15 ? 'BE' : heelBase < -0.15 ? 'BB' : 'ADR';
     const trimDirection = trimBase > 0.15 ? 'POP' : trimBase < -0.15 ? 'PROA' : 'ADR';
 
