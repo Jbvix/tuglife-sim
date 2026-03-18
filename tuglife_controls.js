@@ -252,6 +252,15 @@ function handleTabSelection(targetTab) {
 
     gameState.currentTab = targetTab;
     renderView();
+
+    if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('tuglife:tabchange', {
+            detail: {
+                tab: targetTab,
+                desktopPanels: gameState.desktopPanels
+            }
+        }));
+    }
 }
 
 function bindEventListeners() {

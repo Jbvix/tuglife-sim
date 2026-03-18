@@ -717,6 +717,13 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             renderer.setSize(width, height, false);
         }
 
+        function forceStageRefresh() {
+            resizeIfNeeded();
+            if (stage.clientWidth && stage.clientHeight) {
+                renderer.render(scene, camera);
+            }
+        }
+
         function setRopeGeometry(line, start, end, sag, elapsed, tension) {
             const positions = [];
             const segmentCount = 12;
@@ -966,6 +973,18 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
         }
 
         window.addEventListener('resize', resizeIfNeeded);
+        window.addEventListener('tuglife:tabchange', (event) => {
+            const tab = event?.detail?.tab;
+            const desktopPanels = event?.detail?.desktopPanels || {};
+            const visual3dVisible = tab === 'visual3d' || Object.values(desktopPanels).includes('visual3d');
+
+            if (!visual3dVisible) return;
+
+            requestAnimationFrame(() => {
+                forceStageRefresh();
+                setTimeout(forceStageRefresh, 120);
+            });
+        });
         animate();
     } catch (error) {
         stage.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#ffb4b4;font-family:Segoe UI,Arial,sans-serif;padding:24px;text-align:center;">Falha ao inicializar a cena 3D do rebocador.</div>';
