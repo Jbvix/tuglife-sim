@@ -1,4 +1,5 @@
 const stage = typeof document !== 'undefined' ? document.getElementById('three-d-stage') : null;
+const panel3d = typeof document !== 'undefined' ? document.querySelector('#screen-visual3d .three-d-panel') : null;
 
 if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) {
     const THREE = window.THREE;
@@ -275,6 +276,7 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             draft: document.getElementById('ui-3d-draft'),
             mooringStatus: document.getElementById('ui-3d-mooring-status'),
             modelStatus: document.getElementById('ui-3d-model-status'),
+            fullscreenButton: document.getElementById('btn-3d-fullscreen'),
             anchorPanelButton: document.getElementById('btn-3d-anchor-panel'),
             drivePanelButton: document.getElementById('btn-3d-drive-panel'),
             drivePanel: document.getElementById('three-d-drive-panel'),
@@ -315,6 +317,28 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
         let anchorPanelOpen = false;
         let anchorPanelDirty = false;
         let drivePanelOpen = false;
+
+        function updateFullscreenButtonLabel() {
+            if (!hud.fullscreenButton) return;
+            hud.fullscreenButton.textContent = document.fullscreenElement === panel3d ? 'SAIR DA TELA CHEIA' : 'TELA CHEIA';
+        }
+
+        async function toggleFullscreen() {
+            if (!panel3d || !document.fullscreenEnabled) return;
+
+            try {
+                if (document.fullscreenElement === panel3d) {
+                    await document.exitFullscreen();
+                } else {
+                    await panel3d.requestFullscreen();
+                }
+            } catch (error) {
+                console.error('Falha ao alternar fullscreen do painel 3D.', error);
+            }
+
+            forceStageRefresh();
+            updateFullscreenButtonLabel();
+        }
 
         function getConnectedLineCount() {
             return Object.values(mooringState.lines).filter((line) => Boolean(line.dockAnchorId)).length;
@@ -975,6 +999,16 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             renderer.render(scene, camera);
         }
 
+        if (hud.fullscreenButton) {
+            hud.fullscreenButton.addEventListener('click', toggleFullscreen);
+        }
+
+        document.addEventListener('fullscreenchange', () => {
+            updateFullscreenButtonLabel();
+            forceStageRefresh();
+        });
+
+        updateFullscreenButtonLabel();
         window.addEventListener('resize', resizeIfNeeded);
         window.addEventListener('tuglife:tabchange', (event) => {
             const tab = event?.detail?.tab;
