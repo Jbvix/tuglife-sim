@@ -177,14 +177,33 @@ const VESSEL_HYDROSTATICS = {
         visualOffsetFullLoad: -0.62
     },
     response: {
-        heelGain: 26,
-        trimGain: 44,
-        maxHeelDeg: 7,
-        maxTrimDeg: 9,
+        maxHeelDeg: 8,
+        maxTrimDeg: 10,
         visualHeelGain: 0.68,
         visualTrimGain: 0.78,
         draftCurveExponent: 0.9,
         visualDraftCurveExponent: 0.82
+    },
+    curves: {
+        displacementDraft: [
+            { mass: 402.5, draft: 3.35 },
+            { mass: 450.0, draft: 3.62 },
+            { mass: 500.0, draft: 3.92 },
+            { mass: 550.0, draft: 4.20 },
+            { mass: 595.0, draft: 4.45 }
+        ],
+        heelResponse: [
+            { draft: 3.35, factor: 0.078 },
+            { draft: 3.75, factor: 0.072 },
+            { draft: 4.10, factor: 0.066 },
+            { draft: 4.45, factor: 0.061 }
+        ],
+        trimResponse: [
+            { draft: 3.35, factor: 0.046 },
+            { draft: 3.75, factor: 0.043 },
+            { draft: 4.10, factor: 0.039 },
+            { draft: 4.45, factor: 0.036 }
+        ]
     },
     fluidDensities: {
         fw: 1.0,

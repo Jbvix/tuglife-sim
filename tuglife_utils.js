@@ -76,6 +76,8 @@ function buildHydroAccum() {
         totalMass: 0,
         fixedMass: 0,
         fluidMass: 0,
+        transverseMoment: 0,
+        longitudinalMoment: 0,
         portVolume: 0,
         starboardVolume: 0,
         foreVolume: 0,
@@ -83,13 +85,46 @@ function buildHydroAccum() {
     };
 }
 
-function addHydroMass(accum, mass, side, longitudinal, volume) {
+function getSideArm(side) {
+    if (side === 'port') return -2.35;
+    if (side === 'starboard') return 2.35;
+    return 0;
+}
+
+function getLongitudinalArm(longitudinal) {
+    if (longitudinal === 'fore') return -5.8;
+    if (longitudinal === 'aft') return 5.9;
+    return 0;
+}
+
+function interpolateCurve(curve, inputKey, outputKey, inputValue) {
+    if (!Array.isArray(curve) || !curve.length) return 0;
+    if (inputValue <= curve[0][inputKey]) return curve[0][outputKey];
+
+    for (let i = 1; i < curve.length; i += 1) {
+        const prev = curve[i - 1];
+        const next = curve[i];
+
+        if (inputValue <= next[inputKey]) {
+            const span = next[inputKey] - prev[inputKey] || 1;
+            const ratio = (inputValue - prev[inputKey]) / span;
+            return prev[outputKey] + (next[outputKey] - prev[outputKey]) * ratio;
+        }
+    }
+
+    return curve[curve.length - 1][outputKey];
+}
+
+function addHydroMass(accum, mass, side, longitudinal, volume, xArm, yArm) {
     accum.totalMass += mass;
 
     if (side === 'port') accum.portMass += mass;
     if (side === 'starboard') accum.starboardMass += mass;
     if (longitudinal === 'fore') accum.foreMass += mass;
     if (longitudinal === 'aft') accum.aftMass += mass;
+
+    accum.transverseMoment += mass * (typeof xArm === 'number' ? xArm : getSideArm(side));
+    accum.longitudinalMoment += mass * (typeof yArm === 'number' ? yArm : getLongitudinalArm(longitudinal));
 
     if (typeof volume === 'number') {
         if (side === 'port') accum.portVolume += volume;
@@ -101,14 +136,31 @@ function addHydroMass(accum, mass, side, longitudinal, volume) {
 
 function calculateVesselHydrostatics() {
     const accum = buildHydroAccum();
-    const tankLayout = getTankHydroLayout();
+    const tankLayout = {
+        tk_peak_fwd: { side: 'center', longitudinal: 'fore', xArm: 0, yArm: -6.4 },
+        tk02: { side: 'center', longitudinal: 'fore', xArm: 0, yArm: -4.3 },
+        tk_hyd: { side: 'center', longitudinal: 'fore', xArm: 0, yArm: -4.8 },
+        tk06: { side: 'port', longitudinal: 'mid', xArm: -2.65, yArm: -1.3 },
+        tk07: { side: 'starboard', longitudinal: 'mid', xArm: 2.65, yArm: -1.3 },
+        tk04: { side: 'port', longitudinal: 'mid', xArm: -1.45, yArm: -0.4 },
+        tk05: { side: 'starboard', longitudinal: 'mid', xArm: 1.45, yArm: -0.4 },
+        tk03: { side: 'center', longitudinal: 'mid', xArm: 0, yArm: 0.4 },
+        tk_od_center: { side: 'center', longitudinal: 'mid', xArm: 0, yArm: 1.0 },
+        tk11: { side: 'port', longitudinal: 'aft', xArm: -2.55, yArm: 3.6 },
+        tk12: { side: 'starboard', longitudinal: 'aft', xArm: 2.55, yArm: 3.6 },
+        tk13: { side: 'center', longitudinal: 'aft', xArm: 0, yArm: 2.7 },
+        tk14: { side: 'center', longitudinal: 'aft', xArm: 0, yArm: 3.1 },
+        tk15: { side: 'center', longitudinal: 'aft', xArm: 0, yArm: 4.1 },
+        tk16: { side: 'center', longitudinal: 'aft', xArm: 0, yArm: 4.6 },
+        tk_peak_aft: { side: 'center', longitudinal: 'aft', xArm: 0, yArm: 6.6 }
+    };
 
     accum.fixedMass += VESSEL_HYDROSTATICS.lightshipStructureTonnes;
     accum.totalMass += VESSEL_HYDROSTATICS.lightshipStructureTonnes;
 
     VESSEL_HYDROSTATICS.fixedEquipment.forEach((item) => {
         accum.fixedMass += item.mass;
-        addHydroMass(accum, item.mass, item.side, item.longitudinal);
+        addHydroMass(accum, item.mass, item.side, item.longitudinal, undefined, item.xArm, item.yArm);
     });
 
     Object.entries(gameState.tanks).forEach(([tankKey, tank]) => {
@@ -118,25 +170,25 @@ function calculateVesselHydrostatics() {
         const density = getTankDensity(tank.type);
         const mass = tank.vol * density;
         accum.fluidMass += mass;
-        addHydroMass(accum, mass, layout.side, layout.longitudinal, tank.vol);
+        addHydroMass(accum, mass, layout.side, layout.longitudinal, tank.vol, layout.xArm, layout.yArm);
     });
 
     const machineryFluidItems = [
-        { volume: gameState.machinery.mcp_ps.carter.vol, density: getTankDensity('lo_15w40'), side: 'port', longitudinal: 'aft' },
-        { volume: gameState.machinery.mcp_sb.carter.vol, density: getTankDensity('lo_15w40'), side: 'starboard', longitudinal: 'aft' },
-        { volume: gameState.machinery.mca_ps.carter.vol, density: getTankDensity('lo_15w40'), side: 'port', longitudinal: 'mid' },
-        { volume: gameState.machinery.mca_sb.carter.vol, density: getTankDensity('lo_15w40'), side: 'starboard', longitudinal: 'mid' },
-        { volume: gameState.machinery.zd_ps.gearboxLO.vol, density: getTankDensity('lo_150'), side: 'port', longitudinal: 'aft' },
-        { volume: gameState.machinery.zd_sb.gearboxLO.vol, density: getTankDensity('lo_150'), side: 'starboard', longitudinal: 'aft' },
-        { volume: gameState.machinery.zd_ps.steeringHyd.vol, density: getTankDensity('oh32'), side: 'port', longitudinal: 'aft' },
-        { volume: gameState.machinery.zd_sb.steeringHyd.vol, density: getTankDensity('oh32'), side: 'starboard', longitudinal: 'aft' },
-        { volume: gameState.machinery.winch.hydReservoir.vol, density: getTankDensity('oh32'), side: 'center', longitudinal: 'fore' }
+        { volume: gameState.machinery.mcp_ps.carter.vol, density: getTankDensity('lo_15w40'), side: 'port', longitudinal: 'aft', xArm: -1.8, yArm: 2.4 },
+        { volume: gameState.machinery.mcp_sb.carter.vol, density: getTankDensity('lo_15w40'), side: 'starboard', longitudinal: 'aft', xArm: 1.8, yArm: 2.4 },
+        { volume: gameState.machinery.mca_ps.carter.vol, density: getTankDensity('lo_15w40'), side: 'port', longitudinal: 'mid', xArm: -1.6, yArm: -0.7 },
+        { volume: gameState.machinery.mca_sb.carter.vol, density: getTankDensity('lo_15w40'), side: 'starboard', longitudinal: 'mid', xArm: 1.6, yArm: -0.7 },
+        { volume: gameState.machinery.zd_ps.gearboxLO.vol, density: getTankDensity('lo_150'), side: 'port', longitudinal: 'aft', xArm: -1.25, yArm: 5.4 },
+        { volume: gameState.machinery.zd_sb.gearboxLO.vol, density: getTankDensity('lo_150'), side: 'starboard', longitudinal: 'aft', xArm: 1.25, yArm: 5.4 },
+        { volume: gameState.machinery.zd_ps.steeringHyd.vol, density: getTankDensity('oh32'), side: 'port', longitudinal: 'aft', xArm: -1.25, yArm: 5.2 },
+        { volume: gameState.machinery.zd_sb.steeringHyd.vol, density: getTankDensity('oh32'), side: 'starboard', longitudinal: 'aft', xArm: 1.25, yArm: 5.2 },
+        { volume: gameState.machinery.winch.hydReservoir.vol, density: getTankDensity('oh32'), side: 'center', longitudinal: 'fore', xArm: 0, yArm: -5.1 }
     ];
 
     machineryFluidItems.forEach((item) => {
         const mass = item.volume * item.density;
         accum.fluidMass += mass;
-        addHydroMass(accum, mass, item.side, item.longitudinal, item.volume);
+        addHydroMass(accum, mass, item.side, item.longitudinal, item.volume, item.xArm, item.yArm);
     });
 
     const maxTankFluidMass = Object.values(gameState.tanks).reduce((sum, tank) => sum + (tank.max * getTankDensity(tank.type)), 0);
@@ -151,13 +203,15 @@ function calculateVesselHydrostatics() {
     const loadRatio = Math.max(0, Math.min(1, (accum.totalMass - baseMassTonnes) / Math.max(1, fullLoadMassTonnes - baseMassTonnes)));
     const draftRatio = Math.pow(loadRatio, VESSEL_HYDROSTATICS.response.draftCurveExponent);
     const visualDraftRatio = Math.pow(loadRatio, VESSEL_HYDROSTATICS.response.visualDraftCurveExponent);
-    const draftMeters = VESSEL_HYDROSTATICS.draft.lightshipMeters
-        + (VESSEL_HYDROSTATICS.draft.fullLoadMeters - VESSEL_HYDROSTATICS.draft.lightshipMeters) * draftRatio;
+    const curveMass = baseMassTonnes + (fullLoadMassTonnes - baseMassTonnes) * draftRatio;
+    const draftMeters = interpolateCurve(VESSEL_HYDROSTATICS.curves.displacementDraft, 'mass', 'draft', curveMass);
     const visualOffset = VESSEL_HYDROSTATICS.draft.visualOffsetLightship
         + (VESSEL_HYDROSTATICS.draft.visualOffsetFullLoad - VESSEL_HYDROSTATICS.draft.visualOffsetLightship) * visualDraftRatio;
 
-    const rawHeel = accum.totalMass > 0 ? ((accum.starboardMass - accum.portMass) / accum.totalMass) * VESSEL_HYDROSTATICS.response.heelGain : 0;
-    const rawTrim = accum.totalMass > 0 ? ((accum.aftMass - accum.foreMass) / accum.totalMass) * VESSEL_HYDROSTATICS.response.trimGain : 0;
+    const heelFactor = interpolateCurve(VESSEL_HYDROSTATICS.curves.heelResponse, 'draft', 'factor', draftMeters);
+    const trimFactor = interpolateCurve(VESSEL_HYDROSTATICS.curves.trimResponse, 'draft', 'factor', draftMeters);
+    const rawHeel = accum.transverseMoment * heelFactor;
+    const rawTrim = accum.longitudinalMoment * trimFactor;
     const heelBase = Math.max(-VESSEL_HYDROSTATICS.response.maxHeelDeg, Math.min(VESSEL_HYDROSTATICS.response.maxHeelDeg, rawHeel));
     const trimBase = Math.max(-VESSEL_HYDROSTATICS.response.maxTrimDeg, Math.min(VESSEL_HYDROSTATICS.response.maxTrimDeg, rawTrim));
     const heelDirection = heelBase > 0.15 ? 'BE' : heelBase < -0.15 ? 'BB' : 'ADR';
@@ -178,7 +232,9 @@ function calculateVesselHydrostatics() {
         totalMassTonnes: accum.totalMass,
         fixedMassTonnes: accum.fixedMass,
         fluidMassTonnes: accum.fluidMass,
-        fullLoadMassTonnes
+        fullLoadMassTonnes,
+        transverseMomentTm: accum.transverseMoment,
+        longitudinalMomentTm: accum.longitudinalMoment
     };
 }
 
