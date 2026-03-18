@@ -194,11 +194,11 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 @media (min-width: 1280px) {
     #main-display.desktop-layout {
         width: 100%;
-        max-width: 1720px;
+        max-width: 1580px;
         margin: 0 auto;
         padding: 14px;
         display: grid;
-        grid-template-columns: minmax(280px, 360px) minmax(620px, 1fr) minmax(280px, 360px);
+        grid-template-columns: minmax(280px, 340px) minmax(720px, 900px) minmax(280px, 340px);
         gap: 14px;
         align-items: start;
         overflow: auto;
@@ -217,6 +217,9 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
         align-self: start;
         position: sticky;
         top: 0;
+        width: 100%;
+        max-width: 900px;
+        justify-self: center;
     }
 
     #main-display.desktop-layout .desktop-side-panel {
@@ -259,13 +262,53 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 
     #main-display.desktop-layout .desktop-core .hull-container,
     #main-display.desktop-layout .desktop-core .quick-panel-btn {
-        max-width: 100%;
+        max-width: 900px;
+        width: 100%;
+    }
+
+    #main-display.desktop-layout .desktop-side-panel .three-d-panel {
+        padding: 12px;
+    }
+
+    #main-display.desktop-layout .desktop-side-panel .three-d-stage {
+        height: 300px;
+    }
+
+    #main-display.desktop-layout .desktop-side-panel .three-d-hud {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    #main-display.desktop-layout .desktop-side-panel .three-d-card {
+        padding: 8px;
+    }
+
+    #main-display.desktop-layout .desktop-side-panel .three-d-card-label {
+        font-size: 0.68rem;
+    }
+
+    #main-display.desktop-layout .desktop-side-panel .three-d-card-value {
+        font-size: 0.82rem;
+        line-height: 1.25;
+        word-break: normal;
+        overflow-wrap: anywhere;
+    }
+
+    #main-display.desktop-layout .desktop-side-panel .three-d-actions {
+        gap: 8px;
+    }
+
+    #main-display.desktop-layout .desktop-side-panel .three-d-btn,
+    #main-display.desktop-layout .desktop-side-panel .three-d-config-btn,
+    #main-display.desktop-layout .desktop-side-panel .three-d-save-btn {
+        min-width: 100%;
         width: 100%;
     }
 }
 @media (min-width: 1280px) and (max-width: 1460px) {
     #main-display.desktop-layout {
-        grid-template-columns: minmax(260px, 320px) minmax(560px, 1fr) minmax(260px, 320px);
+        max-width: 1460px;
+        grid-template-columns: minmax(250px, 300px) minmax(640px, 780px) minmax(250px, 300px);
         gap: 12px;
     }
 
@@ -273,6 +316,16 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
     #main-display.desktop-layout .desktop-side-panel .control-select,
     #main-display.desktop-layout .desktop-side-panel .aux-btn {
         font-size: 0.88rem;
+    }
+
+    #main-display.desktop-layout .desktop-core,
+    #main-display.desktop-layout .desktop-core .hull-container,
+    #main-display.desktop-layout .desktop-core .quick-panel-btn {
+        max-width: 780px;
+    }
+
+    #main-display.desktop-layout .desktop-side-panel .three-d-stage {
+        height: 270px;
     }
 }
 @media (max-width: 720px) {
