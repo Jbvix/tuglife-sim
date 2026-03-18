@@ -40,7 +40,7 @@ function renderModalContent() {
                 <div class="modal-data-row"><span class="modal-data-label">Rotação:</span><span class="modal-data-value">${eng.rpm} RPM</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Pressão Óleo:</span><span class="modal-data-value">${eng.oilPress.toFixed(1)} Bar</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Temp. Arrefec.:</span><span class="modal-data-value">${eng.coolTemp.toFixed(1)} °C</span></div>
-                <div class="modal-data-row"><span class="modal-data-label">Carter LO:</span><span class="modal-data-value" style="color:${carterColor}">${eng.carter.vol.toFixed(3)} m³ (${carterPct}%)</span></div>
+                <div class="modal-data-row"><span class="modal-data-label">Carter OL15W40:</span><span class="modal-data-value" style="color:${carterColor}">${eng.carter.vol.toFixed(3)} m³ (${carterPct}%)</span></div>
             `;
         } else if (gameState.modal.type === 'mca-gen') {
             titleEl.innerText = `${eng.name} - GERADOR`;
@@ -51,6 +51,20 @@ function renderModalContent() {
                 <div class="modal-data-row"><span class="modal-data-label">Disjuntor:</span><span class="modal-data-value" style="color:${eng.breakerClosed ? 'var(--accent-green)' : '#888'}">${eng.breakerClosed ? 'FECHADO' : 'ABERTO'}</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Consumo FO:</span><span class="modal-data-value">${eng.consumption} m³/tick</span></div>
             `;
+        } else if (gameState.modal.type === 'mcp') {
+            titleEl.innerText = eng.name;
+            html = `
+                <div style="font-size:0.75rem; color:#ff9800; font-weight:bold; margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid #333;">&#9881; MOTOR PRINCIPAL</div>
+                <div class="modal-data-row"><span class="modal-data-label">Estado:</span><span class="modal-data-value" style="color:${statusColor}">${eng.status}</span></div>
+                <div class="modal-data-row"><span class="modal-data-label">Rotação:</span><span class="modal-data-value">${eng.rpm} RPM</span></div>
+                <div class="modal-data-row"><span class="modal-data-label">Pressão Óleo:</span><span class="modal-data-value">${eng.oilPress.toFixed(1)} Bar</span></div>
+                <div class="modal-data-row"><span class="modal-data-label">Temp. Arrefec.:</span><span class="modal-data-value">${eng.coolTemp.toFixed(1)} °C</span></div>
+                <div class="modal-data-row"><span class="modal-data-label">Carter OL15W40:</span><span class="modal-data-value" style="color:${carterColor}">${eng.carter.vol.toFixed(3)} m³ (${carterPct}%)</span></div>
+                <div class="modal-data-row"><span class="modal-data-label">BBA Pré-Lubrificação:</span><span class="modal-data-value">${eng.preLubeOn ? 'LIGADA' : 'DESLIGADA'}</span></div>
+                <div class="modal-data-row"><span class="modal-data-label">Motor de Arranque:</span><span class="modal-data-value">${eng.status === 'OFF' ? 'PRONTO' : 'EM STAND-BY'}</span></div>
+                <div class="modal-data-row"><span class="modal-data-label">BBA Refrigeração:</span><span class="modal-data-value">${eng.coolingOn ? 'LIGADA' : 'DESLIGADA'}</span></div>
+                <div class="modal-data-row"><span class="modal-data-label">BBA Combustível:</span><span class="modal-data-value">${gameState.tanks[eng.fuelSource].vol > 0 ? 'PRESSURIZADA' : 'SEM COMBUSTÍVEL'}</span></div>
+            `;
         } else {
             titleEl.innerText = eng.name;
             html = `
@@ -59,7 +73,7 @@ function renderModalContent() {
                 <div class="modal-data-row"><span class="modal-data-label">Rotação:</span><span class="modal-data-value">${eng.rpm} RPM</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Pressão Óleo:</span><span class="modal-data-value">${eng.oilPress.toFixed(1)} Bar</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Temp. Arrefec.:</span><span class="modal-data-value">${eng.coolTemp.toFixed(1)} °C</span></div>
-                <div class="modal-data-row"><span class="modal-data-label">Carter LO:</span><span class="modal-data-value" style="color:${carterColor}">${eng.carter.vol.toFixed(3)} m³ (${carterPct}%)</span></div>
+                <div class="modal-data-row"><span class="modal-data-label">Carter OL15W40:</span><span class="modal-data-value" style="color:${carterColor}">${eng.carter.vol.toFixed(3)} m³ (${carterPct}%)</span></div>
                 <div style="font-size:0.75rem; color:#00bcd4; font-weight:bold; margin:10px 0 8px; padding-bottom:4px; border-bottom:1px solid #333;">&#9889; GERADOR</div>
                 <div class="modal-data-row"><span class="modal-data-label">Tensão:</span><span class="modal-data-value">${eng.v.toFixed(0)} V</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Frequência:</span><span class="modal-data-value">${eng.hz.toFixed(1)} Hz</span></div>
@@ -105,13 +119,13 @@ function renderModalContent() {
             <div class="modal-data-row"><span class="modal-data-label">RPM Propulsor:</span><span class="modal-data-value">${zd.propRpm} RPM</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Empuxo:</span><span class="modal-data-value">${zd.thrust}%</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Azimute:</span><span class="modal-data-value">${zd.azimuth}°</span></div>
-            <div class="modal-data-row"><span class="modal-data-label">LO Caixa:</span><span class="modal-data-value" style="color:${gearboxPct < 20 ? 'var(--accent-red)' : '#ffc107'}">${zd.gearboxLO.vol.toFixed(3)} m³ (${gearboxPct}%)</span></div>
-            <div class="modal-data-row"><span class="modal-data-label">Hyd Governo:</span><span class="modal-data-value" style="color:${steeringPct < 20 ? 'var(--accent-red)' : '#2196f3'}">${zd.steeringHyd.vol.toFixed(3)} m³ (${steeringPct}%)</span></div>
+            <div class="modal-data-row"><span class="modal-data-label">OL150 Caixa:</span><span class="modal-data-value" style="color:${gearboxPct < 20 ? 'var(--accent-red)' : '#ffc107'}">${zd.gearboxLO.vol.toFixed(3)} m³ (${gearboxPct}%)</span></div>
+            <div class="modal-data-row"><span class="modal-data-label">OH32 Governo:</span><span class="modal-data-value" style="color:${steeringPct < 20 ? 'var(--accent-red)' : '#2196f3'}">${zd.steeringHyd.vol.toFixed(3)} m³ (${steeringPct}%)</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Propulsor:</span><span class="modal-data-value" style="color:${zd.propState === 'TRIP' ? 'var(--accent-red)' : 'var(--accent-green)'}">${zd.propState}</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Fluxo:</span><span class="modal-data-value">${zd.propFlow}</span></div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px;">
-                <button onclick="refillZDriveFluid('${side}','gearbox')" class="control-btn" style="padding:10px; background:#1a1100; color:#ffc107;">REPOR LO</button>
-                <button onclick="refillZDriveFluid('${side}','steering')" class="control-btn" style="padding:10px; background:#0a1520; color:#2196f3;">REPOR HYD</button>
+                <button onclick="refillZDriveFluid('${side}','gearbox')" class="control-btn" style="padding:10px; background:#1a1100; color:#ffc107;">TRANSFERIR OL150</button>
+                <button onclick="refillZDriveFluid('${side}','steering')" class="control-btn" style="padding:10px; background:#0a1520; color:#2196f3;">TRANSFERIR OH32</button>
             </div>
         `;
     } else if (gameState.modal.type === 'winch') {
@@ -119,17 +133,20 @@ function renderModalContent() {
         const anyPress = MCP_KEYS.some(key => gameState.machinery[key].hydraulicPressure > 0);
         const pressPS = gameState.machinery.mcp_ps.hydraulicPressure;
         const pressSB = gameState.machinery.mcp_sb.hydraulicPressure;
+        const winchPct = ((winch.hydReservoir.vol / winch.hydReservoir.max) * 100).toFixed(0);
         titleEl.innerText = 'GUINCHO MANOBRA PROA';
         html = `
             <div class="modal-data-row"><span class="modal-data-label">Estado:</span><span class="modal-data-value" style="color:${winch.isActive ? 'var(--accent-orange)' : '#888'}">${winch.isActive ? winch.direction : 'PARADO'}</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Press. HID BB:</span><span class="modal-data-value" style="color:${pressPS > 0 ? 'var(--accent-green)' : '#888'}">${pressPS} bar</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Press. HID BE:</span><span class="modal-data-value" style="color:${pressSB > 0 ? 'var(--accent-green)' : '#888'}">${pressSB} bar</span></div>
+            <div class="modal-data-row"><span class="modal-data-label">Reservatório OH32:</span><span class="modal-data-value" style="color:${winchPct < 20 ? 'var(--accent-red)' : '#2196f3'}">${winch.hydReservoir.vol.toFixed(3)} m³ (${winchPct}%)</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Interlock:</span><span class="modal-data-value" style="color:${anyPress ? 'var(--accent-green)' : 'var(--accent-red)'}"> ${anyPress ? 'PRESSÃO OK' : 'SEM PRESSÃO'}</span></div>
             <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:12px;">
                 <button onclick="winchControl('HALAR')" class="control-btn" style="padding:10px; font-size:0.8rem; background:${winch.isActive && winch.direction === 'HALAR' ? 'var(--accent-green)' : '#444'}; ${!anyPress ? 'opacity:0.4;' : ''}" ${!anyPress ? 'disabled' : ''}>HALAR</button>
                 <button onclick="winchControl('STOP')" class="control-btn" style="padding:10px; font-size:0.8rem; background:#444;">STOP</button>
                 <button onclick="winchControl('LARGAR')" class="control-btn" style="padding:10px; font-size:0.8rem; background:${winch.isActive && winch.direction === 'LARGAR' ? 'var(--accent-orange)' : '#444'}; ${!anyPress ? 'opacity:0.4;' : ''}" ${!anyPress ? 'disabled' : ''}>LARGAR</button>
             </div>
+            <button onclick="refillWinchHydraulic()" class="control-btn" style="margin-top:8px; padding:10px; background:#0a1520; color:#2196f3;">TRANSFERIR OH32 PARA GUINCHO</button>
         `;
     } else if (gameState.modal.type === 'chiller') {
         const chiller = gameState.machinery.chiller;

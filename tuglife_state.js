@@ -53,18 +53,19 @@ const gameState = {
         tk12: { name: "TK 12 FO Armaz. Ré BE", type: 'fo', max: 14.5, vol: 0 },
         tk13: { name: "TK 13 Óleo Sujo (Dirty Oil)", type: 'do', max: 4.8, vol: 0 },
         tk14: { name: "TK 14 Água de Porão (Bilge)", type: 'bilge', max: 4.8, vol: 0 },
-        tk15: { name: "TK 15 LO Armazenamento", type: 'lo', max: 2.0, vol: 1.0 },
-        tk_hyd: { name: "TK HID GUINCHO PROA", type: 'hyd', max: 0.2, vol: 0.2 }
+        tk15: { name: "TK 15 OL15W40 Armazenamento", type: 'lo_15w40', max: 2.0, vol: 1.4 },
+        tk16: { name: "TK 16 OL150 Z-Drive", type: 'lo_150', max: 4.0, vol: 3.6 },
+        tk_hyd: { name: "TK HID OH32", type: 'oh32', max: 0.6, vol: 0.52 }
     },
     machinery: {
-        mca_ps: { name: "MCA 1 (BOMBORDO)", status: 'OFF', rpm: 0, v: 0, hz: 0, breakerClosed: false, fuelSource: 'tk04', consumption: 0.01, oilPress: 0, coolTemp: 30, carter: { vol: 0, max: 0.15 }, loConsumption: 0.001, current: 0, power: 0, powerFactor: 0.85 },
-        mca_sb: { name: "MCA 2 (ESTIBORDO)", status: 'OFF', rpm: 0, v: 0, hz: 0, breakerClosed: false, fuelSource: 'tk05', consumption: 0.01, oilPress: 0, coolTemp: 30, carter: { vol: 0, max: 0.15 }, loConsumption: 0.001, current: 0, power: 0, powerFactor: 0.85 },
-        mcp_ps: { name: "MCP BB (Motor Principal)", status: 'OFF', rpm: 0, targetRpm: 0, telegraph: 0, preLubeOn: false, coolingOn: false, oilPress: 0, coolTemp: 30, fuelSource: 'tk04', clutchEngaged: false, carter: { vol: 0, max: 0.25 }, loConsumption: 0.002, hydraulicPressure: 0, hydraulicPumpCoupled: true },
-        mcp_sb: { name: "MCP BE (Motor Principal)", status: 'OFF', rpm: 0, targetRpm: 0, telegraph: 0, preLubeOn: false, coolingOn: false, oilPress: 0, coolTemp: 30, fuelSource: 'tk05', clutchEngaged: false, carter: { vol: 0, max: 0.25 }, loConsumption: 0.002, hydraulicPressure: 0, hydraulicPumpCoupled: true },
-        winch: { isActive: false, direction: 'STOP' },
+        mca_ps: { name: "MCA 1 (BOMBORDO)", status: 'OFF', rpm: 0, v: 0, hz: 0, breakerClosed: false, fuelSource: 'tk04', consumption: 0.01, oilPress: 0, coolTemp: 30, carter: { vol: 0, max: 0.015 }, loConsumption: 0.00005, current: 0, power: 0, powerFactor: 0.85 },
+        mca_sb: { name: "MCA 2 (ESTIBORDO)", status: 'OFF', rpm: 0, v: 0, hz: 0, breakerClosed: false, fuelSource: 'tk05', consumption: 0.01, oilPress: 0, coolTemp: 30, carter: { vol: 0, max: 0.015 }, loConsumption: 0.00005, current: 0, power: 0, powerFactor: 0.85 },
+        mcp_ps: { name: "MCP BB (Motor Principal)", status: 'OFF', rpm: 0, targetRpm: 0, telegraph: 0, preLubeOn: false, coolingOn: false, oilPress: 0, coolTemp: 30, fuelSource: 'tk04', clutchEngaged: false, carter: { vol: 0, max: 0.8 }, loConsumption: 0.0015, hydraulicPressure: 0, hydraulicPumpCoupled: true },
+        mcp_sb: { name: "MCP BE (Motor Principal)", status: 'OFF', rpm: 0, targetRpm: 0, telegraph: 0, preLubeOn: false, coolingOn: false, oilPress: 0, coolTemp: 30, fuelSource: 'tk05', clutchEngaged: false, carter: { vol: 0, max: 0.8 }, loConsumption: 0.0015, hydraulicPressure: 0, hydraulicPumpCoupled: true },
+        winch: { isActive: false, direction: 'STOP', hydReservoir: { vol: 0.4, max: 0.4 } },
         chiller: { isOn: false, setTemp: 22, actualTemp: 30, power: 0 },
-        zd_ps: { name: "Z-Drive BB", status: 'FREE', azimuth: 0, propRpm: 0, thrust: 0, gearboxLO: { vol: 0.08, max: 0.08 }, steeringHyd: { vol: 0.05, max: 0.05 }, propState: 'STOP', propFlow: 'Parado' },
-        zd_sb: { name: "Z-Drive BE", status: 'FREE', azimuth: 0, propRpm: 0, thrust: 0, gearboxLO: { vol: 0.08, max: 0.08 }, steeringHyd: { vol: 0.05, max: 0.05 }, propState: 'STOP', propFlow: 'Parado' }
+        zd_ps: { name: "Z-Drive BB", status: 'FREE', azimuth: 0, propRpm: 0, thrust: 0, gearboxLO: { vol: 1.65, max: 1.8 }, steeringHyd: { vol: 0.055, max: 0.06 }, propState: 'STOP', propFlow: 'Parado' },
+        zd_sb: { name: "Z-Drive BE", status: 'FREE', azimuth: 0, propRpm: 0, thrust: 0, gearboxLO: { vol: 1.65, max: 1.8 }, steeringHyd: { vol: 0.055, max: 0.06 }, propState: 'STOP', propFlow: 'Parado' }
     }
 };
 

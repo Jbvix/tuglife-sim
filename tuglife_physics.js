@@ -5,12 +5,12 @@ function refillZDriveFluid(side, fluidType) {
     const zd = gameState.machinery[`zd_${side}`];
 
     if (fluidType === 'gearbox') {
-        const sourceTank = gameState.tanks.tk15;
+        const sourceTank = gameState.tanks.tk16;
         const needed = zd.gearboxLO.max - zd.gearboxLO.vol;
         const transfer = Math.min(needed, sourceTank.vol);
 
         if (transfer <= 0) {
-            return triggerAlarm("SEM LO DISPONÍVEL NO TK 15 PARA REPOSIÇÃO DO Z-DRIVE.");
+            return triggerAlarm("SEM OL150 DISPONÍVEL NO TK 16 PARA REPOSIÇÃO DO Z-DRIVE.");
         }
 
         zd.gearboxLO.vol += transfer;
@@ -23,13 +23,28 @@ function refillZDriveFluid(side, fluidType) {
         const transfer = Math.min(needed, sourceTank.vol);
 
         if (transfer <= 0) {
-            return triggerAlarm("SEM ÓLEO HIDRÁULICO DISPONÍVEL NO TK HID PARA O GOVERNO.");
+            return triggerAlarm("SEM OH32 DISPONÍVEL NO TK HID PARA O GOVERNO.");
         }
 
         zd.steeringHyd.vol += transfer;
         sourceTank.vol -= transfer;
     }
 
+    renderView();
+}
+
+function refillWinchHydraulic() {
+    const sourceTank = gameState.tanks.tk_hyd;
+    const winch = gameState.machinery.winch;
+    const needed = winch.hydReservoir.max - winch.hydReservoir.vol;
+    const transfer = Math.min(needed, sourceTank.vol);
+
+    if (transfer <= 0) {
+        return triggerAlarm("SEM OH32 DISPONÍVEL NO TK HID PARA O GUINCHO.");
+    }
+
+    winch.hydReservoir.vol += transfer;
+    sourceTank.vol -= transfer;
     renderView();
 }
 

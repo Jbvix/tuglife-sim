@@ -117,8 +117,8 @@ function fillCarter(engKey) {
     const eng = gameState.machinery[engKey];
     const tk15 = gameState.tanks.tk15;
 
-    if (eng.status === 'RUNNING') return triggerAlarm(`INTERLOCK: NÃO ENCHER CARTER COM ${eng.name} EM MARCHA!`);
-    if (tk15.vol <= 0) return triggerAlarm("FALTA LO: TK 15 VAZIO! REABASTECER ÓLEO LUBRIFICANTE.");
+    if (eng.status === 'RUNNING') return triggerAlarm(`INTERLOCK: NÃO TRANSFERIR OL15W40 PARA ${eng.name} EM MARCHA!`);
+    if (tk15.vol <= 0) return triggerAlarm("FALTA OL15W40: TK 15 VAZIO! REABASTECER ÓLEO LUBRIFICANTE.");
 
     const needed = eng.carter.max - eng.carter.vol;
     const toTransfer = Math.min(needed, tk15.vol);
