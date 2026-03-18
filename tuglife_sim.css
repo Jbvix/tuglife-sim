@@ -182,9 +182,11 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 .three-d-panel { width:95%; max-width:960px; background:linear-gradient(180deg, #162028, #0d1319); border:1px solid rgba(0,188,212,0.28); border-radius:16px; padding:14px; box-shadow:0 16px 40px rgba(0,0,0,0.32); }
 .three-d-stage { width:100%; height:420px; border-radius:14px; overflow:hidden; background:radial-gradient(circle at top, rgba(104,185,220,0.12), rgba(7,16,24,0.92)); border:1px solid rgba(255,255,255,0.06); }
 .three-d-stage canvas { width:100%; height:100%; display:block; }
-.three-d-panel:fullscreen { width:100vw; max-width:none; height:100vh; border-radius:0; padding:12px; display:flex; flex-direction:column; }
+.three-d-panel:fullscreen { width:100vw; max-width:none; height:100vh; border-radius:0; padding:12px; display:flex; flex-direction:column; overflow:auto; }
 .three-d-panel:fullscreen .three-d-stage { flex:1; height:auto; min-height:60vh; }
 .three-d-panel:fullscreen .three-d-hud { margin-top:10px; }
+.three-d-panel:fullscreen.three-d-config-open .three-d-stage { flex:0 0 48vh; min-height:48vh; }
+.three-d-panel:fullscreen.three-d-config-open .three-d-anchor-panel { margin-bottom:12px; }
 .three-d-hud { display:grid; grid-template-columns:repeat(6, 1fr); gap:10px; margin-top:12px; }
 .three-d-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:10px; }
 .three-d-card-label { font-size:0.72rem; color:#7e99a8; text-transform:uppercase; margin-bottom:6px; }

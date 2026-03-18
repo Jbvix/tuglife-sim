@@ -318,6 +318,22 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
         let anchorPanelDirty = false;
         let drivePanelOpen = false;
 
+        function updateConfigPanelState() {
+            if (!panel3d) return;
+            panel3d.classList.toggle('three-d-config-open', anchorPanelOpen || drivePanelOpen);
+        }
+
+        function revealConfigPanel(panelElement) {
+            updateConfigPanelState();
+            forceStageRefresh();
+            if (!panelElement) return;
+            requestAnimationFrame(() => {
+                if (document.fullscreenElement === panel3d) {
+                    panelElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                }
+            });
+        }
+
         function updateFullscreenButtonLabel() {
             if (!hud.fullscreenButton) return;
             hud.fullscreenButton.textContent = document.fullscreenElement === panel3d ? 'SAIR DA TELA CHEIA' : 'TELA CHEIA';
@@ -462,7 +478,11 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             anchorPanelOpen = typeof forceOpen === 'boolean' ? forceOpen : !anchorPanelOpen;
             if (hud.anchorPanel) hud.anchorPanel.style.display = anchorPanelOpen ? 'block' : 'none';
             if (hud.anchorPanelButton) hud.anchorPanelButton.textContent = anchorPanelOpen ? 'FECHAR AJUSTE DO TUG' : 'AJUSTAR PONTOS DO TUG';
-            if (anchorPanelOpen) updateAnchorSliderValues();
+            updateConfigPanelState();
+            if (anchorPanelOpen) {
+                updateAnchorSliderValues();
+                revealConfigPanel(hud.anchorPanel);
+            }
         }
 
         function updateDrivePanelValues() {
@@ -480,7 +500,11 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             drivePanelOpen = typeof forceOpen === 'boolean' ? forceOpen : !drivePanelOpen;
             if (hud.drivePanel) hud.drivePanel.style.display = drivePanelOpen ? 'block' : 'none';
             if (hud.drivePanelButton) hud.drivePanelButton.textContent = drivePanelOpen ? 'FECHAR PROPULSÃO 3D' : 'PAINEL DE PROPULSÃO 3D';
-            if (drivePanelOpen) updateDrivePanelValues();
+            updateConfigPanelState();
+            if (drivePanelOpen) {
+                updateDrivePanelValues();
+                revealConfigPanel(hud.drivePanel);
+            }
         }
 
         function setDriveReadinessStatus() {
@@ -852,7 +876,7 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             let torque = 0;
 
             thrusters.forEach((thruster, index) => {
-                const magnitude = thruster.thrust * 3.8;
+                const magnitude = thruster.thrust * 56;
                 forceX += thruster.direction.x * magnitude;
                 forceZ += thruster.direction.z * magnitude;
                 torque += thruster.origin.x * (thruster.direction.z * magnitude) - thruster.origin.z * (thruster.direction.x * magnitude);
@@ -883,9 +907,19 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             const worldFx = forceX * cos - forceZ * sin;
             const worldFz = forceX * sin + forceZ * cos;
 
-            vessel.vx = vessel.vx * 0.925 + worldFx * dt * 0.18;
-            vessel.vz = vessel.vz * 0.925 + worldFz * dt * 0.18;
-            vessel.yawRate = vessel.yawRate * 0.88 + torque * dt * 0.085;
+            const linearDamping = Math.exp(-1.55 * dt);
+            const angularDamping = Math.exp(-2.4 * dt);
+            vessel.vx = vessel.vx * linearDamping + worldFx * dt * 0.09;
+            vessel.vz = vessel.vz * linearDamping + worldFz * dt * 0.09;
+            vessel.yawRate = vessel.yawRate * angularDamping + torque * dt * 0.22;
+
+            const speedMagnitude = Math.sqrt(vessel.vx * vessel.vx + vessel.vz * vessel.vz);
+            const maxSpeedUnits = 6.2;
+            if (speedMagnitude > maxSpeedUnits) {
+                const scale = maxSpeedUnits / speedMagnitude;
+                vessel.vx *= scale;
+                vessel.vz *= scale;
+            }
 
             vessel.x += vessel.vx * dt;
             vessel.z += vessel.vz * dt;
