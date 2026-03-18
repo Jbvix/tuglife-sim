@@ -123,7 +123,7 @@ const gameState = {
         tk05: { name: "HDR 05 FO Servico BE", type: 'fo_hdr', max: 2.8, vol: 0 },
         tk03: { name: "TK 03 FO Transbordo (Overflow)", type: 'overflow', max: 2.0, vol: 0 },
         tk11: { name: "TK 11 FO Armaz. Re BB", type: 'fo', max: 11.4, vol: 0 },
-        tk12: { name: "TK 12 FO Armaz. Re BE", type: 'fo', max: 14.5, vol: 0 },
+        tk12: { name: "TK 12 FO Armaz. Re BE", type: 'fo', max: 11.4, vol: 0 },
         tk_od_center: { name: "TK CENTRAL OD", type: 'od', max: 30.0, vol: 0 },
         tk13: { name: "TK 13 Oleo Sujo (Dirty Oil)", type: 'do', max: 4.8, vol: 0 },
         tk14: { name: "TK 14 Agua de Porao (Bilge)", type: 'bilge', max: 4.8, vol: 0 },
@@ -178,9 +178,9 @@ const VESSEL_HYDROSTATICS = {
     },
     response: {
         maxHeelDeg: 8,
-        maxTrimDeg: 10,
+        maxTrimDeg: 15,
         visualHeelGain: 0.68,
-        visualTrimGain: 0.78,
+        visualTrimGain: 1.08,
         draftCurveExponent: 0.9,
         visualDraftCurveExponent: 0.82
     },
@@ -199,10 +199,10 @@ const VESSEL_HYDROSTATICS = {
             { draft: 4.45, factor: 0.061 }
         ],
         trimResponse: [
-            { draft: 3.35, factor: 0.046 },
-            { draft: 3.75, factor: 0.043 },
-            { draft: 4.10, factor: 0.039 },
-            { draft: 4.45, factor: 0.036 }
+            { draft: 3.35, factor: 0.062 },
+            { draft: 3.75, factor: 0.058 },
+            { draft: 4.10, factor: 0.053 },
+            { draft: 4.45, factor: 0.049 }
         ]
     },
     fluidDensities: {
