@@ -468,7 +468,15 @@ function renderView() {
         if (!fillLayer || !capText) continue;
 
         const perc = (tank.vol / tank.max) * 100;
-        fillLayer.style.height = `${perc}%`;
+        let visualPerc = perc;
+
+        // Keep the paired LO storage tanks visually comparable on the plant.
+        if (key === 'tk15' || key === 'tk16') {
+            const pairedMax = Math.max(gameState.tanks.tk15.max, gameState.tanks.tk16.max);
+            visualPerc = (tank.vol / pairedMax) * 100;
+        }
+
+        fillLayer.style.height = `${visualPerc}%`;
         capText.innerText = ['tk15', 'tk16'].includes(key) ? `${tank.vol.toFixed(2)} m³` : `${tank.vol.toFixed(1)}`;
 
         if (key === 'tk15') fillLayer.style.backgroundColor = perc >= 90 ? "rgba(244,67,54,0.5)" : "rgba(255,193,7,0.35)";

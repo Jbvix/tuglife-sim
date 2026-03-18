@@ -68,7 +68,7 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 .slot.type-propeller { border-color: rgba(156, 39, 176, 0.4); }
 
 .area-manifold { grid-area: manifold; background-color: rgba(76, 175, 80, 0.1); border-color: var(--accent-green); color: var(--accent-green);}
-.area-peak-fwd { grid-area: peak-fwd; } .area-tk02 { grid-area: tk02; } .area-tk06 { grid-area: tk06; } .area-tk07 { grid-area: tk07; }
+.area-peak-fwd { grid-area: peak-fwd; width: 88%; justify-self: center; } .area-tk02 { grid-area: tk02; } .area-tk06 { grid-area: tk06; } .area-tk07 { grid-area: tk07; }
 .area-mca-ps { grid-area: mca-ps; } .area-mca-sb { grid-area: mca-sb; }
 .area-tk04 { grid-area: tk04; } .area-tk05 { grid-area: tk05; } .area-tk03 { grid-area: tk03; }
 .area-mcp-ps { grid-area: mcp-ps; } .area-mcp-sb { grid-area: mcp-sb; }
