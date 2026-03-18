@@ -194,12 +194,12 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 @media (min-width: 1280px) {
     #main-display.desktop-layout {
         width: 100%;
-        max-width: 1320px;
+        max-width: 1500px;
         height: calc(100dvh - 70px - 20px);
         margin: 0 auto;
-        padding: 6px 12px 12px;
+        padding: 4px 12px 12px;
         display: grid;
-        grid-template-columns: minmax(188px, 224px) minmax(600px, 720px) minmax(188px, 224px);
+        grid-template-columns: minmax(300px, 380px) minmax(420px, 500px) minmax(300px, 380px);
         gap: 10px;
         align-items: stretch;
         overflow: hidden;
@@ -219,7 +219,7 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
         position: sticky;
         top: 0;
         width: 100%;
-        max-width: 720px;
+        max-width: 500px;
         height: fit-content;
         justify-self: center;
     }
@@ -248,6 +248,12 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
         max-width: none;
     }
 
+    #main-display.desktop-layout .desktop-side-panel .control-panel:first-of-type,
+    #main-display.desktop-layout .desktop-side-panel .three-d-panel:first-of-type,
+    #main-display.desktop-layout .desktop-side-panel .quick-panel-btn:first-of-type {
+        margin-top: 2px;
+    }
+
     #main-display.desktop-layout .desktop-side-panel .screen-title {
         text-align: left;
         width: calc(100% - 18px);
@@ -271,7 +277,7 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 
     #main-display.desktop-layout .desktop-core .hull-container,
     #main-display.desktop-layout .desktop-core .quick-panel-btn {
-        max-width: 720px;
+        max-width: 500px;
         width: 100%;
     }
 
@@ -353,8 +359,8 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 }
 @media (min-width: 1280px) and (max-width: 1460px) {
     #main-display.desktop-layout {
-        max-width: 1240px;
-        grid-template-columns: minmax(176px, 210px) minmax(560px, 660px) minmax(176px, 210px);
+        max-width: 1360px;
+        grid-template-columns: minmax(270px, 330px) minmax(400px, 460px) minmax(270px, 330px);
         gap: 10px;
     }
 
@@ -367,7 +373,7 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
     #main-display.desktop-layout .desktop-core,
     #main-display.desktop-layout .desktop-core .hull-container,
     #main-display.desktop-layout .desktop-core .quick-panel-btn {
-        max-width: 660px;
+        max-width: 460px;
     }
 
     #main-display.desktop-layout .desktop-side-panel .three-d-stage {
