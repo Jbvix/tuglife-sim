@@ -97,7 +97,7 @@ const gameState = {
         }
     },
     tanks: {
-        tk_peak_fwd: { name: "PEAK VANTE LASTRO", type: 'ballast', max: 30.0, vol: 0 },
+        tk_peak_fwd: { name: "PEAK VANTE AGUA DOCE", type: 'fw', max: 30.0, vol: 0 },
         tk02: { name: "TK 02 Agua Doce", type: 'fw', max: 15.0, vol: 0 },
         tk06: { name: "TK 06 FO Armazenamento BB", type: 'fo', max: 23.8, vol: 0 },
         tk07: { name: "TK 07 FO Armazenamento BE", type: 'fo', max: 23.8, vol: 0 },
@@ -111,7 +111,7 @@ const gameState = {
         tk14: { name: "TK 14 Agua de Porao (Bilge)", type: 'bilge', max: 4.8, vol: 0 },
         tk15: { name: "TK 15 OL15W40 Armazenamento", type: 'lo_15w40', max: 2.0, vol: 1.4 },
         tk16: { name: "TK 16 OL150 Z-Drive", type: 'lo_150', max: 4.0, vol: 3.6 },
-        tk_peak_aft: { name: "PEAK RE LASTRO", type: 'ballast', max: 35.0, vol: 0 },
+        tk_peak_aft: { name: "PEAK RE AGUA DOCE", type: 'fw', max: 35.0, vol: 0 },
         tk_hyd: { name: "TK HID OH32", type: 'oh32', max: 0.6, vol: 0.52 }
     },
     machinery: {

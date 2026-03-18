@@ -64,7 +64,7 @@
         <div id="screen-build" class="screen active">
             <div class="screen-title">Praça de Máquinas (Toque para Inspecionar)</div>
             <div class="hull-container">
-                <div class="slot type-ballast area-peak-fwd" onclick="openModal('tank', 'tk_peak_fwd')"><div class="slot-fill" id="fill-tk_peak_fwd"></div>PEAK VANTE LASTRO<br><span class="capacity" id="cap-tk_peak_fwd">0.0</span></div>
+                <div class="slot type-tank area-peak-fwd" onclick="openModal('tank', 'tk_peak_fwd')"><div class="slot-fill" id="fill-tk_peak_fwd"></div>PEAK VANTE FW<br><span class="capacity" id="cap-tk_peak_fwd">0.0</span></div>
                 <div class="slot type-winch area-winch" onclick="openModal('winch','winch')">
                     GUINCHO PROA<br>
                     <span id="ui-winch-status" style="font-size:0.55rem;color:#aaa;">PARADO</span>
@@ -111,7 +111,7 @@
 
                 <div class="slot type-lo area-tk15" onclick="openModal('tank', 'tk15')"><div class="slot-fill" id="fill-tk15"></div><span style="color:#ffc107; font-weight:bold;">TK 15 OL15W40</span><span class="capacity" id="cap-tk15" style="color:#ffc107; font-size:0.6rem; margin-left:6px;">1.40 m³</span></div>
                 <div class="slot type-lo area-tk16" onclick="openModal('tank', 'tk16')"><div class="slot-fill" id="fill-tk16"></div><span style="color:#ffb74d; font-weight:bold;">TK 16 OL150</span><span class="capacity" id="cap-tk16" style="color:#ffb74d; font-size:0.6rem; margin-left:6px;">3.60 m³</span></div>
-                <div class="slot type-ballast area-peak-aft" onclick="openModal('tank', 'tk_peak_aft')"><div class="slot-fill" id="fill-tk_peak_aft"></div>PEAK RÉ LASTRO<br><span class="capacity" id="cap-tk_peak_aft">0.0</span></div>
+                <div class="slot type-tank area-peak-aft" onclick="openModal('tank', 'tk_peak_aft')"><div class="slot-fill" id="fill-tk_peak_aft"></div>PEAK RÉ FW<br><span class="capacity" id="cap-tk_peak_aft">0.0</span></div>
 
                 <div class="slot type-propeller area-zd-ps" id="ui-zd-ps-hull" onclick="openModal('zdrive','zd_ps')">
                     Z-DRIVE BB<br>
@@ -215,6 +215,8 @@
                     <label class="panel-label">Tanque de Destino:</label>
                     <select id="select-water-tank" class="control-select">
                         <option value="tk02">TK 02 FW (15.0 m³)</option>
+                        <option value="tk_peak_fwd">PEAK VANTE FW (30.0 m³)</option>
+                        <option value="tk_peak_aft">PEAK RÉ FW (35.0 m³)</option>
                     </select>
                     <button id="btn-pump-water" class="control-btn" disabled>INICIAR BOMBA DE ÁGUA</button>
                 </div>
