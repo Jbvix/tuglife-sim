@@ -27,7 +27,14 @@ const gameState = {
             yaw: 0,
             yawRate: 0
         },
-        mooringConnected: true
+        mooringConnected: true,
+        mooring: {
+            selectedTugLine: null,
+            lines: {
+                fore: { dockAnchorId: 'dock_fore' },
+                aft: { dockAnchorId: 'dock_aft' }
+            }
+        }
     },
     tanks: {
         tk02: { name: "TK 02 Água Doce", type: 'fw', max: 8.8, vol: 0 },

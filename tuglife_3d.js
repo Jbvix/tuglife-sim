@@ -272,12 +272,107 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             resultant: document.getElementById('ui-3d-resultant'),
             attitude: document.getElementById('ui-3d-attitude'),
             mooringStatus: document.getElementById('ui-3d-mooring-status'),
-            mooringButton: document.getElementById('btn-3d-mooring'),
             modelStatus: document.getElementById('ui-3d-model-status')
         };
 
         const modelConfig = window.tuglife3dModelConfig || {};
         let externalModel = null;
+        const mooringState = window.gameState.visual3d.mooring;
+        const raycaster = new THREE.Raycaster();
+        const pointer = new THREE.Vector2();
+        const anchorMeshes = [];
+
+        function getConnectedLineCount() {
+            return Object.values(mooringState.lines).filter((line) => Boolean(line.dockAnchorId)).length;
+        }
+
+        function syncMooringFlag() {
+            window.gameState.visual3d.mooringConnected = getConnectedLineCount() > 0;
+        }
+
+        function createAnchorMarker(color) {
+            const marker = new THREE.Mesh(
+                new THREE.SphereGeometry(0.11, 18, 18),
+                new THREE.MeshStandardMaterial({
+                    color,
+                    emissive: color,
+                    emissiveIntensity: 0.6,
+                    roughness: 0.28,
+                    metalness: 0.16
+                })
+            );
+            marker.userData.isAnchorMarker = true;
+            anchorMeshes.push(marker);
+            return marker;
+        }
+
+        function makeAnchorPoint(parent, position, anchorId, lineKey, type, color) {
+            const marker = createAnchorMarker(color);
+            marker.position.copy(position);
+            marker.userData.anchorId = anchorId;
+            marker.userData.lineKey = lineKey;
+            marker.userData.anchorType = type;
+            parent.add(marker);
+            return marker;
+        }
+
+        const tugAnchorMarkers = {
+            fore: makeAnchorPoint(tugGroup, new THREE.Vector3(1.48, 1.22, -3.02), 'tug_fore', 'fore', 'tug', 0x4dd9ff),
+            aft: makeAnchorPoint(tugGroup, new THREE.Vector3(1.32, 1.18, 2.78), 'tug_aft', 'aft', 'tug', 0x7cff8d)
+        };
+        const dockAnchorMarkers = {
+            fore: makeAnchorPoint(scene, new THREE.Vector3(-4.2, 1.8, -4.7), 'dock_fore', 'fore', 'dock', 0xffd36e),
+            aft: makeAnchorPoint(scene, new THREE.Vector3(-4.2, 1.8, 4.7), 'dock_aft', 'aft', 'dock', 0xffd36e)
+        };
+
+        function getDockAnchorPoint(anchorId) {
+            if (anchorId === 'dock_fore') return dockAnchorMarkers.fore.getWorldPosition(new THREE.Vector3());
+            if (anchorId === 'dock_aft') return dockAnchorMarkers.aft.getWorldPosition(new THREE.Vector3());
+            return null;
+        }
+
+        function updateAnchorVisuals(elapsed) {
+            const pulse = 0.5 + Math.sin(elapsed * 3.2) * 0.18;
+            Object.entries(tugAnchorMarkers).forEach(([lineKey, marker]) => {
+                const isSelected = mooringState.selectedTugLine === lineKey;
+                const isConnected = Boolean(mooringState.lines[lineKey].dockAnchorId);
+                marker.material.emissive.set(isSelected ? 0x00e5ff : isConnected ? 0x62ff95 : 0x247f96);
+                marker.material.emissiveIntensity = isSelected ? 1.1 + pulse : isConnected ? 0.82 : 0.42;
+                marker.scale.setScalar(isSelected ? 1.28 : 1);
+            });
+
+            Object.values(dockAnchorMarkers).forEach((marker) => {
+                const usedByLine = Object.entries(mooringState.lines).find(([, line]) => line.dockAnchorId === marker.userData.anchorId);
+                const waitingForDock = Boolean(mooringState.selectedTugLine);
+                marker.material.emissive.set(waitingForDock ? 0xfff08a : usedByLine ? 0xffc04d : 0x8a6a22);
+                marker.material.emissiveIntensity = waitingForDock ? 1.0 + pulse : usedByLine ? 0.85 : 0.45;
+                marker.scale.setScalar(waitingForDock ? 1.18 : 1);
+            });
+        }
+
+        function handleAnchorSelection(anchorData) {
+            if (anchorData.anchorType === 'tug') {
+                const lineKey = anchorData.lineKey;
+                if (mooringState.lines[lineKey].dockAnchorId) {
+                    mooringState.lines[lineKey].dockAnchorId = null;
+                    if (mooringState.selectedTugLine === lineKey) mooringState.selectedTugLine = null;
+                } else {
+                    mooringState.selectedTugLine = mooringState.selectedTugLine === lineKey ? null : lineKey;
+                }
+            } else if (anchorData.anchorType === 'dock') {
+                if (mooringState.selectedTugLine) {
+                    mooringState.lines[mooringState.selectedTugLine].dockAnchorId = anchorData.anchorId;
+                    mooringState.selectedTugLine = null;
+                } else {
+                    const usedEntry = Object.entries(mooringState.lines).find(([, line]) => line.dockAnchorId === anchorData.anchorId);
+                    if (usedEntry) {
+                        usedEntry[1].dockAnchorId = null;
+                    }
+                }
+            }
+
+            syncMooringFlag();
+        }
 
         function setModelStatus(text, color) {
             if (!hud.modelStatus) return;
@@ -380,20 +475,7 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             lastY: 0
         };
 
-        if (hud.mooringButton) {
-            hud.mooringButton.addEventListener('click', () => {
-                window.gameState.visual3d.mooringConnected = !window.gameState.visual3d.mooringConnected;
-                if (window.gameState.visual3d.mooringConnected) {
-                    vessel.x = -1.1;
-                    vessel.z = 0;
-                    vessel.vx = 0;
-                    vessel.vz = 0;
-                    vessel.yaw = THREE.MathUtils.degToRad(6);
-                    vessel.yawRate = 0;
-                }
-            });
-        }
-
+        syncMooringFlag();
         if (window.gameState.visual3d.mooringConnected) {
             vessel.x = -1.1;
             vessel.z = 0;
@@ -438,23 +520,38 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             orbit.pitch = THREE.MathUtils.clamp(orbit.pitch - dy * 0.006, 0.18, 1.22);
         }
 
+        function tryHandleAnchorClick(event) {
+            const rect = renderer.domElement.getBoundingClientRect();
+            pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+            raycaster.setFromCamera(pointer, camera);
+            const hits = raycaster.intersectObjects(anchorMeshes, false);
+            if (!hits.length) return;
+            handleAnchorSelection(hits[0].object.userData);
+        }
+
         stage.addEventListener('pointerdown', (event) => {
             orbit.dragging = true;
             orbit.pointerId = event.pointerId;
             orbit.lastX = event.clientX;
             orbit.lastY = event.clientY;
+            orbit.dragMoved = false;
             if (stage.setPointerCapture) stage.setPointerCapture(event.pointerId);
         });
 
         stage.addEventListener('pointermove', (event) => {
             if (!orbit.dragging || orbit.pointerId !== event.pointerId) return;
-            updateOrbitFromInput(event.clientX - orbit.lastX, event.clientY - orbit.lastY);
+            const dx = event.clientX - orbit.lastX;
+            const dy = event.clientY - orbit.lastY;
+            if (Math.abs(dx) + Math.abs(dy) > 3) orbit.dragMoved = true;
+            updateOrbitFromInput(dx, dy);
             orbit.lastX = event.clientX;
             orbit.lastY = event.clientY;
         });
 
         function endDrag(event) {
             if (orbit.pointerId !== event.pointerId) return;
+            const shouldHandleClick = !orbit.dragMoved;
             orbit.dragging = false;
             orbit.pointerId = null;
             if (stage.releasePointerCapture) {
@@ -464,6 +561,7 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
                     // Ignore release errors when the pointer is already detached.
                 }
             }
+            if (shouldHandleClick) tryHandleAnchorClick(event);
         }
 
         stage.addEventListener('pointerup', endDrag);
@@ -508,13 +606,15 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
                 helper.visible = thruster.active || magnitude > 0.01;
             });
 
-            if (window.gameState.visual3d.mooringConnected) {
-                vessel.vx *= 0.82;
-                vessel.vz *= 0.82;
-                vessel.yawRate *= 0.8;
-                vessel.x = THREE.MathUtils.lerp(vessel.x, -1.1, 0.06);
-                vessel.z = THREE.MathUtils.lerp(vessel.z, 0, 0.06);
-                vessel.yaw = THREE.MathUtils.lerp(vessel.yaw, THREE.MathUtils.degToRad(6), 0.06);
+            const connectedLineCount = getConnectedLineCount();
+            if (connectedLineCount > 0) {
+                const mooringStrength = connectedLineCount / 2;
+                vessel.vx *= 0.88 - mooringStrength * 0.08;
+                vessel.vz *= 0.88 - mooringStrength * 0.08;
+                vessel.yawRate *= 0.86 - mooringStrength * 0.08;
+                vessel.x = THREE.MathUtils.lerp(vessel.x, -1.1, 0.025 + mooringStrength * 0.05);
+                vessel.z = THREE.MathUtils.lerp(vessel.z, 0, 0.02 + mooringStrength * 0.045);
+                vessel.yaw = THREE.MathUtils.lerp(vessel.yaw, THREE.MathUtils.degToRad(6), 0.02 + mooringStrength * 0.045);
                 return { resultant: Math.sqrt(forceX * forceX + forceZ * forceZ), localX: forceX, localZ: forceZ, ps, sb };
             }
 
@@ -570,21 +670,24 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             waterUnderlay.material.opacity = 0.48 + Math.sin(elapsed * 0.8) * 0.04;
             harborWater.material.opacity = 0.22 + Math.sin(elapsed * 0.9) * 0.03;
             hullWaterGlow.material.opacity = 0.12 + Math.sin(elapsed * 1.5) * 0.03;
+            updateAnchorVisuals(elapsed);
 
             const forePoint = new THREE.Vector3(1.55, 1.15, -3.15).applyMatrix4(tugGroup.matrixWorld);
             const aftPoint = new THREE.Vector3(1.45, 1.08, 2.95).applyMatrix4(tugGroup.matrixWorld);
-            const bollardForePoint = new THREE.Vector3(-4.2, 1.66, -4.7);
-            const bollardAftPoint = new THREE.Vector3(-4.2, 1.66, 4.7);
-            const foreDistance = forePoint.distanceTo(bollardForePoint);
-            const aftDistance = aftPoint.distanceTo(bollardAftPoint);
+            const foreDockPoint = getDockAnchorPoint(mooringState.lines.fore.dockAnchorId);
+            const aftDockPoint = getDockAnchorPoint(mooringState.lines.aft.dockAnchorId);
+            const foreDistance = foreDockPoint ? forePoint.distanceTo(foreDockPoint) : 0;
+            const aftDistance = aftDockPoint ? aftPoint.distanceTo(aftDockPoint) : 0;
             const foreTension = THREE.MathUtils.clamp(1 - foreDistance / 8, 0.15, 0.95);
             const aftTension = THREE.MathUtils.clamp(1 - aftDistance / 8, 0.15, 0.95);
 
-            foreRope.visible = window.gameState.visual3d.mooringConnected;
-            aftRope.visible = window.gameState.visual3d.mooringConnected;
-            if (window.gameState.visual3d.mooringConnected) {
-                setRopeGeometry(foreRope, forePoint, bollardForePoint, 0.18, elapsed, foreTension);
-                setRopeGeometry(aftRope, aftPoint, bollardAftPoint, 0.14, elapsed, aftTension);
+            foreRope.visible = Boolean(foreDockPoint);
+            aftRope.visible = Boolean(aftDockPoint);
+            if (foreDockPoint) {
+                setRopeGeometry(foreRope, forePoint, foreDockPoint, 0.18, elapsed, foreTension);
+            }
+            if (aftDockPoint) {
+                setRopeGeometry(aftRope, aftPoint, aftDockPoint, 0.14, elapsed, aftTension);
             }
 
             const target = new THREE.Vector3(vessel.x - 0.2, 1.0, vessel.z);
@@ -601,11 +704,20 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             if (hud.resultant) hud.resultant.textContent = `${(state.resultant * 10).toFixed(1)} kN`;
             if (hud.attitude) hud.attitude.textContent = `Banda ${stability.heelDirection} / Trim ${stability.trimDirection}`;
             if (hud.mooringStatus) {
-                hud.mooringStatus.textContent = window.gameState.visual3d.mooringConnected ? 'AMARRADO NO CAIS' : 'CABOS DESCONECTADOS';
-                hud.mooringStatus.style.color = window.gameState.visual3d.mooringConnected ? '#9ed8b0' : '#ffb74d';
-            }
-            if (hud.mooringButton) {
-                hud.mooringButton.textContent = window.gameState.visual3d.mooringConnected ? 'DESCONECTAR CABOS' : 'RECONECTAR CABOS';
+                const connectedCount = getConnectedLineCount();
+                if (mooringState.selectedTugLine) {
+                    hud.mooringStatus.textContent = `SELECIONE O CABEÇO DO CAIS (${mooringState.selectedTugLine === 'fore' ? 'PROA' : 'POPA'})`;
+                    hud.mooringStatus.style.color = '#7cdeff';
+                } else if (connectedCount === 2) {
+                    hud.mooringStatus.textContent = 'AMARRADO PROA E POPA';
+                    hud.mooringStatus.style.color = '#9ed8b0';
+                } else if (connectedCount === 1) {
+                    hud.mooringStatus.textContent = 'AMARRAÇÃO PARCIAL';
+                    hud.mooringStatus.style.color = '#ffd36e';
+                } else {
+                    hud.mooringStatus.textContent = 'SEM AMARRAÇÃO';
+                    hud.mooringStatus.style.color = '#ffb74d';
+                }
             }
         }
 
