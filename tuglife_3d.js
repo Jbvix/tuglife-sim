@@ -117,6 +117,19 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
         tugShadow.rotation.x = -Math.PI / 2;
         tugShadow.position.y = -0.18;
         tugGroup.add(tugShadow);
+
+        const hullWaterGlow = new THREE.Mesh(
+            new THREE.CircleGeometry(2.9, 48),
+            new THREE.MeshBasicMaterial({
+                color: 0x7fdcff,
+                transparent: true,
+                opacity: 0.14
+            })
+        );
+        hullWaterGlow.rotation.x = -Math.PI / 2;
+        hullWaterGlow.position.y = 0.16;
+        hullWaterGlow.scale.set(0.86, 1, 1.95);
+        tugGroup.add(hullWaterGlow);
         const proceduralParts = [];
 
         function registerProceduralPart(part) {
@@ -530,7 +543,7 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             const baseHeel = THREE.MathUtils.degToRad(parseFloat(stability.heelDeg || 0)) * heelSign * 0.45;
             const baseTrim = THREE.MathUtils.degToRad(parseFloat(stability.trimDeg || 0)) * trimSign * 0.35;
 
-            tugGroup.position.set(vessel.x, -0.03, vessel.z);
+            tugGroup.position.set(vessel.x, -0.08, vessel.z);
             tugGroup.rotation.y = vessel.yaw;
             tugGroup.rotation.z = THREE.MathUtils.lerp(tugGroup.rotation.z, baseHeel + maneuverHeel, 0.08);
             tugGroup.rotation.x = THREE.MathUtils.lerp(tugGroup.rotation.x, baseTrim + Math.sin(elapsed * 1.7) * 0.02, 0.08);
@@ -556,9 +569,10 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             water.geometry.computeVertexNormals();
             waterUnderlay.material.opacity = 0.48 + Math.sin(elapsed * 0.8) * 0.04;
             harborWater.material.opacity = 0.22 + Math.sin(elapsed * 0.9) * 0.03;
+            hullWaterGlow.material.opacity = 0.12 + Math.sin(elapsed * 1.5) * 0.03;
 
-            const forePoint = new THREE.Vector3(-1.65, 1.18, -2.9).applyMatrix4(tugGroup.matrixWorld);
-            const aftPoint = new THREE.Vector3(-1.55, 1.0, 2.45).applyMatrix4(tugGroup.matrixWorld);
+            const forePoint = new THREE.Vector3(1.55, 1.15, -3.15).applyMatrix4(tugGroup.matrixWorld);
+            const aftPoint = new THREE.Vector3(1.45, 1.08, 2.95).applyMatrix4(tugGroup.matrixWorld);
             const bollardForePoint = new THREE.Vector3(-4.2, 1.66, -4.7);
             const bollardAftPoint = new THREE.Vector3(-4.2, 1.66, 4.7);
             const foreDistance = forePoint.distanceTo(bollardForePoint);
