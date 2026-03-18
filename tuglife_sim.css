@@ -194,13 +194,13 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 @media (min-width: 1280px) {
     #main-display.desktop-layout {
         width: 100%;
-        max-width: 1420px;
+        max-width: 1320px;
         height: calc(100dvh - 70px - 20px);
         margin: 0 auto;
-        padding: 10px 14px 12px;
+        padding: 6px 12px 12px;
         display: grid;
-        grid-template-columns: minmax(270px, 320px) minmax(600px, 720px) minmax(270px, 320px);
-        gap: 12px;
+        grid-template-columns: minmax(188px, 224px) minmax(600px, 720px) minmax(188px, 224px);
+        gap: 10px;
         align-items: stretch;
         overflow: hidden;
     }
@@ -229,7 +229,7 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
         background: rgba(10, 18, 24, 0.78);
         border: 1px solid rgba(0, 188, 212, 0.2);
         border-radius: 18px;
-        padding: 8px 0 14px;
+        padding: 0 0 12px;
         box-shadow: 0 20px 40px rgba(0,0,0,0.22);
         height: 100%;
         overflow-y: auto;
@@ -252,6 +252,8 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
         text-align: left;
         width: calc(100% - 18px);
         font-size: 1rem;
+        margin-top: 0;
+        margin-bottom: 8px;
     }
 
     #main-display.desktop-layout .desktop-side-panel .panel-label,
@@ -351,9 +353,9 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 }
 @media (min-width: 1280px) and (max-width: 1460px) {
     #main-display.desktop-layout {
-        max-width: 1320px;
-        grid-template-columns: minmax(238px, 284px) minmax(560px, 660px) minmax(238px, 284px);
-        gap: 12px;
+        max-width: 1240px;
+        grid-template-columns: minmax(176px, 210px) minmax(560px, 660px) minmax(176px, 210px);
+        gap: 10px;
     }
 
     #main-display.desktop-layout .desktop-side-panel .control-btn,
