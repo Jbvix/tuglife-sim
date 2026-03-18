@@ -173,6 +173,7 @@ function updateChillerPhysics() {
 function runSimulationTick() {
     let stateChanged = false;
     syncBunkerTruckVolume();
+    syncWaterTruckVolume();
 
     if (gameState.bunker.isPumping && gameState.bunker.selectedTank) {
         const tk = gameState.tanks[gameState.bunker.selectedTank];
@@ -209,21 +210,24 @@ function runSimulationTick() {
 
     if (gameState.waterBunkering.isPumping && gameState.waterBunkering.selectedTank) {
         const tk = gameState.tanks[gameState.waterBunkering.selectedTank];
-        if (gameState.waterBunkering.truckVolume > 0 && tk.vol < tk.max) {
+        const waterTruck = getSelectedWaterTruck();
+
+        if (waterTruck && waterTruck.volume > 0 && tk.vol < tk.max) {
             const trans = Math.min(
                 gameState.waterBunkering.flowRate,
-                gameState.waterBunkering.truckVolume,
+                waterTruck.volume,
                 tk.max - tk.vol
             );
             tk.vol += trans;
-            gameState.waterBunkering.truckVolume -= trans;
+            waterTruck.volume -= trans;
+            syncWaterTruckVolume();
             gameState.waterBunkering.hydrometer += trans;
             stateChanged = true;
 
             if (tk.vol >= tk.max) {
                 gameState.waterBunkering.isPumping = false;
                 triggerAlarm(`STOP AUTO: ${tk.name} CHEIO! ENCERRAR RECEBIMENTO DE ÁGUA.`);
-            } else if (gameState.waterBunkering.truckVolume <= 0) {
+            } else if (waterTruck.volume <= 0) {
                 gameState.waterBunkering.isPumping = false;
                 triggerAlarm("RECEBIMENTO DE ÁGUA CONCLUÍDO: CAMINHÃO ESGOTADO.");
             }

@@ -52,6 +52,17 @@ const gameState = {
                     { id: 'c5', label: 'TQ 5', vol: 5.0, max: 5.0 },
                     { id: 'c6', label: 'TQ 6', vol: 5.0, max: 5.0 }
                 ]
+            },
+            truck04: {
+                label: 'Caminhao 04',
+                compartments: [
+                    { id: 'c1', label: 'TQ 1', vol: 5.0, max: 5.0 },
+                    { id: 'c2', label: 'TQ 2', vol: 5.0, max: 5.0 },
+                    { id: 'c3', label: 'TQ 3', vol: 5.0, max: 5.0 },
+                    { id: 'c4', label: 'TQ 4', vol: 5.0, max: 5.0 },
+                    { id: 'c5', label: 'TQ 5', vol: 5.0, max: 5.0 },
+                    { id: 'c6', label: 'TQ 6', vol: 5.0, max: 5.0 }
+                ]
             }
         }
     },
@@ -63,12 +74,19 @@ const gameState = {
     },
     waterBunkering: {
         truckVolume: 20.0,
+        selectedTruck: 'truck01',
         hoseConnected: false,
         selectedTank: 'tk02',
         isPumping: false,
         flowRate: 0.2,
         hydrometer: 0,
-        panelOpen: false
+        panelOpen: false,
+        trucks: {
+            truck01: { label: 'Caminhao 01', volume: 20.0, max: 20.0 },
+            truck02: { label: 'Caminhao 02', volume: 20.0, max: 20.0 },
+            truck03: { label: 'Caminhao 03', volume: 20.0, max: 20.0 },
+            truck04: { label: 'Caminhao 04', volume: 20.0, max: 20.0 }
+        }
     },
     transfer: { sourceTank: null, destTank: null, isPumping: false, flowRate: 0.05, flowRateMode: 'LOW', crossFeedValve: { isOpen: false } },
     power: { isLive: false, connectedGenerators: 0 },

@@ -65,6 +65,15 @@ function selectBunkerTruck(truckKey) {
     renderView();
 }
 
+function selectWaterTruck(truckKey) {
+    if (!gameState.waterBunkering.trucks[truckKey]) return;
+
+    gameState.waterBunkering.selectedTruck = truckKey;
+    gameState.waterBunkering.isPumping = false;
+    syncWaterTruckVolume();
+    renderView();
+}
+
 function receiveLoDrum() {
     const targetTank = gameState.tanks[gameState.loReceiving.selectedTank];
 
@@ -323,12 +332,21 @@ function bindEventListeners() {
         });
     });
 
-    ['truck01', 'truck02', 'truck03'].forEach(truckKey => {
+    ['truck01', 'truck02', 'truck03', 'truck04'].forEach(truckKey => {
         const truckButton = document.getElementById(`btn-${truckKey}`);
         if (!truckButton) return;
 
         truckButton.addEventListener('click', () => {
             selectBunkerTruck(truckKey);
+        });
+    });
+
+    ['truck01', 'truck02', 'truck03', 'truck04'].forEach(truckKey => {
+        const truckButton = document.getElementById(`btn-water-${truckKey}`);
+        if (!truckButton) return;
+
+        truckButton.addEventListener('click', () => {
+            selectWaterTruck(truckKey);
         });
     });
 

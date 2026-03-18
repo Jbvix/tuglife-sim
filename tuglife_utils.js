@@ -26,6 +26,16 @@ function syncBunkerTruckVolume() {
     return gameState.bunker.truckVolume;
 }
 
+function getSelectedWaterTruck() {
+    return gameState.waterBunkering.trucks[gameState.waterBunkering.selectedTruck];
+}
+
+function syncWaterTruckVolume() {
+    const truck = getSelectedWaterTruck();
+    gameState.waterBunkering.truckVolume = truck ? truck.volume : 0;
+    return gameState.waterBunkering.truckVolume;
+}
+
 function calculateStabilityIndicators() {
     const tankMap = [
         { key: 'tk_peak_fwd', side: 'center', longitudinal: 'fore' },

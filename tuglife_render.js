@@ -203,6 +203,7 @@ function renderView() {
     }
 
     syncBunkerTruckVolume();
+    syncWaterTruckVolume();
 
     const alarmBanner = document.getElementById('global-alarm-banner');
     if (gameState.isAlarmActive) {
@@ -214,7 +215,7 @@ function renderView() {
 
     document.getElementById('ui-truck-vol').innerText = gameState.bunker.truckVolume.toFixed(1);
     document.getElementById('ui-truck-label').innerText = getSelectedBunkerTruck()?.label || 'Caminhao';
-    ['truck01', 'truck02', 'truck03'].forEach(truckKey => {
+    ['truck01', 'truck02', 'truck03', 'truck04'].forEach(truckKey => {
         const truckButton = document.getElementById(`btn-${truckKey}`);
         if (!truckButton) return;
         truckButton.classList.toggle('active', gameState.bunker.selectedTruck === truckKey);
@@ -246,8 +247,14 @@ function renderView() {
     document.getElementById('btn-pump-bunker').disabled = !gameState.bunker.selectedTank || !selectedCompartment || selectedCompartment.vol <= 0;
     document.getElementById('btn-pump-bunker').innerText = gameState.bunker.isPumping ? 'BOMBEANDO DO COMPARTIMENTO' : 'INICIAR BOMBA';
     document.getElementById('ui-water-truck-vol').innerText = gameState.waterBunkering.truckVolume.toFixed(1);
+    document.getElementById('ui-water-truck-label').innerText = getSelectedWaterTruck()?.label || 'Caminhao';
     document.getElementById('ui-water-hydrometer').innerText = `${gameState.waterBunkering.hydrometer.toFixed(2)} m³`;
     document.getElementById('ui-water-flow').innerText = `${gameState.waterBunkering.flowRate.toFixed(2)} m³/t`;
+    ['truck01', 'truck02', 'truck03', 'truck04'].forEach(truckKey => {
+        const truckButton = document.getElementById(`btn-water-${truckKey}`);
+        if (!truckButton) return;
+        truckButton.classList.toggle('active', gameState.waterBunkering.selectedTruck === truckKey);
+    });
     document.getElementById('lo-drum-panel').style.display = gameState.loReceiving.panelOpen ? 'block' : 'none';
     document.getElementById('btn-toggle-lo-drum-panel').classList.toggle('active', gameState.loReceiving.panelOpen);
     document.getElementById('btn-toggle-lo-drum-panel').innerText = gameState.loReceiving.panelOpen ? 'OCULTAR RECEBIMENTO DE OL' : 'RECEBIMENTO DE OL POR TAMBOR 200L';
