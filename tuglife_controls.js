@@ -37,6 +37,43 @@ function toggleWaterPanel() {
     renderView();
 }
 
+function toggleLoDrumPanel() {
+    gameState.loReceiving.panelOpen = !gameState.loReceiving.panelOpen;
+    renderView();
+}
+
+function selectBunkerCompartment(compartmentId) {
+    const compartment = gameState.bunker.compartments.find(item => item.id === compartmentId);
+    if (!compartment) return;
+
+    gameState.bunker.selectedCompartment = compartmentId;
+
+    if (compartment.vol <= 0) {
+        gameState.bunker.isPumping = false;
+    }
+
+    renderView();
+}
+
+function receiveLoDrum() {
+    const targetTank = gameState.tanks[gameState.loReceiving.selectedTank];
+
+    if (!targetTank) return;
+
+    if (gameState.loReceiving.drumsAvailable <= 0) {
+        return triggerAlarm("SEM TAMBORES DE 200 L DISPONÍVEIS PARA RECEBIMENTO.");
+    }
+
+    if (targetTank.vol >= targetTank.max) {
+        return triggerAlarm(`${targetTank.name} CHEIO. SEM CAPACIDADE PARA RECEBER ÓLEO LUBRIFICANTE.`);
+    }
+
+    const transfer = Math.min(gameState.loReceiving.drumVolume, targetTank.max - targetTank.vol);
+    targetTank.vol += transfer;
+    gameState.loReceiving.drumsAvailable -= 1;
+    renderView();
+}
+
 function toggleTk03PurifierTransfer() {
     const hdrDestination = ['tk04', 'tk05'].includes(gameState.transfer.destTank) ? gameState.transfer.destTank : 'tk04';
     const sameTransfer = gameState.transfer.sourceTank === 'tk03' && gameState.transfer.destTank === hdrDestination;
@@ -228,6 +265,28 @@ function bindEventListeners() {
 
     document.getElementById('btn-toggle-water-panel').addEventListener('click', () => {
         toggleWaterPanel();
+    });
+
+    document.getElementById('btn-toggle-lo-drum-panel').addEventListener('click', () => {
+        toggleLoDrumPanel();
+    });
+
+    document.getElementById('select-lo-drum-tank').addEventListener('change', (e) => {
+        gameState.loReceiving.selectedTank = e.target.value;
+        renderView();
+    });
+
+    document.getElementById('btn-receive-lo-drum').addEventListener('click', () => {
+        receiveLoDrum();
+    });
+
+    ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'].forEach(compartmentId => {
+        const button = document.getElementById(`btn-bunker-${compartmentId}`);
+        if (!button) return;
+
+        button.addEventListener('click', () => {
+            selectBunkerCompartment(compartmentId);
+        });
     });
 
     document.getElementById('btn-connect-water-hose').addEventListener('click', () => {

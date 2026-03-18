@@ -130,8 +130,22 @@
             <div class="screen-title">Recebimento de Água / Óleo</div>
             <div class="control-panel">
                 <div class="busbar-status dead" style="font-size: 1rem;">Caminhão-Tanque: <span id="ui-truck-vol">50.0</span> m³</div>
+                <div id="truck-compartments" class="aux-grid" style="margin-bottom:10px;">
+                    <button id="btn-bunker-c1" class="aux-btn">TQ 1<br><small id="ui-bunker-c1">5.0 m³</small></button>
+                    <button id="btn-bunker-c2" class="aux-btn">TQ 2<br><small id="ui-bunker-c2">5.0 m³</small></button>
+                    <button id="btn-bunker-c3" class="aux-btn">TQ 3<br><small id="ui-bunker-c3">5.0 m³</small></button>
+                    <button id="btn-bunker-c4" class="aux-btn">TQ 4<br><small id="ui-bunker-c4">5.0 m³</small></button>
+                    <button id="btn-bunker-c5" class="aux-btn">TQ 5<br><small id="ui-bunker-c5">5.0 m³</small></button>
+                    <button id="btn-bunker-c6" class="aux-btn">TQ 6<br><small id="ui-bunker-c6">5.0 m³</small></button>
+                </div>
                 <button id="btn-connect-hose" class="control-btn">LIGAR MANGOTE</button>
                 <div id="bunker-controls" style="display:none; margin-top: 15px;">
+                    <label class="panel-label">Compartimento do Caminhão:</label>
+                    <div id="ui-bunker-compartment" class="system-strip" style="margin-bottom:12px;">
+                        <span class="system-strip-title">COMPARTIMENTO ATIVO</span>
+                        <span id="ui-bunker-compartment-label" class="system-strip-value">TQ 1</span>
+                        <span id="ui-bunker-compartment-vol" class="system-strip-badge">5.0 m³</span>
+                    </div>
                     <label class="panel-label">Tanque de Armazenamento:</label>
                     <select id="select-bunker-tank" class="control-select">
                         <option value="">-- Selecione o Tanque --</option>
@@ -142,6 +156,29 @@
                     </select>
                     <button id="btn-pump-bunker" class="control-btn" disabled>INICIAR BOMBA</button>
                 </div>
+            </div>
+            <button id="btn-toggle-lo-drum-panel" class="quick-panel-btn">RECEBIMENTO DE OL POR TAMBOR 200L</button>
+            <div id="lo-drum-panel" class="control-panel water-panel" style="display:none;">
+                <div class="water-panel-header">
+                    <span class="water-panel-title">RECEBIMENTO DE ÓLEO LUBRIFICANTE</span>
+                    <span class="water-panel-badge">TAMBOR 200L</span>
+                </div>
+                <div class="meter-grid" style="grid-template-columns:1fr 1fr; margin-top:10px;">
+                    <div class="meter">
+                        <div id="ui-lo-drum-vol" class="meter-val" style="color:#ffc107;">0.20 m³</div>
+                        <div class="meter-label">POR TAMBOR</div>
+                    </div>
+                    <div class="meter">
+                        <div id="ui-lo-drums-available" class="meter-val" style="color:#ffcc80;">12</div>
+                        <div class="meter-label">TAMBORES</div>
+                    </div>
+                </div>
+                <label class="panel-label">Tanque de Destino:</label>
+                <select id="select-lo-drum-tank" class="control-select">
+                    <option value="tk15">TK 15 OL15W40</option>
+                    <option value="tk16">TK 16 OL150</option>
+                </select>
+                <button id="btn-receive-lo-drum" class="control-btn" style="background:#1a1100; color:#ffc107;">RECEBER 1 TAMBOR DE 200L</button>
             </div>
             <button id="btn-toggle-water-panel" class="quick-panel-btn">PAINEL DE RECEBIMENTO DE ÁGUA</button>
             <div id="water-panel" class="control-panel water-panel" style="display:none;">

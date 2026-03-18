@@ -175,10 +175,13 @@ function runSimulationTick() {
 
     if (gameState.bunker.isPumping && gameState.bunker.selectedTank) {
         const tk = gameState.tanks[gameState.bunker.selectedTank];
-        if (gameState.bunker.truckVolume > 0 && tk.vol < tk.max) {
-            const trans = Math.min(gameState.bunker.flowRate, gameState.bunker.truckVolume, tk.max - tk.vol);
+        const selectedCompartment = gameState.bunker.compartments.find(item => item.id === gameState.bunker.selectedCompartment);
+
+        if (selectedCompartment && selectedCompartment.vol > 0 && tk.vol < tk.max) {
+            const trans = Math.min(gameState.bunker.flowRate, selectedCompartment.vol, tk.max - tk.vol);
             tk.vol += trans;
-            gameState.bunker.truckVolume -= trans;
+            selectedCompartment.vol -= trans;
+            gameState.bunker.truckVolume = gameState.bunker.compartments.reduce((sum, compartment) => sum + compartment.vol, 0);
             stateChanged = true;
 
             const pct = (tk.vol / tk.max) * 100;
@@ -193,7 +196,7 @@ function runSimulationTick() {
                 gameState.bunker.alarmLevel = 'WARNING';
                 triggerAlarm(`AVISO: ${tk.name} a ${pct.toFixed(0)}% - ATENÇÃO AO NÍVEL!`);
             }
-        } else if (gameState.bunker.truckVolume <= 0) {
+        } else if (!selectedCompartment || selectedCompartment.vol <= 0 || gameState.bunker.truckVolume <= 0) {
             gameState.bunker.isPumping = false;
         }
 

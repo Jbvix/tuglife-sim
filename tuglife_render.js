@@ -173,6 +173,7 @@ function renderModalContent() {
 function renderView() {
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-target') === gameState.currentTab));
     document.querySelectorAll('.screen').forEach(screen => screen.classList.toggle('active', screen.id === `screen-${gameState.currentTab}`));
+    gameState.bunker.truckVolume = gameState.bunker.compartments.reduce((sum, compartment) => sum + compartment.vol, 0);
 
     const alarmBanner = document.getElementById('global-alarm-banner');
     if (gameState.isAlarmActive) {
@@ -183,6 +184,22 @@ function renderView() {
     }
 
     document.getElementById('ui-truck-vol').innerText = gameState.bunker.truckVolume.toFixed(1);
+    gameState.bunker.compartments.forEach(compartment => {
+        const button = document.getElementById(`btn-bunker-${compartment.id}`);
+        const valueEl = document.getElementById(`ui-bunker-${compartment.id}`);
+        if (!button || !valueEl) return;
+
+        valueEl.innerText = `${compartment.vol.toFixed(1)} m³`;
+        button.classList.toggle('active', gameState.bunker.selectedCompartment === compartment.id);
+        button.disabled = compartment.vol <= 0;
+    });
+
+    const selectedCompartment = gameState.bunker.compartments.find(item => item.id === gameState.bunker.selectedCompartment) || gameState.bunker.compartments[0];
+    if (selectedCompartment) {
+        document.getElementById('ui-bunker-compartment-label').innerText = selectedCompartment.label;
+        document.getElementById('ui-bunker-compartment-vol').innerText = `${selectedCompartment.vol.toFixed(1)} m³`;
+    }
+
     if (gameState.bunker.hoseConnected) {
         document.getElementById('bunker-controls').style.display = 'block';
         document.getElementById('btn-connect-hose').classList.add('active');
@@ -191,10 +208,19 @@ function renderView() {
         document.getElementById('btn-connect-hose').classList.remove('active');
     }
 
-    document.getElementById('btn-pump-bunker').disabled = !gameState.bunker.selectedTank || gameState.bunker.truckVolume <= 0;
+    document.getElementById('btn-pump-bunker').disabled = !gameState.bunker.selectedTank || !selectedCompartment || selectedCompartment.vol <= 0;
+    document.getElementById('btn-pump-bunker').innerText = gameState.bunker.isPumping ? 'BOMBEANDO DO COMPARTIMENTO' : 'INICIAR BOMBA';
     document.getElementById('ui-water-truck-vol').innerText = gameState.waterBunkering.truckVolume.toFixed(1);
     document.getElementById('ui-water-hydrometer').innerText = `${gameState.waterBunkering.hydrometer.toFixed(2)} m³`;
     document.getElementById('ui-water-flow').innerText = `${gameState.waterBunkering.flowRate.toFixed(2)} m³/t`;
+    document.getElementById('lo-drum-panel').style.display = gameState.loReceiving.panelOpen ? 'block' : 'none';
+    document.getElementById('btn-toggle-lo-drum-panel').classList.toggle('active', gameState.loReceiving.panelOpen);
+    document.getElementById('btn-toggle-lo-drum-panel').innerText = gameState.loReceiving.panelOpen ? 'OCULTAR RECEBIMENTO DE OL' : 'RECEBIMENTO DE OL POR TAMBOR 200L';
+    document.getElementById('ui-lo-drum-vol').innerText = `${gameState.loReceiving.drumVolume.toFixed(2)} m³`;
+    document.getElementById('ui-lo-drums-available').innerText = `${gameState.loReceiving.drumsAvailable}`;
+    document.getElementById('select-lo-drum-tank').value = gameState.loReceiving.selectedTank;
+    const selectedLoTank = gameState.tanks[gameState.loReceiving.selectedTank];
+    document.getElementById('btn-receive-lo-drum').disabled = !selectedLoTank || gameState.loReceiving.drumsAvailable <= 0 || selectedLoTank.vol >= selectedLoTank.max;
     document.getElementById('water-panel').style.display = gameState.waterBunkering.panelOpen ? 'block' : 'none';
     document.getElementById('btn-toggle-water-panel').classList.toggle('active', gameState.waterBunkering.panelOpen);
     document.getElementById('btn-toggle-water-panel').innerText = gameState.waterBunkering.panelOpen ? 'OCULTAR PAINEL DE ÁGUA' : 'PAINEL DE RECEBIMENTO DE ÁGUA';

@@ -6,7 +6,29 @@ const gameState = {
     isAlarmActive: false,
     activeAlarmMessage: "",
     modal: { isOpen: false, type: null, entityKey: null },
-    bunker: { truckVolume: 50.0, hoseConnected: false, selectedTank: null, isPumping: false, flowRate: 0.5, alarmLevel: 'NONE' },
+    bunker: {
+        truckVolume: 30.0,
+        hoseConnected: false,
+        selectedTank: null,
+        selectedCompartment: 'c1',
+        isPumping: false,
+        flowRate: 0.5,
+        alarmLevel: 'NONE',
+        compartments: [
+            { id: 'c1', label: 'TQ 1', vol: 5.0, max: 5.0 },
+            { id: 'c2', label: 'TQ 2', vol: 5.0, max: 5.0 },
+            { id: 'c3', label: 'TQ 3', vol: 5.0, max: 5.0 },
+            { id: 'c4', label: 'TQ 4', vol: 5.0, max: 5.0 },
+            { id: 'c5', label: 'TQ 5', vol: 5.0, max: 5.0 },
+            { id: 'c6', label: 'TQ 6', vol: 5.0, max: 5.0 }
+        ]
+    },
+    loReceiving: {
+        drumVolume: 0.2,
+        drumsAvailable: 12,
+        selectedTank: 'tk15',
+        panelOpen: false
+    },
     waterBunkering: {
         truckVolume: 20.0,
         hoseConnected: false,
