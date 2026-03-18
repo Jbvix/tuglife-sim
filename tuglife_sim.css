@@ -292,6 +292,29 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
         width: 100%;
     }
 
+    #main-display.desktop-layout .desktop-core .hull-container {
+        padding: 36px 12px 12px 12px;
+        gap: 4px;
+    }
+
+    #main-display.desktop-layout .desktop-core .slot {
+        font-size: 0.58rem;
+        padding: 4px;
+    }
+
+    #main-display.desktop-layout .desktop-core .slot span.capacity {
+        font-size: 0.48rem;
+    }
+
+    #main-display.desktop-layout .desktop-core .slot.type-engine {
+        min-height: 38px;
+    }
+
+    #main-display.desktop-layout .desktop-core .slot.type-lo {
+        min-height: 30px;
+        gap: 5px;
+    }
+
     #screen-power.desktop-side-panel .busbar-status {
         font-size: 0.92rem;
         line-height: 1.3;
@@ -385,6 +408,20 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
     #main-display.desktop-layout .desktop-core .hull-container,
     #main-display.desktop-layout .desktop-core .quick-panel-btn {
         max-width: 460px;
+    }
+
+    #main-display.desktop-layout .desktop-core .hull-container {
+        padding: 32px 10px 10px 10px;
+        gap: 3px;
+    }
+
+    #main-display.desktop-layout .desktop-core .slot {
+        font-size: 0.54rem;
+        padding: 3px;
+    }
+
+    #main-display.desktop-layout .desktop-core .slot span.capacity {
+        font-size: 0.44rem;
     }
 
     #main-display.desktop-layout .desktop-side-panel .three-d-stage {
