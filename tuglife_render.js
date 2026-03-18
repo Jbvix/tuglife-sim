@@ -142,9 +142,9 @@ function renderModalContent() {
             <div class="modal-data-row"><span class="modal-data-label">Reservatório OH32:</span><span class="modal-data-value" style="color:${winchPct < 20 ? 'var(--accent-red)' : '#2196f3'}">${winch.hydReservoir.vol.toFixed(3)} m³ (${winchPct}%)</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Interlock:</span><span class="modal-data-value" style="color:${anyPress ? 'var(--accent-green)' : 'var(--accent-red)'}"> ${anyPress ? 'PRESSÃO OK' : 'SEM PRESSÃO'}</span></div>
             <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:12px;">
-                <button onclick="winchControl('HALAR')" class="control-btn" style="padding:10px; font-size:0.8rem; background:${winch.isActive && winch.direction === 'HALAR' ? 'var(--accent-green)' : '#444'}; ${!anyPress ? 'opacity:0.4;' : ''}" ${!anyPress ? 'disabled' : ''}>HALAR</button>
+                <button onclick="winchControl('COLHER')" class="control-btn" style="padding:10px; font-size:0.8rem; background:${winch.isActive && winch.direction === 'COLHER' ? 'var(--accent-green)' : '#444'}; ${!anyPress ? 'opacity:0.4;' : ''}" ${!anyPress ? 'disabled' : ''}>COLHER</button>
                 <button onclick="winchControl('STOP')" class="control-btn" style="padding:10px; font-size:0.8rem; background:#444;">STOP</button>
-                <button onclick="winchControl('LARGAR')" class="control-btn" style="padding:10px; font-size:0.8rem; background:${winch.isActive && winch.direction === 'LARGAR' ? 'var(--accent-orange)' : '#444'}; ${!anyPress ? 'opacity:0.4;' : ''}" ${!anyPress ? 'disabled' : ''}>LARGAR</button>
+                <button onclick="winchControl('PAGAR')" class="control-btn" style="padding:10px; font-size:0.8rem; background:${winch.isActive && winch.direction === 'PAGAR' ? 'var(--accent-orange)' : '#444'}; ${!anyPress ? 'opacity:0.4;' : ''}" ${!anyPress ? 'disabled' : ''}>PAGAR</button>
             </div>
             <button onclick="refillWinchHydraulic()" class="control-btn" style="margin-top:8px; padding:10px; background:#0a1520; color:#2196f3;">TRANSFERIR OH32 PARA GUINCHO</button>
         `;
