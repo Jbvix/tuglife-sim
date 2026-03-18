@@ -317,8 +317,8 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
         }
 
         const tugAnchorMarkers = {
-            fore: makeAnchorPoint(tugGroup, new THREE.Vector3(1.48, 1.22, -3.02), 'tug_fore', 'fore', 'tug', 0x4dd9ff),
-            aft: makeAnchorPoint(tugGroup, new THREE.Vector3(1.32, 1.18, 2.78), 'tug_aft', 'aft', 'tug', 0x7cff8d)
+            fore: makeAnchorPoint(tugGroup, new THREE.Vector3(1.62, 1.18, -2.05), 'tug_fore', 'fore', 'tug', 0x4dd9ff),
+            aft: makeAnchorPoint(tugGroup, new THREE.Vector3(-1.34, 1.14, 1.98), 'tug_aft', 'aft', 'tug', 0x7cff8d)
         };
         const dockAnchorMarkers = {
             fore: makeAnchorPoint(scene, new THREE.Vector3(-4.2, 1.8, -4.7), 'dock_fore', 'fore', 'dock', 0xffd36e),
@@ -672,8 +672,8 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             hullWaterGlow.material.opacity = 0.12 + Math.sin(elapsed * 1.5) * 0.03;
             updateAnchorVisuals(elapsed);
 
-            const forePoint = new THREE.Vector3(1.55, 1.15, -3.15).applyMatrix4(tugGroup.matrixWorld);
-            const aftPoint = new THREE.Vector3(1.45, 1.08, 2.95).applyMatrix4(tugGroup.matrixWorld);
+            const forePoint = tugAnchorMarkers.fore.getWorldPosition(new THREE.Vector3());
+            const aftPoint = tugAnchorMarkers.aft.getWorldPosition(new THREE.Vector3());
             const foreDockPoint = getDockAnchorPoint(mooringState.lines.fore.dockAnchorId);
             const aftDockPoint = getDockAnchorPoint(mooringState.lines.aft.dockAnchorId);
             const foreDistance = foreDockPoint ? forePoint.distanceTo(foreDockPoint) : 0;
