@@ -272,6 +272,7 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             resultant: document.getElementById('ui-3d-resultant'),
             attitude: document.getElementById('ui-3d-attitude'),
             vectorDirection: document.getElementById('ui-3d-vector-direction'),
+            draft: document.getElementById('ui-3d-draft'),
             mooringStatus: document.getElementById('ui-3d-mooring-status'),
             modelStatus: document.getElementById('ui-3d-model-status'),
             anchorPanelButton: document.getElementById('btn-3d-anchor-panel'),
@@ -870,14 +871,15 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
         }
 
         function updateVisuals(state, elapsed) {
-            const stability = window.calculateStabilityIndicators();
-            const heelSign = stability.heelDirection === 'BE' ? 1 : stability.heelDirection === 'BB' ? -1 : 0;
-            const trimSign = stability.trimDirection === 'POP' ? 1 : stability.trimDirection === 'PROA' ? -1 : 0;
+            const hydrostatics = window.calculateVesselHydrostatics();
+            const heelSign = hydrostatics.heelDirection === 'BE' ? 1 : hydrostatics.heelDirection === 'BB' ? -1 : 0;
+            const trimSign = hydrostatics.trimDirection === 'POP' ? 1 : hydrostatics.trimDirection === 'PROA' ? -1 : 0;
             const maneuverHeel = THREE.MathUtils.clamp((state.sb.thrust - state.ps.thrust) * 0.08, -0.18, 0.18);
-            const baseHeel = THREE.MathUtils.degToRad(parseFloat(stability.heelDeg || 0)) * heelSign * 0.45;
-            const baseTrim = THREE.MathUtils.degToRad(parseFloat(stability.trimDeg || 0)) * trimSign * 0.35;
+            const baseHeel = THREE.MathUtils.degToRad(parseFloat(hydrostatics.heelDeg || 0)) * heelSign * 0.45;
+            const baseTrim = THREE.MathUtils.degToRad(parseFloat(hydrostatics.trimDeg || 0)) * trimSign * 0.45;
+            const heave = hydrostatics.visualOffset + Math.sin(elapsed * 1.3) * 0.015;
 
-            tugGroup.position.set(vessel.x, -0.08, vessel.z);
+            tugGroup.position.set(vessel.x, heave, vessel.z);
             tugGroup.rotation.y = vessel.yaw;
             tugGroup.rotation.z = THREE.MathUtils.lerp(tugGroup.rotation.z, baseHeel + maneuverHeel, 0.08);
             tugGroup.rotation.x = THREE.MathUtils.lerp(tugGroup.rotation.x, baseTrim + Math.sin(elapsed * 1.7) * 0.02, 0.08);
@@ -938,7 +940,8 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             if (hud.speed) hud.speed.textContent = `${speed.toFixed(2)} kn`;
             if (hud.heading) hud.heading.textContent = `${headingDeg.toFixed(0).padStart(3, '0')}°`;
             if (hud.resultant) hud.resultant.textContent = `${(state.resultant * 10).toFixed(1)} kN`;
-            if (hud.attitude) hud.attitude.textContent = `Banda ${stability.heelDirection} / Trim ${stability.trimDirection}`;
+            if (hud.attitude) hud.attitude.textContent = `Banda ${hydrostatics.heelDirection} ${hydrostatics.heelDeg}° / Trim ${hydrostatics.trimDirection} ${hydrostatics.trimDeg}°`;
+            if (hud.draft) hud.draft.textContent = `${hydrostatics.draftMeters.toFixed(2)} m`;
             if (hud.mooringStatus) {
                 const connectedCount = getConnectedLineCount();
                 if (mooringState.selectedTugLine) {

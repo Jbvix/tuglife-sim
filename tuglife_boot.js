@@ -3,6 +3,7 @@
  */
 window.gameState = gameState;
 window.calculateStabilityIndicators = calculateStabilityIndicators;
+window.calculateVesselHydrostatics = calculateVesselHydrostatics;
 window.tuglife3dModelConfig = {
     path: 'assets/models/scene.gltf',
     scale: 1,

@@ -155,3 +155,38 @@ const SIM_CONFIG = {
     zDriveSteeringBaseConsumption: 0.0001,
     zDriveSteeringCommandConsumption: 0.0005
 };
+
+const VESSEL_HYDROSTATICS = {
+    lightshipStructureTonnes: 286,
+    fixedEquipment: [
+        { name: 'Superestrutura', mass: 28, side: 'center', longitudinal: 'fore' },
+        { name: 'MCP BB', mass: 18, side: 'port', longitudinal: 'aft' },
+        { name: 'MCP BE', mass: 18, side: 'starboard', longitudinal: 'aft' },
+        { name: 'MCA BB', mass: 4.5, side: 'port', longitudinal: 'mid' },
+        { name: 'MCA BE', mass: 4.5, side: 'starboard', longitudinal: 'mid' },
+        { name: 'Z-Drive BB', mass: 9, side: 'port', longitudinal: 'aft' },
+        { name: 'Z-Drive BE', mass: 9, side: 'starboard', longitudinal: 'aft' },
+        { name: 'Guincho de Proa', mass: 5.5, side: 'center', longitudinal: 'fore' },
+        { name: 'QEP e cablagem', mass: 8, side: 'center', longitudinal: 'mid' },
+        { name: 'Convés e acessórios', mass: 12, side: 'center', longitudinal: 'mid' }
+    ],
+    draft: {
+        lightshipMeters: 3.35,
+        fullLoadMeters: 4.45,
+        visualOffsetLightship: -0.08,
+        visualOffsetFullLoad: -0.52
+    },
+    fluidDensities: {
+        fw: 1.0,
+        ballast: 1.0,
+        bilge: 1.0,
+        fo: 0.84,
+        fo_hdr: 0.84,
+        overflow: 0.84,
+        od: 0.88,
+        do: 0.90,
+        lo_15w40: 0.88,
+        lo_150: 0.91,
+        oh32: 0.86
+    }
+};
