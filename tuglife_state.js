@@ -3,6 +3,7 @@
  */
 const gameState = {
     currentTab: 'build',
+    desktopPanelSide: 'left',
     isAlarmActive: false,
     activeAlarmMessage: "",
     modal: { isOpen: false, type: null, entityKey: null },

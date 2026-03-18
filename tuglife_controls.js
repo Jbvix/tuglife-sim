@@ -237,11 +237,21 @@ function zdAzimuth(side, val) {
     renderView();
 }
 
+function handleTabSelection(targetTab) {
+    const shouldAlternateSide = targetTab !== 'build' && targetTab !== gameState.currentTab;
+
+    if (shouldAlternateSide) {
+        gameState.desktopPanelSide = gameState.desktopPanelSide === 'left' ? 'right' : 'left';
+    }
+
+    gameState.currentTab = targetTab;
+    renderView();
+}
+
 function bindEventListeners() {
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            gameState.currentTab = btn.getAttribute('data-target');
-            renderView();
+            handleTabSelection(btn.getAttribute('data-target'));
         });
     });
 

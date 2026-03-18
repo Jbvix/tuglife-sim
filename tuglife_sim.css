@@ -191,6 +191,64 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 .three-d-drive-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
 .three-d-drive-box { padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); }
 .three-d-legend { margin-top:10px; color:#8aa3af; font-size:0.82rem; line-height:1.4; }
+@media (min-width: 1280px) {
+    #main-display.desktop-layout {
+        width: 100%;
+        max-width: 1800px;
+        margin: 0 auto;
+        padding: 16px;
+        display: grid;
+        grid-template-columns: minmax(320px, 420px) minmax(560px, 760px) minmax(320px, 420px);
+        gap: 16px;
+        align-items: start;
+        overflow: auto;
+    }
+
+    #main-display.desktop-layout .screen {
+        height: auto;
+        min-height: 0;
+        width: 100%;
+        overflow-y: visible;
+        padding-bottom: 0;
+    }
+
+    #main-display.desktop-layout .desktop-core {
+        grid-column: 2;
+        align-self: start;
+        position: sticky;
+        top: 0;
+    }
+
+    #main-display.desktop-layout .desktop-side-panel {
+        align-self: start;
+        background: rgba(10, 18, 24, 0.78);
+        border: 1px solid rgba(0, 188, 212, 0.2);
+        border-radius: 18px;
+        padding: 8px 0 16px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.22);
+    }
+
+    #main-display.desktop-layout .desktop-side-left { grid-column: 1; }
+    #main-display.desktop-layout .desktop-side-right { grid-column: 3; }
+
+    #main-display.desktop-layout .desktop-side-panel .control-panel,
+    #main-display.desktop-layout .desktop-side-panel .three-d-panel,
+    #main-display.desktop-layout .desktop-side-panel .quick-panel-btn {
+        width: calc(100% - 24px);
+        max-width: none;
+    }
+
+    #main-display.desktop-layout .desktop-side-panel .screen-title {
+        text-align: left;
+        width: calc(100% - 24px);
+    }
+
+    #main-display.desktop-layout .desktop-core .hull-container,
+    #main-display.desktop-layout .desktop-core .quick-panel-btn {
+        max-width: 100%;
+        width: 100%;
+    }
+}
 @media (max-width: 720px) {
     .three-d-stage { height:320px; }
     .three-d-hud { grid-template-columns:1fr 1fr; }

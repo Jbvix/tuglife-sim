@@ -171,8 +171,38 @@ function renderModalContent() {
 }
 
 function renderView() {
+    const mainDisplay = document.getElementById('main-display');
+    const isDesktopOps = window.matchMedia('(min-width: 1280px)').matches;
+    const selectedScreenId = `screen-${gameState.currentTab}`;
+
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-target') === gameState.currentTab));
-    document.querySelectorAll('.screen').forEach(screen => screen.classList.toggle('active', screen.id === `screen-${gameState.currentTab}`));
+    document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active', 'desktop-core', 'desktop-side-panel', 'desktop-side-left', 'desktop-side-right');
+    });
+
+    mainDisplay.classList.toggle('desktop-layout', isDesktopOps);
+
+    if (isDesktopOps) {
+        const buildScreen = document.getElementById('screen-build');
+        buildScreen.classList.add('active', 'desktop-core');
+
+        if (gameState.currentTab !== 'build') {
+            const selectedScreen = document.getElementById(selectedScreenId);
+            if (selectedScreen) {
+                selectedScreen.classList.add(
+                    'active',
+                    'desktop-side-panel',
+                    gameState.desktopPanelSide === 'left' ? 'desktop-side-left' : 'desktop-side-right'
+                );
+            }
+        }
+    } else {
+        const activeScreen = document.getElementById(selectedScreenId);
+        if (activeScreen) {
+            activeScreen.classList.add('active');
+        }
+    }
+
     gameState.bunker.truckVolume = gameState.bunker.compartments.reduce((sum, compartment) => sum + compartment.vol, 0);
 
     const alarmBanner = document.getElementById('global-alarm-banner');
