@@ -51,17 +51,20 @@ function refillWinchHydraulic() {
 function updateFifiPhysics() {
     const fifi = gameState.machinery.fifi;
     const fuelTank = gameState.tanks[fifi.fuelSource];
+    const freshWaterTank = gameState.tanks.tk02;
     let stateChanged = false;
 
     if (fifi.engineStatus === 'RUNNING') {
         if (fifi.carter.vol <= 0) {
             fifi.engineStatus = 'OFF';
             fifi.targetRpm = 0;
+            fifi.monitorsCommandOpen = false;
             triggerAlarm("TRIP FIFI: CARTER VAZIO.");
             stateChanged = true;
         } else if (fuelTank.vol <= 0) {
             fifi.engineStatus = 'OFF';
             fifi.targetRpm = 0;
+            fifi.monitorsCommandOpen = false;
             triggerAlarm(`SHUTDOWN FIFI: ${fuelTank.name} SEM ÓLEO DIESEL.`);
             stateChanged = true;
         } else {
@@ -82,15 +85,61 @@ function updateFifiPhysics() {
         fifi.rpm = fifi.targetRpm;
     }
 
-    const monitorsOpen = [fifi.monitorPortOpen, fifi.monitorStarboardOpen].filter(Boolean).length;
-    const dischargeReady = fifi.seawaterChestOpen && fifi.shellValveOpen && monitorsOpen > 0;
+    const canCommandMonitors = fifi.engineStatus === 'RUNNING' && fifi.seawaterChestOpen && fifi.shellValveOpen;
+
+    if (fifi.monitorsCommandOpen && canCommandMonitors) {
+        if (fifi.monitorDelaySeconds < 60) {
+            fifi.monitorDelaySeconds += 1;
+        } else {
+            fifi.monitorOpenPct = Math.min(100, fifi.monitorOpenPct + 8);
+        }
+        stateChanged = true;
+    } else {
+        if (fifi.monitorDelaySeconds !== 0 && !fifi.monitorsCommandOpen) {
+            fifi.monitorDelaySeconds = 0;
+            stateChanged = true;
+        }
+        if (fifi.monitorOpenPct > 0) {
+            fifi.monitorOpenPct = Math.max(0, fifi.monitorOpenPct - 10);
+            stateChanged = true;
+        }
+    }
+
+    if (!canCommandMonitors && fifi.monitorsCommandOpen) {
+        fifi.monitorsCommandOpen = false;
+        stateChanged = true;
+    }
+
+    if (fifi.sweeteningActive) {
+        if (fifi.engineStatus !== 'OFF' || fifi.seawaterChestOpen) {
+            fifi.sweeteningActive = false;
+            triggerAlarm("INTERLOCK FIFI: ADOÇAMENTO INTERROMPIDO.");
+            stateChanged = true;
+        } else if (freshWaterTank.vol <= 0) {
+            fifi.sweeteningActive = false;
+            triggerAlarm("SEM ÁGUA DOCE NO TK 02 PARA CONTINUAR ADOÇAMENTO DA REDE FIFI.");
+            stateChanged = true;
+        } else {
+            const sweeteningStep = Math.min(0.002, freshWaterTank.vol);
+            freshWaterTank.vol -= sweeteningStep;
+            fifi.sweeteningProgress = Math.min(100, fifi.sweeteningProgress + 8);
+            stateChanged = true;
+            if (fifi.sweeteningProgress >= 100) {
+                fifi.sweeteningActive = false;
+                fifi.networkFilled = true;
+            }
+        }
+    }
+
+    const monitorFraction = fifi.monitorOpenPct / 100;
+    const dischargeReady = canCommandMonitors && monitorFraction > 0;
 
     fifi.oilPress = fifi.engineStatus === 'RUNNING' ? 4.2 + (fifi.rpm / 900) : 0;
     fifi.coolTemp = fifi.engineStatus === 'RUNNING'
-        ? (dischargeReady ? 72 + monitorsOpen * 2 : 84)
+        ? (dischargeReady ? 72 + monitorFraction * 4 : 84)
         : (fifi.coolTemp > 30 ? Math.max(30, fifi.coolTemp - 2) : 30);
-    fifi.pumpPressure = dischargeReady && fifi.engineStatus === 'RUNNING' ? Math.min(13.5, 4.5 + (fifi.rpm / 220)) : 0;
-    fifi.flowRate = dischargeReady && fifi.engineStatus === 'RUNNING' ? monitorsOpen * (420 + (fifi.rpm * 0.12)) : 0;
+    fifi.pumpPressure = dischargeReady ? Math.min(13.5, (4.5 + (fifi.rpm / 220)) * monitorFraction) : 0;
+    fifi.flowRate = dischargeReady ? (2 * (420 + (fifi.rpm * 0.12)) * monitorFraction) : 0;
 
     return stateChanged;
 }

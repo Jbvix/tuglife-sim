@@ -152,6 +152,48 @@ function toggleFifiValve(valveKey) {
     if (!(valveKey in fifi)) return;
 
     fifi[valveKey] = !fifi[valveKey];
+    if (valveKey === 'seawaterChestOpen' && fifi[valveKey]) {
+        fifi.networkFilled = false;
+    }
+    renderView();
+    renderModalContent();
+}
+
+function toggleFifiMonitors() {
+    const fifi = gameState.machinery.fifi;
+
+    if (!fifi.monitorsCommandOpen) {
+        if (fifi.engineStatus !== 'RUNNING') {
+            return triggerAlarm("INTERLOCK FIFI: PARTIR O MOTOR ANTES DE COMANDAR OS CANHÕES.");
+        }
+        if (!fifi.seawaterChestOpen || !fifi.shellValveOpen) {
+            return triggerAlarm("INTERLOCK FIFI: ABRIR CAIXA DE MAR E VÁLVULA DE COSTADO.");
+        }
+        fifi.monitorDelaySeconds = 0;
+    }
+
+    fifi.monitorsCommandOpen = !fifi.monitorsCommandOpen;
+    renderView();
+    renderModalContent();
+}
+
+function startFifiSweetening() {
+    const fifi = gameState.machinery.fifi;
+
+    if (fifi.engineStatus !== 'OFF') {
+        return triggerAlarm("INTERLOCK FIFI: PARAR O MOTOR DIESEL ANTES DE ADOÇAR A REDE.");
+    }
+    if (fifi.seawaterChestOpen) {
+        return triggerAlarm("INTERLOCK FIFI: FECHAR A CAIXA DE MAR ANTES DE ADOÇAR.");
+    }
+    if (gameState.tanks.tk02.vol <= 0) {
+        return triggerAlarm("SEM ÁGUA DOCE NO TK 02 PARA ADOÇAR A REDE FIFI.");
+    }
+
+    fifi.sweeteningActive = !fifi.sweeteningActive;
+    if (fifi.sweeteningActive) {
+        fifi.sweeteningProgress = 0;
+    }
     renderView();
     renderModalContent();
 }
@@ -169,6 +211,7 @@ function handleFifiStart() {
         }
         fifi.engineStatus = 'RUNNING';
         fifi.targetRpm = 1800;
+        fifi.sweeteningActive = false;
     } else {
         fifi.engineStatus = 'OFF';
         fifi.targetRpm = 0;
