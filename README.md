@@ -15,14 +15,14 @@ O projeto é estático e pode ser publicado diretamente no GitHub + Netlify, sem
 
 ### Estrutura principal
 
-- `tuglife_sim.html`: entrada principal
-- `tuglife_sim.css`: estilos
-- `tuglife_state.js`: estado global
-- `tuglife_controls.js`: eventos e comandos
-- `tuglife_physics.js`: motor de simulação
-- `tuglife_render.js`: renderização da UI
-- `tuglife_3d.js`: visual 3D
-- `three.global.js`: biblioteca local do Three.js
+- `index.html`: apresentação e ponto de entrada do projeto
+- `tuglife_sim.html`: entrada principal do simulador
+- `docs/manual.html`: manual do projeto
+- `src/styles/`: estilos da aplicação
+- `src/scripts/`: scripts da aplicação
+- `vendor/three/`: bibliotecas locais do Three.js e loader GLTF
+- `assets/`: modelos e texturas do simulador
+- `docs/references/`: PDFs e materiais de apoio
 
 ### Deploy no Netlify
 

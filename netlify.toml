@@ -2,12 +2,22 @@
   publish = "."
 
 [[headers]]
-  for = "/*.js"
+  for = "/vendor/three/*"
   [headers.values]
     Content-Type = "application/javascript; charset=UTF-8"
 
 [[headers]]
-  for = "/*.css"
+  for = "/vendor/three/modules/*"
+  [headers.values]
+    Content-Type = "application/javascript; charset=UTF-8"
+
+[[headers]]
+  for = "/src/scripts/*"
+  [headers.values]
+    Content-Type = "application/javascript; charset=UTF-8"
+
+[[headers]]
+  for = "/src/styles/*"
   [headers.values]
     Content-Type = "text/css; charset=UTF-8"
 
@@ -15,3 +25,18 @@
   for = "/*.html"
   [headers.values]
     Content-Type = "text/html; charset=UTF-8"
+
+[[headers]]
+  for = "/docs/*.html"
+  [headers.values]
+    Content-Type = "text/html; charset=UTF-8"
+
+[[headers]]
+  for = "/assets/models/*.gltf"
+  [headers.values]
+    Content-Type = "model/gltf+json; charset=UTF-8"
+
+[[headers]]
+  for = "/assets/models/*.bin"
+  [headers.values]
+    Content-Type = "application/octet-stream"
