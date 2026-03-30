@@ -532,14 +532,20 @@ function renderView() {
     if (airPlantFillRate) airPlantFillRate.innerText = `${activeAirCompressor.lastOutput.toFixed(1)} bar/t`;
     const airPlantAlert = document.getElementById('ui-air-alert');
     if (airPlantAlert) {
-        const minControl = Math.min(getAirSystemState('ps').controlPressure, getAirSystemState('sb').controlPressure);
-        const showLowPressureDuringCharging = activeAirCompressor.isRunning && activeAirCompressor.lastOutput > 0;
-        airPlantAlert.innerText = showLowPressureDuringCharging && minControl < airPlant.lowPressureAlarmThreshold
-            ? `BAIXA PRESSÃO EM RECUPERAÇÃO (${minControl.toFixed(1)} bar)`
-            : 'PRESSÕES DENTRO DA FAIXA';
-        airPlantAlert.style.color = showLowPressureDuringCharging && minControl < airPlant.lowPressureAlarmThreshold
-            ? 'var(--accent-orange)'
-            : 'var(--accent-green)';
+        const minBottle = Math.min(getAirSystemState('ps').bottlePressure, getAirSystemState('sb').bottlePressure);
+        const isCharging = activeAirCompressor.isRunning && activeAirCompressor.lastOutput > 0;
+        const hasNormalPressure = minBottle >= airPlant.cutOut;
+
+        if (isCharging) {
+            airPlantAlert.innerText = 'ENCHENDO';
+            airPlantAlert.style.color = 'var(--accent-orange)';
+        } else if (hasNormalPressure) {
+            airPlantAlert.innerText = 'PRESSÃO NORMAL';
+            airPlantAlert.style.color = 'var(--accent-green)';
+        } else {
+            airPlantAlert.innerText = 'STANDBY';
+            airPlantAlert.style.color = '#90caf9';
+        }
     }
 
     ZD_SIDES.forEach(side => {
