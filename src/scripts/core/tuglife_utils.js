@@ -22,6 +22,23 @@ function getAirControlStateLabel(airSystem) {
     return airSystem.controlPressure >= airSystem.couplingMin ? 'AR OK' : 'AR BAIXO';
 }
 
+function getAirCompressorPlant() {
+    return gameState.machinery.air_compressors;
+}
+
+function getActiveAirCompressorSide() {
+    return getAirCompressorPlant().activeSide;
+}
+
+function getAirCompressor(side) {
+    return getAirCompressorPlant().compressors[side];
+}
+
+function getAirCompressorFeedingLabel() {
+    const activeSide = getActiveAirCompressorSide();
+    return activeSide === 'ps' ? 'COMP BB' : 'COMP BE';
+}
+
 function getSelectedBunkerTruck() {
     return gameState.bunker.trucks[gameState.bunker.selectedTruck];
 }

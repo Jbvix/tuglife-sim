@@ -45,6 +45,13 @@ function setDrawerTab(screenKey, tabKey) {
     renderView();
 }
 
+function selectActiveAirCompressor(side) {
+    const airPlant = getAirCompressorPlant();
+    if (!airPlant.compressors[side]) return;
+    airPlant.activeSide = side;
+    renderView();
+}
+
 function toggleWaterPanel() {
     gameState.waterBunkering.panelOpen = !gameState.waterBunkering.panelOpen;
     renderView();
@@ -288,6 +295,7 @@ function toggleClutch(mcpKey) {
     const mcp = gameState.machinery[mcpKey];
     const side = getMcpSide(mcpKey);
     const airSystem = getAirSystemState(side);
+    const feedingCompressor = getAirCompressor(getActiveAirCompressorSide());
     if (mcp.status !== 'RUNNING') return;
 
     if (mcp.rpm > 650 || mcp.telegraph > 0) {
@@ -297,7 +305,7 @@ function toggleClutch(mcpKey) {
 
     if (!mcp.clutchEngaged) {
         if (airSystem.bottlePressure < airSystem.couplingMin) {
-            triggerAlarm(`INTERLOCK ${airSystem.compressorName}: GARRAFA DE AR ABAIXO DE ${airSystem.couplingMin} BAR.`);
+            triggerAlarm(`INTERLOCK ${feedingCompressor.name}: GARRAFA DE AR ABAIXO DE ${airSystem.couplingMin} BAR.`);
             return;
         }
 

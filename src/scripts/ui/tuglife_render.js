@@ -111,6 +111,8 @@ function renderModalContent() {
         const zd = gameState.machinery[gameState.modal.entityKey];
         const side = gameState.modal.entityKey.endsWith('_ps') ? 'ps' : 'sb';
         const airSystem = getAirSystemState(side);
+        const activeCompressor = getAirCompressor(getActiveAirCompressorSide());
+        const feedingLabel = getAirCompressorFeedingLabel();
         const gearboxPct = getPercentage(zd.gearboxLO.vol, zd.gearboxLO.max).toFixed(0);
         const steeringPct = getPercentage(zd.steeringHyd.vol, zd.steeringHyd.max).toFixed(0);
 
@@ -122,7 +124,7 @@ function renderModalContent() {
             <div class="modal-data-row"><span class="modal-data-label">Azimute:</span><span class="modal-data-value">${zd.azimuth}°</span></div>
             <div class="modal-data-row"><span class="modal-data-label">OL150 Caixa:</span><span class="modal-data-value" style="color:${gearboxPct < 20 ? 'var(--accent-red)' : '#ffc107'}">${zd.gearboxLO.vol.toFixed(3)} m³ (${gearboxPct}%)</span></div>
             <div class="modal-data-row"><span class="modal-data-label">OH32 Governo:</span><span class="modal-data-value" style="color:${steeringPct < 20 ? 'var(--accent-red)' : '#2196f3'}">${zd.steeringHyd.vol.toFixed(3)} m³ (${steeringPct}%)</span></div>
-            <div class="modal-data-row"><span class="modal-data-label">Compressor:</span><span class="modal-data-value" style="color:${airSystem.isRunning ? 'var(--accent-green)' : '#888'}">${airSystem.mode} / ${airSystem.isRunning ? 'EM CARGA' : 'EM ESPERA'}</span></div>
+            <div class="modal-data-row"><span class="modal-data-label">Compressor:</span><span class="modal-data-value" style="color:${activeCompressor.isRunning ? 'var(--accent-green)' : '#888'}">${feedingLabel} / ${activeCompressor.status}</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Garrafa de ar:</span><span class="modal-data-value" style="color:${airSystem.bottlePressure < airSystem.couplingMin ? 'var(--accent-red)' : '#90caf9'}">${airSystem.bottlePressure.toFixed(1)} bar</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Caixa de controle:</span><span class="modal-data-value" style="color:${airSystem.controlPressure < airSystem.couplingMin ? 'var(--accent-red)' : 'var(--accent-green)'}">${airSystem.controlPressure.toFixed(1)} bar</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Propulsor:</span><span class="modal-data-value" style="color:${zd.propState === 'TRIP' ? 'var(--accent-red)' : 'var(--accent-green)'}">${zd.propState}</span></div>
@@ -481,10 +483,43 @@ function renderView() {
     if (drivePanel) drivePanel.style.display = gameState.drawerTabs.visual3d === 'drive' ? 'block' : 'none';
     if (anchorPanel) anchorPanel.style.display = gameState.drawerTabs.visual3d === 'anchor' ? 'block' : 'none';
 
+    const airPlant = getAirCompressorPlant();
+    const activeAirSide = getActiveAirCompressorSide();
+    const airPsCompressor = getAirCompressor('ps');
+    const airSbCompressor = getAirCompressor('sb');
+    const airAutoState = airPlant.mode === 'AUTO' ? 'AUTOMÁTICO' : airPlant.mode;
+
+    const propulsionAirPanel = document.getElementById('propulsion-air-panel');
+    if (propulsionAirPanel) propulsionAirPanel.style.display = gameState.drawerTabs.propulsion === 'air_system' ? 'block' : 'none';
+    const activeCompressorLabel = document.getElementById('ui-air-active-compressor');
+    if (activeCompressorLabel) activeCompressorLabel.innerText = activeAirSide === 'ps' ? 'COMPRESSOR BB' : 'COMPRESSOR BE';
+    const airPlantModeLabel = document.getElementById('ui-air-plant-mode');
+    if (airPlantModeLabel) airPlantModeLabel.innerText = airAutoState;
+    const airPlantStatus = document.getElementById('ui-air-plant-status');
+    if (airPlantStatus) {
+        airPlantStatus.innerText = airPsCompressor.isRunning || airSbCompressor.isRunning ? 'EM CARGA' : 'EM ESPERA';
+        airPlantStatus.style.color = airPsCompressor.isRunning || airSbCompressor.isRunning ? 'var(--accent-green)' : '#888';
+    }
+    const btnAirPsDuty = document.getElementById('btn-air-ps-duty');
+    const btnAirSbDuty = document.getElementById('btn-air-sb-duty');
+    if (btnAirPsDuty) btnAirPsDuty.className = activeAirSide === 'ps' ? 'aux-btn active' : 'aux-btn';
+    if (btnAirSbDuty) btnAirSbDuty.className = activeAirSide === 'sb' ? 'aux-btn active' : 'aux-btn';
+    const uiAirPsDuty = document.getElementById('ui-air-ps-duty');
+    const uiAirSbDuty = document.getElementById('ui-air-sb-duty');
+    if (uiAirPsDuty) {
+        uiAirPsDuty.innerText = airPsCompressor.status;
+        uiAirPsDuty.style.color = airPsCompressor.isRunning ? 'var(--accent-green)' : activeAirSide === 'ps' ? '#90caf9' : '#888';
+    }
+    if (uiAirSbDuty) {
+        uiAirSbDuty.innerText = airSbCompressor.status;
+        uiAirSbDuty.style.color = airSbCompressor.isRunning ? 'var(--accent-green)' : activeAirSide === 'sb' ? '#90caf9' : '#888';
+    }
+
     ZD_SIDES.forEach(side => {
         const mcp = gameState.machinery[`mcp_${side}`];
         const zd = gameState.machinery[`zd_${side}`];
         const airSystem = getAirSystemState(side);
+        const feedLabel = getAirCompressorFeedingLabel();
         const mcpColor = mcp.status === 'RUNNING' ? 'var(--accent-green)' : '#888';
         const mcPct = (mcp.carter.vol / mcp.carter.max) * 100;
         const mcColor = mcPct < 20 ? 'var(--accent-red)' : mcPct < 30 ? 'var(--accent-orange)' : '#ffc107';
@@ -535,15 +570,15 @@ function renderView() {
             clutchButton.classList.remove('engaged');
         }
 
-        document.getElementById(`ui-air-${side}-comp`).innerText = airSystem.isRunning ? 'AUTO ON' : 'AUTO OFF';
-        document.getElementById(`ui-air-${side}-comp`).style.color = airSystem.isRunning ? 'var(--accent-green)' : '#888';
+        document.getElementById(`ui-air-${side}-comp`).innerText = feedLabel;
+        document.getElementById(`ui-air-${side}-comp`).style.color = '#90caf9';
         document.getElementById(`ui-air-${side}-bottle`).innerText = airSystem.bottlePressure.toFixed(1);
         document.getElementById(`ui-air-${side}-bottle`).style.color = airSystem.bottlePressure < airSystem.couplingMin ? 'var(--accent-red)' : '#90caf9';
         document.getElementById(`ui-air-${side}-box`).innerText = airSystem.controlPressure.toFixed(1);
         document.getElementById(`ui-air-${side}-box`).style.color = airReady ? 'var(--accent-green)' : 'var(--accent-red)';
         document.getElementById(`ui-air-${side}-control`).innerText = `${airSystem.controlPressure.toFixed(1)} bar`;
         const airStateEl = document.getElementById(`ui-air-${side}-comp-state`);
-        airStateEl.innerText = `${airSystem.mode} / ${getAirControlStateLabel(airSystem)}`;
+        airStateEl.innerText = `${feedLabel} / ${getAirControlStateLabel(airSystem)}`;
         airStateEl.style.background = airReady ? 'rgba(76,175,80,0.18)' : 'rgba(244,67,54,0.18)';
         airStateEl.style.color = airReady ? 'var(--accent-green)' : 'var(--accent-red)';
 

@@ -433,8 +433,36 @@
             <div class="drawer-tab-row tab-row-2">
                 <button class="drawer-tab-btn" data-screen="propulsion" data-tab="mcp_ps" onclick="setDrawerTab('propulsion','mcp_ps')">MCP BB</button>
                 <button class="drawer-tab-btn" data-screen="propulsion" data-tab="mcp_sb" onclick="setDrawerTab('propulsion','mcp_sb')">MCP BE</button>
+                <button class="drawer-tab-btn" data-screen="propulsion" data-tab="air_system" onclick="setDrawerTab('propulsion','air_system')">Ar Acopl.</button>
             </div>
             <div class="control-panel">
+                <div class="drawer-tab-panel" data-screen="propulsion" data-tab="air_system">
+                <div id="propulsion-air-panel" class="generator-box" style="border-color:#90caf9;">
+                    <div class="gen-header"><span class="gen-title" style="color:#90caf9;">PLANTA DE AR DE ACOPLAMENTO</span><span id="ui-air-plant-mode" class="gen-status">AUTOMÁTICO</span></div>
+                    <div class="system-strip">
+                        <span style="font-size:0.75rem; color:#90caf9; font-weight:bold;">COMPRESSOR EM SERVIÇO</span>
+                        <span id="ui-air-active-compressor" class="system-strip-value">COMPRESSOR BB</span>
+                        <span id="ui-air-plant-status" class="system-strip-badge">EM ESPERA</span>
+                    </div>
+                    <div class="aux-grid" style="margin:10px 0 12px;">
+                        <button id="btn-air-ps-duty" class="aux-btn" onclick="selectActiveAirCompressor('ps')">COMPRESSOR BB</button>
+                        <button id="btn-air-sb-duty" class="aux-btn" onclick="selectActiveAirCompressor('sb')">COMPRESSOR BE</button>
+                    </div>
+                    <div class="meter-grid" style="grid-template-columns:1fr 1fr; gap:10px;">
+                        <div class="meter">
+                            <div id="ui-air-ps-duty" class="meter-val" style="color:#90caf9;">ACTIVE</div>
+                            <div class="meter-label">STATUS COMP. BB</div>
+                        </div>
+                        <div class="meter">
+                            <div id="ui-air-sb-duty" class="meter-val" style="color:#888;">STANDBY</div>
+                            <div class="meter-label">STATUS COMP. BE</div>
+                        </div>
+                    </div>
+                    <div class="three-d-legend" style="margin-top:12px;">
+                        Sistema automático: o compressor em serviço entra com 10 bar e corta com 14 bar, alimentando simultaneamente as garrafas BB e BE. O outro compressor permanece em standby até você alternar o serviço.
+                    </div>
+                </div>
+                </div>
                 <!-- MCP Bombordo -->
                 <div class="drawer-tab-panel" data-screen="propulsion" data-tab="mcp_ps">
                 <div class="generator-box" style="border-color: var(--accent-orange);">

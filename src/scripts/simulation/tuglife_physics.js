@@ -146,25 +146,50 @@ function updateFifiPhysics() {
 
 function updateCouplingAirPhysics(side) {
     const airSystem = getAirSystemState(side);
+    const airPlant = getAirCompressorPlant();
+    const activeSide = airPlant.activeSide;
+    const activeCompressor = getAirCompressor(activeSide);
     let stateChanged = false;
 
     if (!airSystem) return stateChanged;
 
-    if (airSystem.mode === 'AUTO') {
-        if (!gameState.power.isLive) {
-            if (airSystem.isRunning) stateChanged = true;
-            airSystem.isRunning = false;
-        } else if (airSystem.bottlePressure <= airSystem.cutIn) {
-            if (!airSystem.isRunning) stateChanged = true;
-            airSystem.isRunning = true;
-        } else if (airSystem.bottlePressure >= airSystem.cutOut) {
-            if (airSystem.isRunning) stateChanged = true;
-            airSystem.isRunning = false;
+    if (side === activeSide) {
+        const lowestBottlePressure = Math.min(
+            getAirSystemState('ps').bottlePressure,
+            getAirSystemState('sb').bottlePressure
+        );
+        const highestBottlePressure = Math.max(
+            getAirSystemState('ps').bottlePressure,
+            getAirSystemState('sb').bottlePressure
+        );
+
+        if (airPlant.mode === 'AUTO') {
+            if (!gameState.power.isLive) {
+                if (activeCompressor.isRunning) stateChanged = true;
+                activeCompressor.isRunning = false;
+            } else if (lowestBottlePressure <= airPlant.cutIn) {
+                if (!activeCompressor.isRunning) stateChanged = true;
+                activeCompressor.isRunning = true;
+            } else if (highestBottlePressure >= airPlant.cutOut && lowestBottlePressure >= airPlant.cutOut) {
+                if (activeCompressor.isRunning) stateChanged = true;
+                activeCompressor.isRunning = false;
+            }
         }
+
+        ['ps', 'sb'].forEach((compressorSide) => {
+            const compressor = getAirCompressor(compressorSide);
+            const shouldRun = compressorSide === activeSide && activeCompressor.isRunning;
+            const nextStatus = compressorSide === activeSide ? (shouldRun ? 'RUNNING' : 'ACTIVE') : 'STANDBY';
+            if (compressor.isRunning !== shouldRun || compressor.status !== nextStatus) {
+                stateChanged = true;
+            }
+            compressor.isRunning = shouldRun;
+            compressor.status = nextStatus;
+        });
     }
 
     const previousBottlePressure = airSystem.bottlePressure;
-    if (airSystem.isRunning && gameState.power.isLive) {
+    if (activeCompressor.isRunning && gameState.power.isLive) {
         airSystem.bottlePressure = Math.min(airSystem.bottleMax, airSystem.bottlePressure + airSystem.chargeRate);
     } else {
         airSystem.bottlePressure = Math.max(0, airSystem.bottlePressure - airSystem.standbyLeak);
@@ -546,8 +571,8 @@ function runSimulationTick() {
         if (mcp.coolingOn) totalLoadKw += 8;
     });
     if (gameState.machinery.chiller.isOn) totalLoadKw += 25;
-    if (gameState.machinery.air_ps.isRunning) totalLoadKw += gameState.machinery.air_ps.compressorLoadKw;
-    if (gameState.machinery.air_sb.isRunning) totalLoadKw += gameState.machinery.air_sb.compressorLoadKw;
+    const activeAirCompressor = getAirCompressor(getActiveAirCompressorSide());
+    if (activeAirCompressor.isRunning) totalLoadKw += activeAirCompressor.loadKw;
 
     const loadPerGen = runningGens.length > 0 ? totalLoadKw / runningGens.length : 0;
     MCA_KEYS.forEach(genKey => {
