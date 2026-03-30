@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>TugLife Sim | Manual</title>
+    <style>
+        :root {
+            --bg: #081119;
+            --panel: rgba(13, 25, 36, 0.9);
+            --line: rgba(0, 188, 212, 0.18);
+            --text: #e6f6fb;
+            --muted: #94b4c0;
+            --accent: #00bcd4;
+            --accent-2: #ff9800;
+            --accent-3: #4caf50;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top, rgba(0, 188, 212, 0.12), transparent 26%),
+                linear-gradient(180deg, #081119 0%, #0b1721 48%, #050b11 100%);
+        }
+
+        .page {
+            width: min(1120px, 100%);
+            margin: 0 auto;
+            padding: 24px 16px 40px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .brand {
+            font-size: 0.9rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: var(--text);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
+            padding: 10px 14px;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        .hero,
+        .section,
+        .toc {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            box-shadow: 0 18px 54px rgba(0, 0, 0, 0.28);
+        }
+
+        .hero {
+            padding: 28px;
+            margin-bottom: 18px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            color: var(--accent);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 4vw, 3.4rem);
+            line-height: 1;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        .hero p {
+            font-size: 1rem;
+            line-height: 1.75;
+            color: var(--muted);
+            max-width: 72ch;
+        }
+
+        .hero-note {
+            margin-top: 18px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            background: rgba(76, 175, 80, 0.08);
+            border: 1px solid rgba(76, 175, 80, 0.18);
+            color: #bcecc3;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 18px;
+            align-items: start;
+        }
+
+        .toc {
+            position: sticky;
+            top: 16px;
+            padding: 18px;
+        }
+
+        .toc-title {
+            font-size: 0.84rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+
+        .toc a {
+            display: block;
+            text-decoration: none;
+            color: var(--text);
+            padding: 10px 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .section {
+            padding: 24px;
+        }
+
+        .section h2 {
+            font-size: 1.2rem;
+            margin-bottom: 14px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .section p {
+            color: var(--muted);
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .section ul {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .section li {
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .card {
+            padding: 14px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .card-title {
+            color: var(--text);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .glossary {
+            display: grid;
+            gap: 10px;
+        }
+
+        .term {
+            padding: 14px 16px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .term-name {
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .term-desc {
+            color: var(--muted);
+            line-height: 1.65;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .toc {
+                position: static;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="topbar">
+            <div class="brand">Manual do Projeto</div>
+            <a class="back-link" href="./index.html">Voltar à Apresentação</a>
+        </div>
+
+        <section class="hero">
+            <div class="eyebrow">TugLife Sim</div>
+            <h1>Manual Educativo</h1>
+            <p>
+                Este manual apresenta a proposta do simulador, seus principais módulos e uma base de
+                termos técnicos e navais utilizados ao longo da interface. O foco é apoiar estudo,
+                treinamento conceitual e entendimento operacional dos sistemas representados no app.
+            </p>
+            <div class="hero-note">
+                O projeto tem finalidade educativa. Ele não substitui procedimentos oficiais,
+                documentação de fabricante, treinamento embarcado ou normas operacionais reais.
+            </div>
+        </section>
+
+        <div class="layout">
+            <nav class="toc">
+                <div class="toc-title">Conteúdo</div>
+                <a href="#visao-geral">Visão Geral</a>
+                <a href="#modulos">Módulos do Simulador</a>
+                <a href="#operacao">Lógica Operacional</a>
+                <a href="#estabilidade">Trim e Estabilidade</a>
+                <a href="#glossario">Glossário Técnico e Naval</a>
+            </nav>
+
+            <main class="content">
+                <section class="section" id="visao-geral">
+                    <h2>Visão Geral</h2>
+                    <p>
+                        O TugLife Sim é uma plataforma interativa para estudo de sistemas de bordo,
+                        recebimento de fluidos, propulsão azimutal, intertravamentos e visualização 3D
+                        do comportamento do rebocador.
+                    </p>
+                    <p>
+                        O ambiente combina planta 2D, painéis operacionais e representação 3D para ajudar
+                        na leitura de volumes, estados de máquinas, consumo, resposta de propulsão e
+                        percepção de banda, trim e calado.
+                    </p>
+                </section>
+
+                <section class="section" id="modulos">
+                    <h2>Módulos do Simulador</h2>
+                    <div class="cards">
+                        <div class="card">
+                            <div class="card-title">Planta</div>
+                            <p>Representação da praça de máquinas e dos tanques, com acesso por inspeção.</p>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Recebimento</div>
+                            <p>Recebimento de água e óleo por caminhão-tanque e por tambor, com seleção de destinos.</p>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">FO/LO</div>
+                            <p>Transferência interna, purificador, cross-feed e lógica de recirculação entre tanques.</p>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">QEP</div>
+                            <p>Quadro elétrico principal com geradores auxiliares, disjuntores e barramento.</p>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Motores</div>
+                            <p>MCPs, MCAs, auxiliares, acoplamento de Z-Drive e telegráfo de comando.</p>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Visual 3D</div>
+                            <p>Rebocador na água com vetores de força, calado, trim, adernamento e amarração.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section" id="operacao">
+                    <h2>Lógica Operacional</h2>
+                    <ul>
+                        <li>Os equipamentos seguem intertravamentos básicos antes de partida e operação.</li>
+                        <li>Tanques de serviço, armazenamento e overflow reagem a recebimento, consumo e transferência.</li>
+                        <li>Os Z-Drives dependem de lubrificação e governo hidráulico para operação consistente.</li>
+                        <li>Alarmes e bloqueios ajudam a representar condições inseguras ou indisponibilidade de sistemas.</li>
+                    </ul>
+                </section>
+
+                <section class="section" id="estabilidade">
+                    <h2>Trim e Estabilidade</h2>
+                    <p>
+                        O simulador utiliza um modelo simplificado para representar deslocamento, banda, trim e
+                        calado a partir da distribuição de massas e volumes. A proposta atual é educativa e serve
+                        para percepção operacional básica, não para cálculo naval definitivo.
+                    </p>
+                    <ul>
+                        <li>Carregamento de proa tende a fazer o rebocador abicar.</li>
+                        <li>Carregamento de ré tende a fazer o rebocador derrabar.</li>
+                        <li>Diferenças entre bombordo e estibordo geram adernamento.</li>
+                        <li>O visual 3D reforça a leitura de resultante vetorial, trim, banda e calado.</li>
+                    </ul>
+                </section>
+
+                <section class="section" id="glossario">
+                    <h2>Glossário Técnico e Naval</h2>
+                    <div class="glossary">
+                        <div class="term">
+                            <div class="term-name">Adernamento</div>
+                            <div class="term-desc">Inclinação transversal da embarcação para bombordo ou estibordo.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">Azimute</div>
+                            <div class="term-desc">Ângulo de orientação do propulsor azimutal em relação ao casco.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">Banda</div>
+                            <div class="term-desc">Direção para a qual a embarcação está inclinada lateralmente.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">Bombordo (BB)</div>
+                            <div class="term-desc">Lado esquerdo da embarcação olhando da popa para a proa.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">Boreste / Estibordo (BE)</div>
+                            <div class="term-desc">Lado direito da embarcação olhando da popa para a proa.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">Calado</div>
+                            <div class="term-desc">Profundidade da parte submersa do casco em relação à linha d’água.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">Cárter</div>
+                            <div class="term-desc">Reservatório de óleo lubrificante do motor.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">Cross-feed</div>
+                            <div class="term-desc">Ligação entre linhas ou tanques para equalização ou alimentação cruzada.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">FO</div>
+                            <div class="term-desc">Fuel Oil, usado aqui como combustível líquido do sistema.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">HDR</div>
+                            <div class="term-desc">Tanque header ou tanque de serviço que alimenta consumidores diretamente.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">Intertravamento</div>
+                            <div class="term-desc">Regra lógica que bloqueia uma ação enquanto pré-condições não forem atendidas.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">LO</div>
+                            <div class="term-desc">Lubricating Oil, óleo lubrificante utilizado em motores e equipamentos.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">Manifold</div>
+                            <div class="term-desc">Conjunto de conexões e válvulas usado para recebimento ou distribuição de fluidos.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">MCA</div>
+                            <div class="term-desc">Motor auxiliar do sistema, associado aqui ao conjunto gerador.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">MCP</div>
+                            <div class="term-desc">Motor de combustão principal, responsável pela propulsão do rebocador.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">OH32</div>
+                            <div class="term-desc">Óleo hidráulico usado no governo dos propulsores e em sistemas hidráulicos.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">Overflow</div>
+                            <div class="term-desc">Tanque de transbordo que recebe excesso de volume de outros tanques.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">Peak de Ré</div>
+                            <div class="term-desc">Tanque localizado na região de popa da embarcação.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">Peak de Vante</div>
+                            <div class="term-desc">Tanque localizado na região de proa da embarcação.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">Popa</div>
+                            <div class="term-desc">Parte traseira da embarcação.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">Praça de Máquinas</div>
+                            <div class="term-desc">Área da embarcação onde ficam máquinas, sistemas auxiliares e instalações principais.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">Proa</div>
+                            <div class="term-desc">Parte dianteira da embarcação.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">Purificador</div>
+                            <div class="term-desc">Equipamento usado para tratamento, limpeza ou recirculação de óleo.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">QEP</div>
+                            <div class="term-desc">Quadro Elétrico Principal, responsável pela distribuição de energia do sistema.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">Telegráfo</div>
+                            <div class="term-desc">Comando de máquina usado para definir intensidade de propulsão.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">Trim</div>
+                            <div class="term-desc">Diferença de calado entre proa e popa, indicando abatimento longitudinal.</div>
+                        </div>
+                        <div class="term">
+                            <div class="term-name">Z-Drive</div>
+                            <div class="term-desc">Propulsor azimutal com giro de 360°, capaz de orientar o empuxo em diferentes direções.</div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
