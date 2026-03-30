@@ -125,6 +125,7 @@ function renderModalContent() {
             <div class="modal-data-row"><span class="modal-data-label">OL150 Caixa:</span><span class="modal-data-value" style="color:${gearboxPct < 20 ? 'var(--accent-red)' : '#ffc107'}">${zd.gearboxLO.vol.toFixed(3)} m³ (${gearboxPct}%)</span></div>
             <div class="modal-data-row"><span class="modal-data-label">OH32 Governo:</span><span class="modal-data-value" style="color:${steeringPct < 20 ? 'var(--accent-red)' : '#2196f3'}">${zd.steeringHyd.vol.toFixed(3)} m³ (${steeringPct}%)</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Compressor:</span><span class="modal-data-value" style="color:${activeCompressor.isRunning ? 'var(--accent-green)' : '#888'}">${feedingLabel} / ${activeCompressor.status}</span></div>
+            <div class="modal-data-row"><span class="modal-data-label">Enchimento:</span><span class="modal-data-value" style="color:${activeCompressor.lastOutput > 0 ? 'var(--accent-green)' : '#888'}">${activeCompressor.lastOutput.toFixed(1)} bar/t</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Garrafa de ar:</span><span class="modal-data-value" style="color:${airSystem.bottlePressure < airSystem.couplingMin ? 'var(--accent-red)' : '#90caf9'}">${airSystem.bottlePressure.toFixed(1)} bar</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Caixa de controle:</span><span class="modal-data-value" style="color:${airSystem.controlPressure < airSystem.couplingMin ? 'var(--accent-red)' : 'var(--accent-green)'}">${airSystem.controlPressure.toFixed(1)} bar</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Propulsor:</span><span class="modal-data-value" style="color:${zd.propState === 'TRIP' ? 'var(--accent-red)' : 'var(--accent-green)'}">${zd.propState}</span></div>
@@ -487,6 +488,7 @@ function renderView() {
     const activeAirSide = getActiveAirCompressorSide();
     const airPsCompressor = getAirCompressor('ps');
     const airSbCompressor = getAirCompressor('sb');
+    const activeAirCompressor = getAirCompressor(activeAirSide);
     const airAutoState = airPlant.mode === 'AUTO' ? 'AUTOMÁTICO' : airPlant.mode;
 
     const propulsionAirPanel = document.getElementById('propulsion-air-panel');
@@ -497,8 +499,16 @@ function renderView() {
     if (airPlantModeLabel) airPlantModeLabel.innerText = airAutoState;
     const airPlantStatus = document.getElementById('ui-air-plant-status');
     if (airPlantStatus) {
-        airPlantStatus.innerText = airPsCompressor.isRunning || airSbCompressor.isRunning ? 'EM CARGA' : 'EM ESPERA';
-        airPlantStatus.style.color = airPsCompressor.isRunning || airSbCompressor.isRunning ? 'var(--accent-green)' : '#888';
+        airPlantStatus.innerText = activeAirCompressor.health === 'FAULT'
+            ? 'FALHA / CONTINGÊNCIA'
+            : airPsCompressor.isRunning || airSbCompressor.isRunning
+                ? 'EM CARGA'
+                : 'EM ESPERA';
+        airPlantStatus.style.color = activeAirCompressor.health === 'FAULT'
+            ? 'var(--accent-red)'
+            : airPsCompressor.isRunning || airSbCompressor.isRunning
+                ? 'var(--accent-green)'
+                : '#888';
     }
     const btnAirPsDuty = document.getElementById('btn-air-ps-duty');
     const btnAirSbDuty = document.getElementById('btn-air-sb-duty');
@@ -507,12 +517,22 @@ function renderView() {
     const uiAirPsDuty = document.getElementById('ui-air-ps-duty');
     const uiAirSbDuty = document.getElementById('ui-air-sb-duty');
     if (uiAirPsDuty) {
-        uiAirPsDuty.innerText = airPsCompressor.status;
-        uiAirPsDuty.style.color = airPsCompressor.isRunning ? 'var(--accent-green)' : activeAirSide === 'ps' ? '#90caf9' : '#888';
+        uiAirPsDuty.innerText = getAirCompressorStatusLabel(airPsCompressor);
+        uiAirPsDuty.style.color = airPsCompressor.health === 'FAULT' ? 'var(--accent-red)' : airPsCompressor.isRunning ? 'var(--accent-green)' : activeAirSide === 'ps' ? '#90caf9' : '#888';
     }
     if (uiAirSbDuty) {
-        uiAirSbDuty.innerText = airSbCompressor.status;
-        uiAirSbDuty.style.color = airSbCompressor.isRunning ? 'var(--accent-green)' : activeAirSide === 'sb' ? '#90caf9' : '#888';
+        uiAirSbDuty.innerText = getAirCompressorStatusLabel(airSbCompressor);
+        uiAirSbDuty.style.color = airSbCompressor.health === 'FAULT' ? 'var(--accent-red)' : airSbCompressor.isRunning ? 'var(--accent-green)' : activeAirSide === 'sb' ? '#90caf9' : '#888';
+    }
+    const airPlantFillRate = document.getElementById('ui-air-fill-rate');
+    if (airPlantFillRate) airPlantFillRate.innerText = `${activeAirCompressor.lastOutput.toFixed(1)} bar/t`;
+    const airPlantAlert = document.getElementById('ui-air-alert');
+    if (airPlantAlert) {
+        const minControl = Math.min(getAirSystemState('ps').controlPressure, getAirSystemState('sb').controlPressure);
+        airPlantAlert.innerText = minControl < airPlant.lowPressureAlarmThreshold
+            ? `ALARME DE BAIXA PRESSÃO (${minControl.toFixed(1)} bar)`
+            : 'PRESSÕES DENTRO DA FAIXA';
+        airPlantAlert.style.color = minControl < airPlant.lowPressureAlarmThreshold ? 'var(--accent-red)' : 'var(--accent-green)';
     }
 
     ZD_SIDES.forEach(side => {

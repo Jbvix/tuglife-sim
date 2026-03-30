@@ -39,6 +39,13 @@ function getAirCompressorFeedingLabel() {
     return activeSide === 'ps' ? 'COMP BB' : 'COMP BE';
 }
 
+function getAirCompressorStatusLabel(compressor) {
+    if (!compressor) return 'OFF';
+    if (compressor.health === 'FAULT') return 'FALHA';
+    if (compressor.isRunning) return 'EM CARGA';
+    return compressor.status;
+}
+
 function getSelectedBunkerTruck() {
     return gameState.bunker.trucks[gameState.bunker.selectedTruck];
 }

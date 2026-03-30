@@ -172,9 +172,11 @@ const gameState = {
             activeSide: 'ps',
             cutIn: 10,
             cutOut: 14,
+            autoStandbyTakeover: true,
+            lowPressureAlarmThreshold: 11,
             compressors: {
-                ps: { name: "Compressor de Ar BB", status: 'STANDBY', isRunning: false, loadKw: 12 },
-                sb: { name: "Compressor de Ar BE", status: 'STANDBY', isRunning: false, loadKw: 12 }
+                ps: { name: "Compressor de Ar BB", status: 'STANDBY', isRunning: false, loadKw: 12, fillRate: 1.2, health: 'READY', lastOutput: 0 },
+                sb: { name: "Compressor de Ar BE", status: 'STANDBY', isRunning: false, loadKw: 12, fillRate: 1.2, health: 'READY', lastOutput: 0 }
             }
         },
         air_ps: {

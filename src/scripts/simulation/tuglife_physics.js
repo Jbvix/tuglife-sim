@@ -149,6 +149,8 @@ function updateCouplingAirPhysics(side) {
     const airPlant = getAirCompressorPlant();
     const activeSide = airPlant.activeSide;
     const activeCompressor = getAirCompressor(activeSide);
+    const standbySide = activeSide === 'ps' ? 'sb' : 'ps';
+    const standbyCompressor = getAirCompressor(standbySide);
     let stateChanged = false;
 
     if (!airSystem) return stateChanged;
@@ -164,12 +166,18 @@ function updateCouplingAirPhysics(side) {
         );
 
         if (airPlant.mode === 'AUTO') {
+            if (activeCompressor.health === 'FAULT' && airPlant.autoStandbyTakeover && standbyCompressor.health !== 'FAULT') {
+                airPlant.activeSide = standbySide;
+                stateChanged = true;
+                return updateCouplingAirPhysics(side);
+            }
+
             if (!gameState.power.isLive) {
                 if (activeCompressor.isRunning) stateChanged = true;
                 activeCompressor.isRunning = false;
             } else if (lowestBottlePressure <= airPlant.cutIn) {
                 if (!activeCompressor.isRunning) stateChanged = true;
-                activeCompressor.isRunning = true;
+                activeCompressor.isRunning = activeCompressor.health !== 'FAULT';
             } else if (highestBottlePressure >= airPlant.cutOut && lowestBottlePressure >= airPlant.cutOut) {
                 if (activeCompressor.isRunning) stateChanged = true;
                 activeCompressor.isRunning = false;
@@ -178,8 +186,9 @@ function updateCouplingAirPhysics(side) {
 
         ['ps', 'sb'].forEach((compressorSide) => {
             const compressor = getAirCompressor(compressorSide);
-            const shouldRun = compressorSide === activeSide && activeCompressor.isRunning;
-            const nextStatus = compressorSide === activeSide ? (shouldRun ? 'RUNNING' : 'ACTIVE') : 'STANDBY';
+            const shouldRun = compressorSide === airPlant.activeSide && getAirCompressor(airPlant.activeSide).isRunning;
+            let nextStatus = compressorSide === airPlant.activeSide ? (shouldRun ? 'RUNNING' : 'ACTIVE') : 'STANDBY';
+            if (compressor.health === 'FAULT') nextStatus = 'FAULT';
             if (compressor.isRunning !== shouldRun || compressor.status !== nextStatus) {
                 stateChanged = true;
             }
@@ -189,8 +198,13 @@ function updateCouplingAirPhysics(side) {
     }
 
     const previousBottlePressure = airSystem.bottlePressure;
-    if (activeCompressor.isRunning && gameState.power.isLive) {
-        airSystem.bottlePressure = Math.min(airSystem.bottleMax, airSystem.bottlePressure + airSystem.chargeRate);
+    const currentActiveCompressor = getAirCompressor(getActiveAirCompressorSide());
+    if (side === 'ps') {
+        currentActiveCompressor.lastOutput = 0;
+    }
+    if (currentActiveCompressor.isRunning && gameState.power.isLive && currentActiveCompressor.health !== 'FAULT') {
+        currentActiveCompressor.lastOutput += currentActiveCompressor.fillRate;
+        airSystem.bottlePressure = Math.min(airSystem.bottleMax, airSystem.bottlePressure + currentActiveCompressor.fillRate);
     } else {
         airSystem.bottlePressure = Math.max(0, airSystem.bottlePressure - airSystem.standbyLeak);
     }
@@ -210,6 +224,14 @@ function updateCouplingAirPhysics(side) {
 
     if (Math.abs(previousControlPressure - airSystem.controlPressure) > 0.0001) {
         stateChanged = true;
+    }
+
+    if (
+        airPlant.mode === 'AUTO'
+        && airSystem.controlPressure < airPlant.lowPressureAlarmThreshold
+        && !gameState.isAlarmActive
+    ) {
+        triggerAlarm(`AVISO AR DE ACOPLAMENTO ${side === 'ps' ? 'BB' : 'BE'}: CAIXA DE CONTROLE ABAIXO DE ${airPlant.lowPressureAlarmThreshold} BAR.`);
     }
 
     return stateChanged;
