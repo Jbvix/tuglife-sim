@@ -286,11 +286,28 @@ function handleTelegraph(mcpKey, val) {
 
 function toggleClutch(mcpKey) {
     const mcp = gameState.machinery[mcpKey];
+    const side = getMcpSide(mcpKey);
+    const airSystem = getAirSystemState(side);
     if (mcp.status !== 'RUNNING') return;
 
     if (mcp.rpm > 650 || mcp.telegraph > 0) {
         triggerAlarm("INTERLOCK (CAIXA REDUTORA): REDUZA O TELÉGRAFO PARA IDLE ANTES DE ACOPLAR!");
         return;
+    }
+
+    if (!mcp.clutchEngaged) {
+        if (airSystem.bottlePressure < airSystem.couplingMin) {
+            triggerAlarm(`INTERLOCK ${airSystem.compressorName}: GARRAFA DE AR ABAIXO DE ${airSystem.couplingMin} BAR.`);
+            return;
+        }
+
+        if (airSystem.controlPressure < airSystem.couplingMin) {
+            triggerAlarm(`INTERLOCK ${airSystem.name}: CAIXA DE CONTROLE SEM PRESSÃO DE ACOPLAMENTO (${airSystem.controlPressure.toFixed(1)} BAR).`);
+            return;
+        }
+
+        airSystem.bottlePressure = Math.max(0, airSystem.bottlePressure - airSystem.couplingConsumption);
+        airSystem.controlPressure = Math.max(0, Math.min(airSystem.controlMax, airSystem.controlPressure - 1.0, airSystem.bottlePressure));
     }
 
     mcp.clutchEngaged = !mcp.clutchEngaged;

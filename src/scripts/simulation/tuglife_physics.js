@@ -144,6 +144,52 @@ function updateFifiPhysics() {
     return stateChanged;
 }
 
+function updateCouplingAirPhysics(side) {
+    const airSystem = getAirSystemState(side);
+    let stateChanged = false;
+
+    if (!airSystem) return stateChanged;
+
+    if (airSystem.mode === 'AUTO') {
+        if (!gameState.power.isLive) {
+            if (airSystem.isRunning) stateChanged = true;
+            airSystem.isRunning = false;
+        } else if (airSystem.bottlePressure <= airSystem.cutIn) {
+            if (!airSystem.isRunning) stateChanged = true;
+            airSystem.isRunning = true;
+        } else if (airSystem.bottlePressure >= airSystem.cutOut) {
+            if (airSystem.isRunning) stateChanged = true;
+            airSystem.isRunning = false;
+        }
+    }
+
+    const previousBottlePressure = airSystem.bottlePressure;
+    if (airSystem.isRunning && gameState.power.isLive) {
+        airSystem.bottlePressure = Math.min(airSystem.bottleMax, airSystem.bottlePressure + airSystem.chargeRate);
+    } else {
+        airSystem.bottlePressure = Math.max(0, airSystem.bottlePressure - airSystem.standbyLeak);
+    }
+
+    if (Math.abs(previousBottlePressure - airSystem.bottlePressure) > 0.0001) {
+        stateChanged = true;
+    }
+
+    const previousControlPressure = airSystem.controlPressure;
+    const targetControlPressure = Math.min(airSystem.controlMax, airSystem.bottlePressure);
+
+    if (airSystem.controlPressure < targetControlPressure) {
+        airSystem.controlPressure = Math.min(targetControlPressure, airSystem.controlPressure + airSystem.controlRechargeRate);
+    } else if (airSystem.controlPressure > targetControlPressure) {
+        airSystem.controlPressure = targetControlPressure;
+    }
+
+    if (Math.abs(previousControlPressure - airSystem.controlPressure) > 0.0001) {
+        stateChanged = true;
+    }
+
+    return stateChanged;
+}
+
 function updateMcpPhysics(mcpKey) {
     const mcp = gameState.machinery[mcpKey];
     const fuelTank = gameState.tanks[mcp.fuelSource];
@@ -418,6 +464,9 @@ function runSimulationTick() {
         triggerAlarm(`AVISO: TK03 OVERFLOW a ${tk03Pct.toFixed(0)}% - RETORNO POR GRAVIDADE PARA TK 08 OD CENTRAL EM CURSO.`);
     }
 
+    stateChanged = updateCouplingAirPhysics('ps') || stateChanged;
+    stateChanged = updateCouplingAirPhysics('sb') || stateChanged;
+
     let breakersClosed = 0;
     MCA_KEYS.forEach(genKey => {
         const gen = gameState.machinery[genKey];
@@ -497,6 +546,8 @@ function runSimulationTick() {
         if (mcp.coolingOn) totalLoadKw += 8;
     });
     if (gameState.machinery.chiller.isOn) totalLoadKw += 25;
+    if (gameState.machinery.air_ps.isRunning) totalLoadKw += gameState.machinery.air_ps.compressorLoadKw;
+    if (gameState.machinery.air_sb.isRunning) totalLoadKw += gameState.machinery.air_sb.compressorLoadKw;
 
     const loadPerGen = runningGens.length > 0 ? totalLoadKw / runningGens.length : 0;
     MCA_KEYS.forEach(genKey => {

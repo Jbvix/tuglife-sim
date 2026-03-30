@@ -110,6 +110,7 @@ function renderModalContent() {
     } else if (gameState.modal.type === 'zdrive') {
         const zd = gameState.machinery[gameState.modal.entityKey];
         const side = gameState.modal.entityKey.endsWith('_ps') ? 'ps' : 'sb';
+        const airSystem = getAirSystemState(side);
         const gearboxPct = getPercentage(zd.gearboxLO.vol, zd.gearboxLO.max).toFixed(0);
         const steeringPct = getPercentage(zd.steeringHyd.vol, zd.steeringHyd.max).toFixed(0);
 
@@ -121,6 +122,9 @@ function renderModalContent() {
             <div class="modal-data-row"><span class="modal-data-label">Azimute:</span><span class="modal-data-value">${zd.azimuth}°</span></div>
             <div class="modal-data-row"><span class="modal-data-label">OL150 Caixa:</span><span class="modal-data-value" style="color:${gearboxPct < 20 ? 'var(--accent-red)' : '#ffc107'}">${zd.gearboxLO.vol.toFixed(3)} m³ (${gearboxPct}%)</span></div>
             <div class="modal-data-row"><span class="modal-data-label">OH32 Governo:</span><span class="modal-data-value" style="color:${steeringPct < 20 ? 'var(--accent-red)' : '#2196f3'}">${zd.steeringHyd.vol.toFixed(3)} m³ (${steeringPct}%)</span></div>
+            <div class="modal-data-row"><span class="modal-data-label">Compressor:</span><span class="modal-data-value" style="color:${airSystem.isRunning ? 'var(--accent-green)' : '#888'}">${airSystem.mode} / ${airSystem.isRunning ? 'EM CARGA' : 'EM ESPERA'}</span></div>
+            <div class="modal-data-row"><span class="modal-data-label">Garrafa de ar:</span><span class="modal-data-value" style="color:${airSystem.bottlePressure < airSystem.couplingMin ? 'var(--accent-red)' : '#90caf9'}">${airSystem.bottlePressure.toFixed(1)} bar</span></div>
+            <div class="modal-data-row"><span class="modal-data-label">Caixa de controle:</span><span class="modal-data-value" style="color:${airSystem.controlPressure < airSystem.couplingMin ? 'var(--accent-red)' : 'var(--accent-green)'}">${airSystem.controlPressure.toFixed(1)} bar</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Propulsor:</span><span class="modal-data-value" style="color:${zd.propState === 'TRIP' ? 'var(--accent-red)' : 'var(--accent-green)'}">${zd.propState}</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Fluxo:</span><span class="modal-data-value">${zd.propFlow}</span></div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px;">
@@ -480,12 +484,14 @@ function renderView() {
     ZD_SIDES.forEach(side => {
         const mcp = gameState.machinery[`mcp_${side}`];
         const zd = gameState.machinery[`zd_${side}`];
+        const airSystem = getAirSystemState(side);
         const mcpColor = mcp.status === 'RUNNING' ? 'var(--accent-green)' : '#888';
         const mcPct = (mcp.carter.vol / mcp.carter.max) * 100;
         const mcColor = mcPct < 20 ? 'var(--accent-red)' : mcPct < 30 ? 'var(--accent-orange)' : '#ffc107';
         const zdColor = zd.status === 'DRIVING' ? 'var(--accent-green)' : '#888';
         const gboxPct = (zd.gearboxLO.vol / zd.gearboxLO.max) * 100;
         const steerPct = (zd.steeringHyd.vol / zd.steeringHyd.max) * 100;
+        const airReady = airSystem.controlPressure >= airSystem.couplingMin;
 
         document.getElementById(`ui-mcp-${side}-status`).innerText = mcp.status;
         document.getElementById(`ui-mcp-${side}-status`).className = mcp.status === 'RUNNING' ? 'gen-status running' : (mcp.status === 'OFF' ? 'gen-status' : 'gen-status error');
@@ -517,14 +523,29 @@ function renderView() {
         if (mcp.status !== 'RUNNING') document.getElementById(`telegraph-${side}-val`).innerText = 'STOP';
 
         const clutchButton = document.getElementById(`btn-clutch-${side}`);
-        clutchButton.disabled = mcp.status !== 'RUNNING';
+        clutchButton.disabled = mcp.status !== 'RUNNING' || (!mcp.clutchEngaged && !airReady);
         if (mcp.clutchEngaged) {
-            clutchButton.innerText = "Z-DRIVE ENGAGED (ACOPLADO)";
+            clutchButton.innerText = "DESACOPLAR Z-DRIVE";
             clutchButton.classList.add('engaged');
+        } else if (!airReady) {
+            clutchButton.innerText = `AGUARDANDO AR (${airSystem.controlPressure.toFixed(1)} BAR)`;
+            clutchButton.classList.remove('engaged');
         } else {
             clutchButton.innerText = "ENGAGE CLUTCH (ACOPLAR Z-DRIVE)";
             clutchButton.classList.remove('engaged');
         }
+
+        document.getElementById(`ui-air-${side}-comp`).innerText = airSystem.isRunning ? 'AUTO ON' : 'AUTO OFF';
+        document.getElementById(`ui-air-${side}-comp`).style.color = airSystem.isRunning ? 'var(--accent-green)' : '#888';
+        document.getElementById(`ui-air-${side}-bottle`).innerText = airSystem.bottlePressure.toFixed(1);
+        document.getElementById(`ui-air-${side}-bottle`).style.color = airSystem.bottlePressure < airSystem.couplingMin ? 'var(--accent-red)' : '#90caf9';
+        document.getElementById(`ui-air-${side}-box`).innerText = airSystem.controlPressure.toFixed(1);
+        document.getElementById(`ui-air-${side}-box`).style.color = airReady ? 'var(--accent-green)' : 'var(--accent-red)';
+        document.getElementById(`ui-air-${side}-control`).innerText = `${airSystem.controlPressure.toFixed(1)} bar`;
+        const airStateEl = document.getElementById(`ui-air-${side}-comp-state`);
+        airStateEl.innerText = `${airSystem.mode} / ${getAirControlStateLabel(airSystem)}`;
+        airStateEl.style.background = airReady ? 'rgba(76,175,80,0.18)' : 'rgba(244,67,54,0.18)';
+        airStateEl.style.color = airReady ? 'var(--accent-green)' : 'var(--accent-red)';
 
         document.getElementById(`ui-mcp-${side}-hyd-press`).innerText = `${mcp.hydraulicPressure} bar`;
         const hydStatusEl = document.getElementById(`ui-mcp-${side}-hyd-status`);

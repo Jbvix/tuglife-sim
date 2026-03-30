@@ -13,6 +13,15 @@ function getHydraulicPumpState(mcp) {
     return mcp.hydraulicPumpCoupled && mcp.status === 'RUNNING' ? 'ON' : 'OFF';
 }
 
+function getAirSystemState(side) {
+    return gameState.machinery[`air_${side}`];
+}
+
+function getAirControlStateLabel(airSystem) {
+    if (!airSystem) return 'OFF';
+    return airSystem.controlPressure >= airSystem.couplingMin ? 'AR OK' : 'AR BAIXO';
+}
+
 function getSelectedBunkerTruck() {
     return gameState.bunker.trucks[gameState.bunker.selectedTruck];
 }
