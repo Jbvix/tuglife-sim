@@ -172,7 +172,7 @@ function renderModalContent() {
 
 function renderView() {
     const mainDisplay = document.getElementById('main-display');
-    const isDesktopOps = window.matchMedia('(min-width: 1280px)').matches;
+    const isDesktopOps = window.matchMedia('(min-width: 1280px), (min-width: 900px) and (orientation: landscape)').matches;
     const selectedScreenId = `screen-${gameState.currentTab}`;
 
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-target') === gameState.currentTab));
