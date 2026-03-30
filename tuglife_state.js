@@ -68,7 +68,7 @@ const gameState = {
     },
     loReceiving: {
         drumVolume: 0.2,
-        drumsAvailable: 20,
+        drumsAvailable: 33,
         selectedTank: 'tk15',
         panelOpen: false
     },
