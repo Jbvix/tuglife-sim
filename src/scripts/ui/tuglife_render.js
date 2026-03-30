@@ -533,10 +533,13 @@ function renderView() {
     const airPlantAlert = document.getElementById('ui-air-alert');
     if (airPlantAlert) {
         const minControl = Math.min(getAirSystemState('ps').controlPressure, getAirSystemState('sb').controlPressure);
-        airPlantAlert.innerText = minControl < airPlant.lowPressureAlarmThreshold
-            ? `ALARME DE BAIXA PRESSÃO (${minControl.toFixed(1)} bar)`
+        const showLowPressureDuringCharging = activeAirCompressor.isRunning && activeAirCompressor.lastOutput > 0;
+        airPlantAlert.innerText = showLowPressureDuringCharging && minControl < airPlant.lowPressureAlarmThreshold
+            ? `BAIXA PRESSÃO EM RECUPERAÇÃO (${minControl.toFixed(1)} bar)`
             : 'PRESSÕES DENTRO DA FAIXA';
-        airPlantAlert.style.color = minControl < airPlant.lowPressureAlarmThreshold ? 'var(--accent-red)' : 'var(--accent-green)';
+        airPlantAlert.style.color = showLowPressureDuringCharging && minControl < airPlant.lowPressureAlarmThreshold
+            ? 'var(--accent-orange)'
+            : 'var(--accent-green)';
     }
 
     ZD_SIDES.forEach(side => {

@@ -226,14 +226,6 @@ function updateCouplingAirPhysics(side) {
         stateChanged = true;
     }
 
-    if (
-        airPlant.mode === 'AUTO'
-        && airSystem.controlPressure < airPlant.lowPressureAlarmThreshold
-        && !gameState.isAlarmActive
-    ) {
-        triggerAlarm(`AVISO AR DE ACOPLAMENTO ${side === 'ps' ? 'BB' : 'BE'}: CAIXA DE CONTROLE ABAIXO DE ${airPlant.lowPressureAlarmThreshold} BAR.`);
-    }
-
     return stateChanged;
 }
 
