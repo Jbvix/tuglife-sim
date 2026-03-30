@@ -9,7 +9,7 @@ const gameState = {
     },
     isAlarmActive: false,
     activeAlarmMessage: "",
-    modal: { isOpen: false, type: null, entityKey: null },
+    modal: { isOpen: false, type: null, entityKey: null, subtab: null },
     bunker: {
         truckVolume: 30.0,
         selectedTruck: 'truck01',

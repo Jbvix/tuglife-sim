@@ -17,13 +17,20 @@ function openModal(type, entityKey) {
     gameState.modal.isOpen = true;
     gameState.modal.type = type;
     gameState.modal.entityKey = entityKey;
+    gameState.modal.subtab = type === 'fifi' ? 'overview' : null;
     document.getElementById('info-modal-overlay').style.display = 'flex';
     renderModalContent();
 }
 
 function closeModal() {
     gameState.modal.isOpen = false;
+    gameState.modal.subtab = null;
     document.getElementById('info-modal-overlay').style.display = 'none';
+}
+
+function setModalSubtab(subtab) {
+    gameState.modal.subtab = subtab;
+    renderModalContent();
 }
 
 function setFlowRate(btn) {
