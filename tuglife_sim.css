@@ -295,11 +295,11 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
         max-width: 1500px;
         height: calc(100dvh - var(--nav-height));
         margin: 0 auto;
-        padding: 0 14px 10px;
+        padding: 8px 14px 10px;
         display: grid;
         grid-template-columns: minmax(300px, 380px) minmax(420px, 500px) minmax(300px, 380px);
         gap: var(--layout-gap);
-        align-items: stretch;
+        align-items: start;
         justify-content: center;
         overflow: hidden;
     }
@@ -315,26 +315,27 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 
     #main-display.desktop-layout .desktop-core {
         grid-column: 2;
-        align-self: stretch;
+        align-self: start;
         position: sticky;
         top: 0;
         width: 100%;
         max-width: 500px;
-        height: 100%;
+        height: auto;
         justify-self: center;
         display: flex;
         flex-direction: column;
     }
 
     #main-display.desktop-layout .desktop-side-panel {
-        align-self: stretch;
+        align-self: start;
         justify-self: center;
         background: rgba(10, 18, 24, 0.78);
         border: 1px solid rgba(0, 188, 212, 0.2);
         border-radius: 18px;
         padding: 0 0 14px;
         box-shadow: 0 20px 40px rgba(0,0,0,0.22);
-        height: 100%;
+        height: calc(100dvh - var(--nav-height) - 18px);
+        max-height: calc(100dvh - var(--nav-height) - 18px);
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: thin;
