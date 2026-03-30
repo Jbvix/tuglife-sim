@@ -28,14 +28,14 @@
             background:
                 radial-gradient(circle at top, rgba(0, 188, 212, 0.14), transparent 28%),
                 linear-gradient(180deg, #071019 0%, #0b1621 50%, #050b11 100%);
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
         .hero {
             min-height: 100vh;
             display: grid;
             place-items: center;
-            padding: 24px;
+            padding: 20px;
             position: relative;
         }
 
@@ -72,6 +72,7 @@
             gap: 22px;
             position: relative;
             z-index: 1;
+            align-items: stretch;
         }
 
         .card {
@@ -83,7 +84,22 @@
         }
 
         .intro {
-            padding: 34px;
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 18px;
+        }
+
+        .top-actions {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .top-actions .cta {
+            min-width: 0;
+            width: auto;
+            padding: 13px 18px;
         }
 
         .eyebrow {
@@ -94,7 +110,7 @@
             letter-spacing: 0.16em;
             text-transform: uppercase;
             color: var(--accent);
-            margin-bottom: 18px;
+            margin-bottom: 6px;
         }
 
         .eyebrow::before {
@@ -108,19 +124,19 @@
             font-size: clamp(2rem, 5vw, 4rem);
             line-height: 0.95;
             letter-spacing: 0.03em;
-            margin-bottom: 16px;
+            margin-bottom: 2px;
             text-transform: uppercase;
         }
 
         .subtitle {
-            font-size: 1.02rem;
-            line-height: 1.7;
+            font-size: 1rem;
+            line-height: 1.65;
             color: var(--muted);
-            max-width: 58ch;
+            max-width: 30ch;
         }
 
         .meta {
-            margin-top: 26px;
+            margin-top: 4px;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
@@ -149,7 +165,7 @@
         }
 
         .cta-row {
-            margin-top: 28px;
+            margin-top: 2px;
             display: flex;
             gap: 14px;
             flex-wrap: wrap;
@@ -185,7 +201,7 @@
         }
 
         .notice {
-            margin-top: 22px;
+            margin-top: 2px;
             padding: 16px 18px;
             border-radius: 16px;
             background: rgba(0, 188, 212, 0.06);
@@ -364,7 +380,7 @@
         }
 
         .author {
-            margin-top: 20px;
+            margin-top: auto;
             font-size: 0.92rem;
             color: var(--muted);
         }
@@ -374,20 +390,91 @@
         }
 
         @media (max-width: 900px) {
+            .hero {
+                padding: 10px;
+                align-items: start;
+            }
+
             .shell {
                 grid-template-columns: 1fr;
+                gap: 12px;
+                width: min(100%, 420px);
             }
 
             .meta {
                 grid-template-columns: 1fr;
             }
 
+            .intro {
+                padding: 20px 18px 18px;
+                gap: 16px;
+            }
+
+            .top-actions {
+                width: 100%;
+            }
+
+            .top-actions .cta {
+                width: 100%;
+                justify-content: center;
+            }
+
+            h1 {
+                font-size: clamp(2.4rem, 12vw, 3.2rem);
+            }
+
+            .subtitle {
+                max-width: none;
+                font-size: 0.98rem;
+                line-height: 1.6;
+            }
+
+            .cta-row {
+                flex-direction: column;
+            }
+
+            .cta {
+                width: 100%;
+                min-width: 0;
+            }
+
             .water-stage {
-                min-height: 300px;
+                min-height: 240px;
             }
 
             .boat {
                 transform: translate(-50%, -50%) rotate(-4deg) scale(0.88);
+            }
+
+            .preview {
+                padding: 18px;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .hero {
+                min-height: auto;
+            }
+
+            .intro {
+                border-radius: 18px;
+            }
+
+            .eyebrow {
+                font-size: 0.74rem;
+                letter-spacing: 0.14em;
+            }
+
+            .meta-box {
+                padding: 12px;
+            }
+
+            .notice {
+                padding: 14px;
+            }
+
+            .preview {
+                display: none;
             }
         }
     </style>
@@ -396,11 +483,15 @@
     <main class="hero">
         <div class="shell">
             <section class="card intro">
+                <div class="top-actions">
+                    <a class="cta cta-primary" href="./tuglife_sim.html">Acessar Simulador</a>
+                </div>
+
                 <div class="eyebrow">Simulação Naval</div>
                 <h1>TugLife Sim</h1>
                 <p class="subtitle">
-                    Plataforma interativa de operação de rebocador com sistemas FO/LO, recebimento de água e óleo,
-                    propulsão azimutal, lógica de intertravamentos e visual 3D orientado por resultante vetorial.
+                    Simulador mobile-first para estudar operação de rebocador, propulsão azimutal,
+                    sistemas de bordo, intertravamentos e resposta visual 3D.
                 </p>
 
                 <div class="meta">
@@ -419,15 +510,14 @@
                 </div>
 
                 <div class="cta-row">
-                    <a class="cta cta-primary" href="./tuglife_sim.html">Acessar Simulador</a>
                     <a class="cta cta-secondary" href="./docs/manual.html">Acessar Manual</a>
                 </div>
 
                 <div class="notice">
                     <div class="notice-label">Projeto Educativo</div>
                     <p class="notice-text">
-                        Este simulador foi desenvolvido com finalidade educativa, para estudo de sistemas de bordo,
-                        lógica operacional, transferência de fluidos, propulsão e percepção básica de estabilidade.
+                        Treine leitura operacional, lógica de máquinas, recebimento de fluidos,
+                        acoplamento, propulsão e noções de estabilidade em uma interface pensada para uso rápido no celular.
                     </p>
                 </div>
 
