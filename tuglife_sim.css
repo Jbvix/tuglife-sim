@@ -215,10 +215,10 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
         max-width: 1180px;
         height: calc(100dvh - 70px);
         margin: 0 auto;
-        padding: 4px 8px 8px;
+        padding: 4px 12px 8px;
         display: grid;
-        grid-template-columns: minmax(240px, 290px) minmax(340px, 420px) minmax(240px, 290px);
-        gap: 8px;
+        grid-template-columns: minmax(250px, 320px) minmax(320px, 390px) minmax(250px, 320px);
+        gap: 10px;
         align-items: stretch;
         justify-content: center;
         overflow: hidden;
@@ -239,7 +239,7 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
         position: sticky;
         top: 0;
         width: 100%;
-        max-width: 420px;
+        max-width: 390px;
         height: fit-content;
         justify-self: center;
     }
@@ -289,7 +289,7 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 
     #main-display.desktop-layout .desktop-core .hull-container,
     #main-display.desktop-layout .desktop-core .quick-panel-btn {
-        max-width: 420px;
+        max-width: 390px;
         width: 100%;
     }
 
