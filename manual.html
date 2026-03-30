@@ -207,6 +207,41 @@
             gap: 10px;
         }
 
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.02);
+            margin-top: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 620px;
+        }
+
+        th,
+        td {
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            vertical-align: top;
+        }
+
+        th {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            background: rgba(0, 188, 212, 0.05);
+        }
+
+        td {
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
         .term {
             padding: 14px 16px;
             border-radius: 16px;
@@ -265,6 +300,7 @@
             <nav class="toc">
                 <div class="toc-title">Conteúdo</div>
                 <a href="#visao-geral">Visão Geral</a>
+                <a href="#caracteristicas">Características da Simulação</a>
                 <a href="#modulos">Módulos do Simulador</a>
                 <a href="#operacao">Lógica Operacional</a>
                 <a href="#estabilidade">Trim e Estabilidade</a>
@@ -284,6 +320,124 @@
                         na leitura de volumes, estados de máquinas, consumo, resposta de propulsão e
                         percepção de banda, trim e calado.
                     </p>
+                </section>
+
+                <section class="section" id="caracteristicas">
+                    <h2>Características da Simulação</h2>
+                    <p>
+                        Abaixo está um quadro resumido com as principais características atualmente
+                        modeladas no simulador. Os valores representam a configuração da simulação e
+                        servem como referência educativa.
+                    </p>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Categoria</th>
+                                    <th>Item</th>
+                                    <th>Característica</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Projeto</td>
+                                    <td>Finalidade</td>
+                                    <td>Simulador educativo de sistemas de bordo, fluidos, energia, propulsão e estabilidade.</td>
+                                </tr>
+                                <tr>
+                                    <td>Visual</td>
+                                    <td>Representação</td>
+                                    <td>Planta 2D interativa + visual 3D do rebocador com resposta vetorial.</td>
+                                </tr>
+                                <tr>
+                                    <td>Propulsão</td>
+                                    <td>Configuração</td>
+                                    <td>2 motores principais + 2 Z-Drives azimutais.</td>
+                                </tr>
+                                <tr>
+                                    <td>Energia</td>
+                                    <td>Geração</td>
+                                    <td>2 MCAs com QEP, barramento e disjuntores.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tanque</th>
+                                    <th>Fluido</th>
+                                    <th>Capacidade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Peak Vante</td><td>Água doce</td><td>30,0 m³</td></tr>
+                                <tr><td>TK 02</td><td>Água doce</td><td>15,0 m³</td></tr>
+                                <tr><td>Peak Ré</td><td>Água doce</td><td>35,0 m³</td></tr>
+                                <tr><td>TK 06</td><td>FO armazenamento BB</td><td>23,8 m³</td></tr>
+                                <tr><td>TK 07</td><td>FO armazenamento BE</td><td>23,8 m³</td></tr>
+                                <tr><td>TK 11</td><td>FO armazenamento ré BB</td><td>15,0 m³</td></tr>
+                                <tr><td>TK 12</td><td>FO armazenamento ré BE</td><td>15,0 m³</td></tr>
+                                <tr><td>HDR 04</td><td>FO serviço BB</td><td>15,0 m³</td></tr>
+                                <tr><td>HDR 05</td><td>FO serviço BE</td><td>15,0 m³</td></tr>
+                                <tr><td>TK Central OD</td><td>Óleo diesel</td><td>30,0 m³</td></tr>
+                                <tr><td>TK 03 Overflow</td><td>Transbordo FO</td><td>2,0 m³</td></tr>
+                                <tr><td>TK 13</td><td>Dirty oil</td><td>4,8 m³</td></tr>
+                                <tr><td>TK 14</td><td>Bilge</td><td>4,8 m³</td></tr>
+                                <tr><td>TK 15</td><td>OL15W40</td><td>2,0 m³</td></tr>
+                                <tr><td>TK 16</td><td>OL150</td><td>4,0 m³</td></tr>
+                                <tr><td>TK HID</td><td>OH32</td><td>0,6 m³</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Equipamento</th>
+                                    <th>Configuração</th>
+                                    <th>Capacidade / Reserva</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>MCA 1 BB</td><td>Gerador auxiliar</td><td>Cárter 15 L</td></tr>
+                                <tr><td>MCA 2 BE</td><td>Gerador auxiliar</td><td>Cárter 15 L</td></tr>
+                                <tr><td>MCP BB</td><td>Motor principal</td><td>Cárter 800 L</td></tr>
+                                <tr><td>MCP BE</td><td>Motor principal</td><td>Cárter 800 L</td></tr>
+                                <tr><td>Z-Drive BB</td><td>Propulsor azimutal</td><td>Caixa 1.800 L / Governo 60 L</td></tr>
+                                <tr><td>Z-Drive BE</td><td>Propulsor azimutal</td><td>Caixa 1.800 L / Governo 60 L</td></tr>
+                                <tr><td>Guincho de proa</td><td>Sistema hidráulico</td><td>Reservatório OH32 400 L</td></tr>
+                                <tr><td>Recebimento por tambor</td><td>Lubrificantes e OH32</td><td>33 tambores de 200 L</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Equipamento</th>
+                                    <th>Consumo modelado</th>
+                                    <th>Autonomia aproximada</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>MCP BB</td><td>5 L / 30 s</td><td>~1 h 20 min com cárter cheio</td></tr>
+                                <tr><td>MCP BE</td><td>5 L / 30 s</td><td>~1 h 20 min com cárter cheio</td></tr>
+                                <tr><td>MCA 1 BB</td><td>0,1 L / 30 s</td><td>~1 h 15 min com cárter cheio</td></tr>
+                                <tr><td>MCA 2 BE</td><td>0,1 L / 30 s</td><td>~1 h 15 min com cárter cheio</td></tr>
+                                <tr><td>Z-Drive BB</td><td>OL150: 0,2 L/s</td><td>~2 h 30 min com caixa cheia</td></tr>
+                                <tr><td>Z-Drive BE</td><td>OL150: 0,2 L/s</td><td>~2 h 30 min com caixa cheia</td></tr>
+                                <tr><td>Governo Z-Drive BB</td><td>OH32: 0,1 L/s + 0,5 L/comando</td><td>~10 min em uso contínuo</td></tr>
+                                <tr><td>Governo Z-Drive BE</td><td>OH32: 0,1 L/s + 0,5 L/comando</td><td>~10 min em uso contínuo</td></tr>
+                                <tr><td>Guincho de proa</td><td>Sem consumo contínuo modelado</td><td>Reserva presente, autonomia ainda não calculada</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </section>
 
                 <section class="section" id="modulos">
