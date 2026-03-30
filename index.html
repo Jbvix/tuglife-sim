@@ -174,14 +174,30 @@
             box-shadow: 0 10px 24px rgba(0, 188, 212, 0.25);
         }
 
-        .cta-secondary {
-            color: var(--text);
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
         .cta:hover {
             transform: translateY(-1px);
+        }
+
+        .notice {
+            margin-top: 22px;
+            padding: 16px 18px;
+            border-radius: 16px;
+            background: rgba(0, 188, 212, 0.06);
+            border: 1px solid rgba(0, 188, 212, 0.16);
+        }
+
+        .notice-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .notice-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--muted);
         }
 
         .preview {
@@ -383,8 +399,8 @@
 
                 <div class="meta">
                     <div class="meta-box">
-                        <div class="meta-label">Base</div>
-                        <div class="meta-value">Damen ASD 2411</div>
+                        <div class="meta-label">Propósito</div>
+                        <div class="meta-value">Educativo</div>
                     </div>
                     <div class="meta-box">
                         <div class="meta-label">Módulos</div>
@@ -398,7 +414,14 @@
 
                 <div class="cta-row">
                     <a class="cta cta-primary" href="./tuglife_sim.html">Acessar Simulador</a>
-                    <a class="cta cta-secondary" href="https://github.com/Jbvix/tuglife-sim" target="_blank" rel="noreferrer">Ver Projeto no GitHub</a>
+                </div>
+
+                <div class="notice">
+                    <div class="notice-label">Projeto Educativo</div>
+                    <p class="notice-text">
+                        Este simulador foi desenvolvido com finalidade educativa, para estudo de sistemas de bordo,
+                        lógica operacional, transferência de fluidos, propulsão e percepção básica de estabilidade.
+                    </p>
                 </div>
 
                 <p class="author">Autor: <strong>Jossian Brito</strong></p>
