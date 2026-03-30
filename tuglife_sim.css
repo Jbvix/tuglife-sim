@@ -104,6 +104,12 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 .control-btn.active { background: var(--accent-green); color: black;}
 .control-btn.active:hover:not(:disabled) { background: #43a047; }
 .control-btn.pump-on { background: var(--accent-orange); animation: pulse 1s infinite; }
+.drawer-tab-row { width:95%; max-width:400px; display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin:8px 0 12px; }
+.drawer-tab-row.tab-row-2 { grid-template-columns:repeat(2, 1fr); }
+.drawer-tab-btn { padding:10px 8px; background:#252525; color:#8fa5af; border:1px solid #444; border-radius:8px; font-size:0.76rem; font-weight:bold; text-transform:uppercase; cursor:pointer; transition:0.2s; }
+.drawer-tab-btn.active { background:rgba(0,188,212,0.16); color:var(--accent-blue); border-color:rgba(0,188,212,0.45); }
+.drawer-tab-panel { width:100%; display:block; }
+.drawer-tab-hidden-toggle { display:none !important; }
 .control-select { width: 100%; padding: 12px; margin-bottom: 15px; background: #222; color: white; border: 1px solid #555; border-radius: 5px; font-size: 1rem; }
 .panel-label { color: #aaa; font-size: 0.9rem; margin-bottom: 5px; display: block;}
 

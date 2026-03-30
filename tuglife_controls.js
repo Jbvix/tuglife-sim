@@ -39,6 +39,12 @@ function setFlowRate(btn) {
     renderView();
 }
 
+function setDrawerTab(screenKey, tabKey) {
+    if (!gameState.drawerTabs || !(screenKey in gameState.drawerTabs)) return;
+    gameState.drawerTabs[screenKey] = tabKey;
+    renderView();
+}
+
 function toggleWaterPanel() {
     gameState.waterBunkering.panelOpen = !gameState.waterBunkering.panelOpen;
     renderView();

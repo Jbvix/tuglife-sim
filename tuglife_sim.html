@@ -133,6 +133,12 @@
              ========================================================= -->
         <div id="screen-bunkering" class="screen">
             <div class="screen-title">Recebimento de Água / Óleo</div>
+            <div class="drawer-tab-row">
+                <button class="drawer-tab-btn" data-screen="bunkering" data-tab="oil" onclick="setDrawerTab('bunkering','oil')">Óleo</button>
+                <button class="drawer-tab-btn" data-screen="bunkering" data-tab="drums" onclick="setDrawerTab('bunkering','drums')">Tambores</button>
+                <button class="drawer-tab-btn" data-screen="bunkering" data-tab="water" onclick="setDrawerTab('bunkering','water')">Água</button>
+            </div>
+            <div class="drawer-tab-panel" data-screen="bunkering" data-tab="oil">
             <div class="control-panel">
                 <div class="aux-grid" style="margin-bottom:10px;">
                     <button id="btn-truck01" class="aux-btn active">CAMINHÃO 01</button>
@@ -169,7 +175,9 @@
                     <button id="btn-pump-bunker" class="control-btn" disabled>INICIAR BOMBA</button>
                 </div>
             </div>
-            <button id="btn-toggle-lo-drum-panel" class="quick-panel-btn">RECEBIMENTO DE OL/OH POR TAMBOR 200L</button>
+            </div>
+            <button id="btn-toggle-lo-drum-panel" class="quick-panel-btn drawer-tab-hidden-toggle">RECEBIMENTO DE OL/OH POR TAMBOR 200L</button>
+            <div class="drawer-tab-panel" data-screen="bunkering" data-tab="drums">
             <div id="lo-drum-panel" class="control-panel water-panel" style="display:none;">
                 <div class="water-panel-header">
                     <span class="water-panel-title">RECEBIMENTO DE LUBRIFICANTE / HIDRÁULICO</span>
@@ -193,7 +201,9 @@
                 </select>
                 <button id="btn-receive-lo-drum" class="control-btn" style="background:#1a1100; color:#ffc107;">RECEBER 1 TAMBOR DE 200L</button>
             </div>
-            <button id="btn-toggle-water-panel" class="quick-panel-btn">PAINEL DE RECEBIMENTO DE ÁGUA</button>
+            </div>
+            <button id="btn-toggle-water-panel" class="quick-panel-btn drawer-tab-hidden-toggle">PAINEL DE RECEBIMENTO DE ÁGUA</button>
+            <div class="drawer-tab-panel" data-screen="bunkering" data-tab="water">
             <div id="water-panel" class="control-panel water-panel" style="display:none;">
                 <div class="water-panel-header">
                     <span class="water-panel-title">RECEBIMENTO DE ÁGUA DOCE</span>
@@ -231,6 +241,7 @@
                     <button id="btn-pump-water" class="control-btn" disabled>INICIAR BOMBA DE ÁGUA</button>
                 </div>
             </div>
+            </div>
         </div>
 
         <!-- =========================================================
@@ -238,8 +249,14 @@
              ========================================================= -->
         <div id="screen-fuel" class="screen">
             <div class="screen-title">Sistema de FO/LO (Transferência)</div>
+            <div class="drawer-tab-row">
+                <button class="drawer-tab-btn" data-screen="fuel" data-tab="purifier" onclick="setDrawerTab('fuel','purifier')">Purificador</button>
+                <button class="drawer-tab-btn" data-screen="fuel" data-tab="crossfeed" onclick="setDrawerTab('fuel','crossfeed')">Cross-feed</button>
+                <button class="drawer-tab-btn" data-screen="fuel" data-tab="overflow" onclick="setDrawerTab('fuel','overflow')">Overflow</button>
+            </div>
 
             <!-- PURIFICADOR DE OD -->
+            <div class="drawer-tab-panel" data-screen="fuel" data-tab="purifier">
             <div class="control-panel">
                 <div style="border-bottom:1px solid #333; padding-bottom:8px; margin-bottom:12px;">
                     <span style="font-size:0.9rem; color:var(--accent-orange); font-weight:bold;">&#9881; PURIFICADOR DE ÓLEO DIESEL (OD)</span>
@@ -267,8 +284,10 @@
                 </div>
                 <button id="btn-pump-transfer" class="control-btn" disabled>PURIFICADOR OD - INICIAR</button>
             </div>
+            </div>
 
             <!-- VÁLVULA CROSS-FEED HDR 04 <-> HDR 05 -->
+            <div class="drawer-tab-panel" data-screen="fuel" data-tab="crossfeed">
             <div class="control-panel" style="padding:15px 20px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                     <span style="font-size:0.85rem; color:#aaa; font-weight:bold;">VLV COMUNICAÇÃO HDR 04 &harr; HDR 05</span>
@@ -276,8 +295,10 @@
                 </div>
                 <button id="btn-crossfeed-valve" class="control-btn" style="margin-bottom:0; padding:10px;">ABRIR VÁLVULA CROSS-FEED</button>
             </div>
+            </div>
 
             <!-- TK03 OVERFLOW -->
+            <div class="drawer-tab-panel" data-screen="fuel" data-tab="overflow">
             <div class="control-panel" style="border-color:rgba(244,67,54,0.4); padding:15px 20px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                     <span style="color:var(--accent-red); font-weight:bold; font-size:0.9rem;">&#9888; TK 03 - OVERFLOW</span>
@@ -295,6 +316,7 @@
                 </div>
                 <button id="btn-transfer-tk03-purifier" class="control-btn" style="margin-bottom:0; padding:10px; background:#2a0a00; border-color:var(--accent-red);">TRANSFERIR TK03 PARA HDR</button>
             </div>
+            </div>
         </div>
 
         <!-- =========================================================
@@ -306,8 +328,14 @@
                 <div id="ui-busbar-status" class="busbar-status dead">DEAD BUS (0V)</div>
             </div>
 
+            <div class="drawer-tab-row tab-row-2">
+                <button class="drawer-tab-btn" data-screen="power" data-tab="mca_ps" onclick="setDrawerTab('power','mca_ps')">MCA BB</button>
+                <button class="drawer-tab-btn" data-screen="power" data-tab="mca_sb" onclick="setDrawerTab('power','mca_sb')">MCA BE</button>
+            </div>
+
             <div class="control-panel">
                 <!-- MCA Bombordo -->
+                <div class="drawer-tab-panel" data-screen="power" data-tab="mca_ps">
                 <div class="generator-box">
                     <div class="gen-header"><span class="gen-title">MCA 1 (BOMBORDO)</span><span id="ui-mca-ps-status" class="gen-status">OFF</span></div>
                     <div class="qep-unit-grid">
@@ -341,8 +369,10 @@
                     <button id="btn-mca-ps-start" class="control-btn" style="padding:10px;">ARRANQUE</button>
                     <button id="btn-mca-ps-breaker" class="breaker-btn" disabled>DISJUNTOR: ABERTO</button>
                 </div>
+                </div>
 
                 <!-- MCA Boreste -->
+                <div class="drawer-tab-panel" data-screen="power" data-tab="mca_sb">
                 <div class="generator-box">
                     <div class="gen-header"><span class="gen-title">MCA 2 (BORESTE)</span><span id="ui-mca-sb-status" class="gen-status">OFF</span></div>
                     <div class="qep-unit-grid">
@@ -376,6 +406,7 @@
                     <button id="btn-mca-sb-start" class="control-btn" style="padding:10px;">ARRANQUE</button>
                     <button id="btn-mca-sb-breaker" class="breaker-btn" disabled>DISJUNTOR: ABERTO</button>
                 </div>
+                </div>
             </div>
         </div>
 
@@ -384,8 +415,13 @@
              ========================================================= -->
         <div id="screen-propulsion" class="screen">
             <div class="screen-title">Propulsão Principal</div>
+            <div class="drawer-tab-row tab-row-2">
+                <button class="drawer-tab-btn" data-screen="propulsion" data-tab="mcp_ps" onclick="setDrawerTab('propulsion','mcp_ps')">MCP BB</button>
+                <button class="drawer-tab-btn" data-screen="propulsion" data-tab="mcp_sb" onclick="setDrawerTab('propulsion','mcp_sb')">MCP BE</button>
+            </div>
             <div class="control-panel">
                 <!-- MCP Bombordo -->
+                <div class="drawer-tab-panel" data-screen="propulsion" data-tab="mcp_ps">
                 <div class="generator-box" style="border-color: var(--accent-orange);">
                     <div class="gen-header"><span class="gen-title" style="color:var(--accent-orange);">MCP BB</span><span id="ui-mcp-ps-status" class="gen-status">OFF</span></div>
                     <div class="aux-grid">
@@ -454,8 +490,10 @@
                         </div>
                     </div>
                 </div>
+                </div>
 
                 <!-- MCP Boreste -->
+                <div class="drawer-tab-panel" data-screen="propulsion" data-tab="mcp_sb">
                 <div class="generator-box" style="border-color: var(--accent-orange);">
                     <div class="gen-header"><span class="gen-title" style="color:var(--accent-orange);">MCP BE</span><span id="ui-mcp-sb-status" class="gen-status">OFF</span></div>
                     <div class="aux-grid">
@@ -524,6 +562,7 @@
                         </div>
                     </div>
                 </div>
+                </div>
             </div>
         </div>
 
@@ -532,8 +571,14 @@
              ========================================================= -->
         <div id="screen-visual3d" class="screen">
             <div class="screen-title">Visual 3D do Rebocador</div>
+            <div class="drawer-tab-row">
+                <button class="drawer-tab-btn" data-screen="visual3d" data-tab="scene" onclick="setDrawerTab('visual3d','scene')">Cena</button>
+                <button class="drawer-tab-btn" data-screen="visual3d" data-tab="drive" onclick="setDrawerTab('visual3d','drive')">Propulsão</button>
+                <button class="drawer-tab-btn" data-screen="visual3d" data-tab="anchor" onclick="setDrawerTab('visual3d','anchor')">Pontos</button>
+            </div>
             <div class="three-d-panel">
                 <div class="three-d-stage" id="three-d-stage"></div>
+                <div class="drawer-tab-panel" data-screen="visual3d" data-tab="scene">
                 <div class="three-d-hud">
                     <div class="three-d-card">
                         <div class="three-d-card-label">Velocidade</div>
@@ -562,11 +607,16 @@
                 </div>
                 <div class="three-d-actions">
                     <button id="btn-3d-fullscreen" class="control-btn three-d-btn three-d-config-btn">TELA CHEIA</button>
-                    <button id="btn-3d-anchor-panel" class="control-btn three-d-btn three-d-config-btn">AJUSTAR PONTOS DO TUG</button>
-                    <button id="btn-3d-drive-panel" class="control-btn three-d-btn three-d-config-btn">PAINEL DE PROPULSÃO 3D</button>
                     <span class="three-d-mooring-status" id="ui-3d-mooring-status">AMARRADO NO CAIS</span>
                     <span class="three-d-mooring-status" id="ui-3d-model-status">MODELO PADRÃO</span>
                 </div>
+                <div class="three-d-legend">
+                    Use as manetes na tela Motores para testar a propulsão. Arraste para orbitar a câmera e use a roda do mouse para zoom. Clique no cabeço de proa ou popa do rebocador e depois em um cabeço do cais para amarrar. Clique em um ponto já conectado para soltar.
+                </div>
+                </div>
+                <button id="btn-3d-anchor-panel" class="control-btn three-d-btn three-d-config-btn drawer-tab-hidden-toggle">AJUSTAR PONTOS DO TUG</button>
+                <button id="btn-3d-drive-panel" class="control-btn three-d-btn three-d-config-btn drawer-tab-hidden-toggle">PAINEL DE PROPULSÃO 3D</button>
+                <div class="drawer-tab-panel" data-screen="visual3d" data-tab="drive">
                 <div id="three-d-drive-panel" class="three-d-anchor-panel" style="display:none;">
                     <div class="three-d-anchor-header">
                         <span class="three-d-anchor-title">PROPULSÃO 3D MANUAL</span>
@@ -602,6 +652,8 @@
                         </div>
                     </div>
                 </div>
+                </div>
+                <div class="drawer-tab-panel" data-screen="visual3d" data-tab="anchor">
                 <div id="three-d-anchor-panel" class="three-d-anchor-panel" style="display:none;">
                     <div class="three-d-anchor-header">
                         <span class="three-d-anchor-title">CALIBRAR PONTO DE CONEXÃO</span>
@@ -629,8 +681,7 @@
                     <input id="slider-3d-anchor-z" class="telegraph-slider three-d-anchor-slider" type="range" min="0.20" max="2.20" step="0.01" value="0">
                     <button id="btn-3d-anchor-save" class="control-btn three-d-save-btn">SALVAR POSIÇÃO</button>
                 </div>
-                <div class="three-d-legend">
-                    Use as manetes na tela Motores para testar a propulsão. Arraste para orbitar a câmera e use a roda do mouse para zoom. Clique no cabeço de proa ou popa do rebocador e depois em um cabeço do cais para amarrar. Clique em um ponto já conectado para soltar.
+                </div>
                 </div>
             </div>
         </div>

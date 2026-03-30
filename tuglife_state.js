@@ -7,6 +7,13 @@ const gameState = {
         left: 'bunkering',
         right: 'propulsion'
     },
+    drawerTabs: {
+        bunkering: 'oil',
+        fuel: 'purifier',
+        power: 'mca_ps',
+        propulsion: 'mcp_ps',
+        visual3d: 'scene'
+    },
     isAlarmActive: false,
     activeAlarmMessage: "",
     modal: { isOpen: false, type: null, entityKey: null, subtab: null },

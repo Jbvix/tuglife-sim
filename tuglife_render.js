@@ -263,6 +263,19 @@ function renderView() {
         }
     }
 
+    document.querySelectorAll('.drawer-tab-btn').forEach((button) => {
+        const screenKey = button.getAttribute('data-screen');
+        const tabKey = button.getAttribute('data-tab');
+        const isActive = gameState.drawerTabs && gameState.drawerTabs[screenKey] === tabKey;
+        button.classList.toggle('active', isActive);
+    });
+
+    document.querySelectorAll('.drawer-tab-panel').forEach((panel) => {
+        const screenKey = panel.getAttribute('data-screen');
+        const tabKey = panel.getAttribute('data-tab');
+        panel.style.display = gameState.drawerTabs && gameState.drawerTabs[screenKey] === tabKey ? '' : 'none';
+    });
+
     syncBunkerTruckVolume();
     syncWaterTruckVolume();
 
@@ -316,7 +329,7 @@ function renderView() {
         if (!truckButton) return;
         truckButton.classList.toggle('active', gameState.waterBunkering.selectedTruck === truckKey);
     });
-    document.getElementById('lo-drum-panel').style.display = gameState.loReceiving.panelOpen ? 'block' : 'none';
+    document.getElementById('lo-drum-panel').style.display = gameState.drawerTabs.bunkering === 'drums' ? 'block' : 'none';
     document.getElementById('btn-toggle-lo-drum-panel').classList.toggle('active', gameState.loReceiving.panelOpen);
     document.getElementById('btn-toggle-lo-drum-panel').innerText = gameState.loReceiving.panelOpen ? 'OCULTAR RECEBIMENTO DE OL' : 'RECEBIMENTO DE OL POR TAMBOR 200L';
     document.getElementById('ui-lo-drum-vol').innerText = `${gameState.loReceiving.drumVolume.toFixed(2)} m³`;
@@ -324,7 +337,7 @@ function renderView() {
     document.getElementById('select-lo-drum-tank').value = gameState.loReceiving.selectedTank;
     const selectedLoTank = gameState.tanks[gameState.loReceiving.selectedTank];
     document.getElementById('btn-receive-lo-drum').disabled = !selectedLoTank || gameState.loReceiving.drumsAvailable <= 0 || selectedLoTank.vol >= selectedLoTank.max;
-    document.getElementById('water-panel').style.display = gameState.waterBunkering.panelOpen ? 'block' : 'none';
+    document.getElementById('water-panel').style.display = gameState.drawerTabs.bunkering === 'water' ? 'block' : 'none';
     document.getElementById('btn-toggle-water-panel').classList.toggle('active', gameState.waterBunkering.panelOpen);
     document.getElementById('btn-toggle-water-panel').innerText = gameState.waterBunkering.panelOpen ? 'OCULTAR PAINEL DE ÁGUA' : 'PAINEL DE RECEBIMENTO DE ÁGUA';
     if (gameState.waterBunkering.hoseConnected) {
@@ -440,6 +453,15 @@ function renderView() {
     document.getElementById('ui-fifi-flow-hull').innerText = fifi.monitorOpenPct > 0 || fifi.monitorsCommandOpen
         ? `CANHÕES ${fifi.monitorOpenPct.toFixed(0)}%`
         : `${fifi.flowRate.toFixed(0)} m³/h`;
+
+    const threeDPanel = document.querySelector('#screen-visual3d .three-d-panel');
+    if (threeDPanel) {
+        threeDPanel.classList.toggle('three-d-config-open', gameState.drawerTabs.visual3d !== 'scene');
+    }
+    const drivePanel = document.getElementById('three-d-drive-panel');
+    const anchorPanel = document.getElementById('three-d-anchor-panel');
+    if (drivePanel) drivePanel.style.display = gameState.drawerTabs.visual3d === 'drive' ? 'block' : 'none';
+    if (anchorPanel) anchorPanel.style.display = gameState.drawerTabs.visual3d === 'anchor' ? 'block' : 'none';
 
     ZD_SIDES.forEach(side => {
         const mcp = gameState.machinery[`mcp_${side}`];
