@@ -19,7 +19,10 @@ O projeto é estático e pode ser publicado diretamente no GitHub + Netlify, sem
 - `tuglife_sim.html`: entrada principal do simulador
 - `docs/manual.html`: manual do projeto
 - `src/styles/`: estilos da aplicação
-- `src/scripts/`: scripts da aplicação
+- `src/scripts/core/`: estado global, utilitários e bootstrap
+- `src/scripts/ui/`: renderização e eventos da interface
+- `src/scripts/simulation/`: motor principal da simulação
+- `src/scripts/visual3d/`: cena 3D, amarração e controles visuais
 - `vendor/three/`: bibliotecas locais do Three.js e loader GLTF
 - `assets/`: modelos e texturas do simulador
 - `docs/references/`: PDFs e materiais de apoio
