@@ -499,16 +499,20 @@ function renderView() {
     if (airPlantModeLabel) airPlantModeLabel.innerText = airAutoState;
     const airPlantStatus = document.getElementById('ui-air-plant-status');
     if (airPlantStatus) {
-        airPlantStatus.innerText = activeAirCompressor.health === 'FAULT'
-            ? 'FALHA / CONTINGÊNCIA'
-            : airPsCompressor.isRunning || airSbCompressor.isRunning
-                ? 'EM CARGA'
-                : 'EM ESPERA';
-        airPlantStatus.style.color = activeAirCompressor.health === 'FAULT'
-            ? 'var(--accent-red)'
-            : airPsCompressor.isRunning || airSbCompressor.isRunning
-                ? 'var(--accent-green)'
-                : '#888';
+        airPlantStatus.innerText = !gameState.power.isLive
+            ? 'QEP DESENERGIZADO'
+            : activeAirCompressor.health === 'FAULT'
+                ? 'FALHA / CONTINGÊNCIA'
+                : airPsCompressor.isRunning || airSbCompressor.isRunning
+                    ? 'EM CARGA'
+                    : 'EM ESPERA';
+        airPlantStatus.style.color = !gameState.power.isLive
+            ? 'var(--accent-orange)'
+            : activeAirCompressor.health === 'FAULT'
+                ? 'var(--accent-red)'
+                : airPsCompressor.isRunning || airSbCompressor.isRunning
+                    ? 'var(--accent-green)'
+                    : '#888';
     }
     const btnAirPsDuty = document.getElementById('btn-air-ps-duty');
     const btnAirSbDuty = document.getElementById('btn-air-sb-duty');

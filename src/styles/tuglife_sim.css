@@ -222,6 +222,56 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 .three-d-drive-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
 .three-d-drive-box { padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); }
 .three-d-legend { margin-top:10px; color:#8aa3af; font-size:0.82rem; line-height:1.4; }
+
+#screen-propulsion .drawer-tab-row.tab-row-2 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+#screen-propulsion .control-panel {
+    width: 100%;
+    max-width: 420px;
+    padding: 14px;
+}
+
+#screen-propulsion .generator-box {
+    padding: 12px;
+    overflow: hidden;
+}
+
+#screen-propulsion .gen-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+#screen-propulsion .gen-title,
+#screen-propulsion .gen-status,
+#screen-propulsion .system-strip-value,
+#screen-propulsion .system-strip-badge,
+#screen-propulsion .meter-val {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+#screen-propulsion .system-strip {
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+#propulsion-air-panel .meter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+}
+
+#propulsion-air-panel .meter {
+    min-width: 0;
+    padding: 8px;
+}
+
+#propulsion-air-panel .meter-val {
+    font-size: 1rem;
+    line-height: 1.15;
+}
 @media (min-width: 900px) and (max-width: 1279px) and (orientation: landscape) {
     #main-display.desktop-layout {
         width: 100%;
