@@ -48,6 +48,53 @@ function refillWinchHydraulic() {
     renderView();
 }
 
+function updateFifiPhysics() {
+    const fifi = gameState.machinery.fifi;
+    const fuelTank = gameState.tanks[fifi.fuelSource];
+    let stateChanged = false;
+
+    if (fifi.engineStatus === 'RUNNING') {
+        if (fifi.carter.vol <= 0) {
+            fifi.engineStatus = 'OFF';
+            fifi.targetRpm = 0;
+            triggerAlarm("TRIP FIFI: CARTER VAZIO.");
+            stateChanged = true;
+        } else if (fuelTank.vol <= 0) {
+            fifi.engineStatus = 'OFF';
+            fifi.targetRpm = 0;
+            triggerAlarm(`SHUTDOWN FIFI: ${fuelTank.name} SEM ÓLEO DIESEL.`);
+            stateChanged = true;
+        } else {
+            fuelTank.vol = Math.max(0, fuelTank.vol - 0.005);
+            fifi.carter.vol = Math.max(0, fifi.carter.vol - fifi.loConsumption);
+        }
+    }
+
+    if (fifi.rpm < fifi.targetRpm) {
+        fifi.rpm += 120;
+        stateChanged = true;
+    } else if (fifi.rpm > fifi.targetRpm) {
+        fifi.rpm -= 160;
+        stateChanged = true;
+    }
+
+    if (Math.abs(fifi.rpm - fifi.targetRpm) < 120) {
+        fifi.rpm = fifi.targetRpm;
+    }
+
+    const monitorsOpen = [fifi.monitorPortOpen, fifi.monitorStarboardOpen].filter(Boolean).length;
+    const dischargeReady = fifi.seawaterChestOpen && fifi.shellValveOpen && monitorsOpen > 0;
+
+    fifi.oilPress = fifi.engineStatus === 'RUNNING' ? 4.2 + (fifi.rpm / 900) : 0;
+    fifi.coolTemp = fifi.engineStatus === 'RUNNING'
+        ? (dischargeReady ? 72 + monitorsOpen * 2 : 84)
+        : (fifi.coolTemp > 30 ? Math.max(30, fifi.coolTemp - 2) : 30);
+    fifi.pumpPressure = dischargeReady && fifi.engineStatus === 'RUNNING' ? Math.min(13.5, 4.5 + (fifi.rpm / 220)) : 0;
+    fifi.flowRate = dischargeReady && fifi.engineStatus === 'RUNNING' ? monitorsOpen * (420 + (fifi.rpm * 0.12)) : 0;
+
+    return stateChanged;
+}
+
 function updateMcpPhysics(mcpKey) {
     const mcp = gameState.machinery[mcpKey];
     const fuelTank = gameState.tanks[mcp.fuelSource];
@@ -448,6 +495,7 @@ function runSimulationTick() {
     }
 
     updateChillerPhysics();
+    stateChanged = updateFifiPhysics() || stateChanged;
 
     if (stateChanged || gameState.modal.isOpen) renderView();
 }

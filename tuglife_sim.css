@@ -51,7 +51,7 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
         "tk06     mca-ps   mca-sb   tk07"
         "tk06     tk04     tk05     tk07"
         "tk06     tk03     tk03     tk07"
-        "mcp-ps   mcp-ps   mcp-sb   mcp-sb"
+        "mcp-ps   fifi     fifi     mcp-sb"
         "tk11     tk-od    tk-od    tk12"
         "tk11     tk13     tk14     tk12"
         "tk15     tk15     tk16     tk16"
@@ -71,13 +71,15 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 .area-peak-fwd { grid-area: peak-fwd; width: 88%; justify-self: center; } .area-tk02 { grid-area: tk02; } .area-tk06 { grid-area: tk06; } .area-tk07 { grid-area: tk07; }
 .area-mca-ps { grid-area: mca-ps; } .area-mca-sb { grid-area: mca-sb; }
 .area-tk04 { grid-area: tk04; } .area-tk05 { grid-area: tk05; } .area-tk03 { grid-area: tk03; }
-.area-mcp-ps { grid-area: mcp-ps; } .area-mcp-sb { grid-area: mcp-sb; }
+.area-mcp-ps { grid-area: mcp-ps; } .area-fifi { grid-area: fifi; } .area-mcp-sb { grid-area: mcp-sb; }
 .area-tk11 { grid-area: tk11; } .area-tk-od { grid-area: tk-od; } .area-tk13 { grid-area: tk13; } .area-tk14 { grid-area: tk14; } .area-tk12 { grid-area: tk12; }
 .area-tk15 { grid-area: tk15; } .area-tk16 { grid-area: tk16; } .area-peak-aft { grid-area: peak-aft; }
 .area-winch { grid-area: winch; } .area-tk-hyd { grid-area: tk-hyd; } .area-chiller { grid-area: chiller; }
 .slot.type-winch { border-color: rgba(156,39,176,0.5); background: rgba(156,39,176,0.05); }
 .slot.type-hyd { border-color: rgba(33,150,243,0.5); background: rgba(33,150,243,0.05); }
 .slot.type-chiller { border-color: rgba(0,188,212,0.4); background: rgba(0,188,212,0.05); }
+.slot.type-fifi { border-color: rgba(244,67,54,0.45); background: rgba(244,67,54,0.08); min-height: 44px; }
+.slot.type-fifi .capacity { color: #ff8a80; }
 .area-zd-ps { grid-area: zd-ps; } .area-zd-sb { grid-area: zd-sb; }
 .slot.type-lo { border-color: rgba(255, 193, 7, 0.5); min-height: 36px; flex-direction: row; gap: 8px; justify-content: center; align-items: center; }
 .slot.type-overflow { border-color: rgba(244, 67, 54, 0.5); background: rgba(244,67,54,0.05); }

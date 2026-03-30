@@ -165,6 +165,35 @@ function renderModalContent() {
                 ${chiller.isOn ? 'DESLIGAR AC' : 'LIGAR AC'}
             </button>
         `;
+    } else if (gameState.modal.type === 'fifi') {
+        const fifi = gameState.machinery.fifi;
+        const carterPct = getPercentage(fifi.carter.vol, fifi.carter.max).toFixed(0);
+        const statusColor = fifi.engineStatus === 'RUNNING' ? 'var(--accent-green)' : '#888';
+        const dischargeReady = fifi.seawaterChestOpen && fifi.shellValveOpen && (fifi.monitorPortOpen || fifi.monitorStarboardOpen);
+        titleEl.innerText = 'FIFI ONE - COMBATE A INCÊNDIO';
+        html = `
+            <div style="font-size:0.75rem; color:#ff7043; font-weight:bold; margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid #333;">&#128293; MANOBRA OPERACIONAL FIFI</div>
+            <div class="modal-data-row"><span class="modal-data-label">Motor diesel:</span><span class="modal-data-value" style="color:${statusColor}">${fifi.engineStatus}</span></div>
+            <div class="modal-data-row"><span class="modal-data-label">RPM motor:</span><span class="modal-data-value">${fifi.rpm} RPM</span></div>
+            <div class="modal-data-row"><span class="modal-data-label">Pressão óleo:</span><span class="modal-data-value">${fifi.oilPress.toFixed(1)} bar</span></div>
+            <div class="modal-data-row"><span class="modal-data-label">Temp. motor:</span><span class="modal-data-value">${fifi.coolTemp.toFixed(1)} °C</span></div>
+            <div class="modal-data-row"><span class="modal-data-label">Cárter OL15W40:</span><span class="modal-data-value" style="color:${carterPct < 30 ? 'var(--accent-red)' : '#ffc107'}">${fifi.carter.vol.toFixed(3)} m³ (${carterPct}%)</span></div>
+            <div class="modal-data-row"><span class="modal-data-label">Caixa de mar:</span><span class="modal-data-value" style="color:${fifi.seawaterChestOpen ? 'var(--accent-green)' : '#888'}">${fifi.seawaterChestOpen ? 'ABERTA' : 'FECHADA'}</span></div>
+            <div class="modal-data-row"><span class="modal-data-label">Válvula costado:</span><span class="modal-data-value" style="color:${fifi.shellValveOpen ? 'var(--accent-green)' : '#888'}">${fifi.shellValveOpen ? 'ABERTA' : 'FECHADA'}</span></div>
+            <div class="modal-data-row"><span class="modal-data-label">Canhão BB:</span><span class="modal-data-value" style="color:${fifi.monitorPortOpen ? 'var(--accent-green)' : '#888'}">${fifi.monitorPortOpen ? 'ABERTO' : 'FECHADO'}</span></div>
+            <div class="modal-data-row"><span class="modal-data-label">Canhão BE:</span><span class="modal-data-value" style="color:${fifi.monitorStarboardOpen ? 'var(--accent-green)' : '#888'}">${fifi.monitorStarboardOpen ? 'ABERTO' : 'FECHADO'}</span></div>
+            <div class="modal-data-row"><span class="modal-data-label">Pressão bomba:</span><span class="modal-data-value">${fifi.pumpPressure.toFixed(1)} bar</span></div>
+            <div class="modal-data-row"><span class="modal-data-label">Vazão total:</span><span class="modal-data-value">${fifi.flowRate.toFixed(0)} m³/h</span></div>
+            <div class="modal-data-row"><span class="modal-data-label">Procedimento:</span><span class="modal-data-value" style="font-size:0.82rem; color:${dischargeReady ? 'var(--accent-green)' : '#bbb'}">${dischargeReady ? 'PRONTO PARA DESCARGA' : 'ABRIR SUCÇÃO, COSTADO E CANHÃO(S)'}</span></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px;">
+                <button onclick="fillCarter('fifi')" class="control-btn" style="padding:10px; background:#1a1100; color:#ffc107;">ENCHER CARTER</button>
+                <button onclick="handleFifiStart()" class="control-btn" style="padding:10px; background:${fifi.engineStatus === 'RUNNING' ? 'var(--accent-red)' : '#444'};">${fifi.engineStatus === 'RUNNING' ? 'PARAR MOTOR' : 'PARTIR MOTOR'}</button>
+                <button onclick="toggleFifiValve('seawaterChestOpen')" class="control-btn" style="padding:10px; background:${fifi.seawaterChestOpen ? 'rgba(76,175,80,0.22)' : '#333'};">CAIXA DE MAR</button>
+                <button onclick="toggleFifiValve('shellValveOpen')" class="control-btn" style="padding:10px; background:${fifi.shellValveOpen ? 'rgba(76,175,80,0.22)' : '#333'};">VÁLVULA COSTADO</button>
+                <button onclick="toggleFifiValve('monitorPortOpen')" class="control-btn" style="padding:10px; background:${fifi.monitorPortOpen ? 'rgba(76,175,80,0.22)' : '#333'};">CANHÃO BB</button>
+                <button onclick="toggleFifiValve('monitorStarboardOpen')" class="control-btn" style="padding:10px; background:${fifi.monitorStarboardOpen ? 'rgba(76,175,80,0.22)' : '#333'};">CANHÃO BE</button>
+            </div>
+        `;
     }
 
     contentEl.innerHTML = html;
@@ -371,6 +400,12 @@ function renderView() {
     document.getElementById('ui-chiller-status').innerText = chiller.isOn ? 'ON' : 'OFF';
     document.getElementById('ui-chiller-status').style.color = chiller.isOn ? 'var(--accent-blue)' : '#aaa';
     document.getElementById('ui-chiller-temp').innerText = `${chiller.actualTemp.toFixed(1)}°C`;
+
+    const fifi = gameState.machinery.fifi;
+    document.getElementById('ui-fifi-hull').style.backgroundColor = fifi.engineStatus === 'RUNNING' ? 'rgba(244, 67, 54, 0.16)' : 'transparent';
+    document.getElementById('ui-fifi-status-hull').innerText = fifi.engineStatus === 'RUNNING' ? `${fifi.pumpPressure.toFixed(1)} bar` : 'OFF';
+    document.getElementById('ui-fifi-status-hull').style.color = fifi.engineStatus === 'RUNNING' ? '#ff8a80' : '#aaa';
+    document.getElementById('ui-fifi-flow-hull').innerText = `${fifi.flowRate.toFixed(0)} m³/h`;
 
     ZD_SIDES.forEach(side => {
         const mcp = gameState.machinery[`mcp_${side}`];

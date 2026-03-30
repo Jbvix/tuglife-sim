@@ -147,6 +147,37 @@ function toggleAuxiliary(mcpKey, type) {
     renderView();
 }
 
+function toggleFifiValve(valveKey) {
+    const fifi = gameState.machinery.fifi;
+    if (!(valveKey in fifi)) return;
+
+    fifi[valveKey] = !fifi[valveKey];
+    renderView();
+    renderModalContent();
+}
+
+function handleFifiStart() {
+    const fifi = gameState.machinery.fifi;
+    const fuelTank = gameState.tanks[fifi.fuelSource];
+
+    if (fifi.engineStatus === 'OFF') {
+        if ((fifi.carter.vol / fifi.carter.max) < 0.30) {
+            return triggerAlarm("INTERLOCK FIFI: ENCHER CARTER COM OL15W40 ANTES DA PARTIDA.");
+        }
+        if (fuelTank.vol <= 0) {
+            return triggerAlarm(`INTERLOCK FIFI: ${fuelTank.name} SEM ÓLEO DIESEL.`);
+        }
+        fifi.engineStatus = 'RUNNING';
+        fifi.targetRpm = 1800;
+    } else {
+        fifi.engineStatus = 'OFF';
+        fifi.targetRpm = 0;
+    }
+
+    renderView();
+    renderModalContent();
+}
+
 function handleMcpStart(mcpKey) {
     const mcp = gameState.machinery[mcpKey];
 
