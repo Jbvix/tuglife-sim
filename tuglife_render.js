@@ -39,7 +39,7 @@ function renderModalContent() {
                 <div class="modal-data-row"><span class="modal-data-label">Estado:</span><span class="modal-data-value" style="color:${statusColor}">${eng.status}</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Rotação:</span><span class="modal-data-value">${eng.rpm} RPM</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Pressão Óleo:</span><span class="modal-data-value">${eng.oilPress.toFixed(1)} Bar</span></div>
-                <div class="modal-data-row"><span class="modal-data-label">Temp. Arrefec.:</span><span class="modal-data-value">${eng.coolTemp.toFixed(1)} °C</span></div>
+                <div class="modal-data-row"><span class="modal-data-label">Temp. ELC:</span><span class="modal-data-value">${eng.coolTemp.toFixed(1)} °C</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Carter OL15W40:</span><span class="modal-data-value" style="color:${carterColor}">${eng.carter.vol.toFixed(3)} m³ (${carterPct}%)</span></div>
             `;
         } else if (gameState.modal.type === 'mca-gen') {
@@ -58,11 +58,11 @@ function renderModalContent() {
                 <div class="modal-data-row"><span class="modal-data-label">Estado:</span><span class="modal-data-value" style="color:${statusColor}">${eng.status}</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Rotação:</span><span class="modal-data-value">${eng.rpm} RPM</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Pressão Óleo:</span><span class="modal-data-value">${eng.oilPress.toFixed(1)} Bar</span></div>
-                <div class="modal-data-row"><span class="modal-data-label">Temp. Arrefec.:</span><span class="modal-data-value">${eng.coolTemp.toFixed(1)} °C</span></div>
+                <div class="modal-data-row"><span class="modal-data-label">Temp. ELC:</span><span class="modal-data-value">${eng.coolTemp.toFixed(1)} °C</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Carter OL15W40:</span><span class="modal-data-value" style="color:${carterColor}">${eng.carter.vol.toFixed(3)} m³ (${carterPct}%)</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">BBA Pré-Lubrificação:</span><span class="modal-data-value">${eng.preLubeOn ? 'LIGADA' : 'DESLIGADA'}</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Motor de Arranque:</span><span class="modal-data-value">${eng.status === 'OFF' ? 'PRONTO' : 'EM STAND-BY'}</span></div>
-                <div class="modal-data-row"><span class="modal-data-label">BBA Refrigeração:</span><span class="modal-data-value">${eng.coolingOn ? 'LIGADA' : 'DESLIGADA'}</span></div>
+                <div class="modal-data-row"><span class="modal-data-label">BBA ELC / Arrefecimento:</span><span class="modal-data-value">${eng.coolingOn ? 'LIGADA' : 'DESLIGADA'}</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">BBA Combustível:</span><span class="modal-data-value">${gameState.tanks[eng.fuelSource].vol > 0 ? 'PRESSURIZADA' : 'SEM COMBUSTÍVEL'}</span></div>
             `;
         } else {
@@ -72,7 +72,7 @@ function renderModalContent() {
                 <div class="modal-data-row"><span class="modal-data-label">Estado:</span><span class="modal-data-value" style="color:${statusColor}">${eng.status}</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Rotação:</span><span class="modal-data-value">${eng.rpm} RPM</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Pressão Óleo:</span><span class="modal-data-value">${eng.oilPress.toFixed(1)} Bar</span></div>
-                <div class="modal-data-row"><span class="modal-data-label">Temp. Arrefec.:</span><span class="modal-data-value">${eng.coolTemp.toFixed(1)} °C</span></div>
+                <div class="modal-data-row"><span class="modal-data-label">Temp. ELC:</span><span class="modal-data-value">${eng.coolTemp.toFixed(1)} °C</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Carter OL15W40:</span><span class="modal-data-value" style="color:${carterColor}">${eng.carter.vol.toFixed(3)} m³ (${carterPct}%)</span></div>
                 <div style="font-size:0.75rem; color:#00bcd4; font-weight:bold; margin:10px 0 8px; padding-bottom:4px; border-bottom:1px solid #333;">&#9889; GERADOR</div>
                 <div class="modal-data-row"><span class="modal-data-label">Tensão:</span><span class="modal-data-value">${eng.v.toFixed(0)} V</span></div>
