@@ -131,7 +131,7 @@ const gameState = {
         tk03: { name: "TK 03 FO Transbordo (Overflow)", type: 'overflow', max: 2.0, vol: 0 },
         tk11: { name: "TK 11 FO Armaz. Re BB", type: 'fo', max: 15.0, vol: 0 },
         tk12: { name: "TK 12 FO Armaz. Re BE", type: 'fo', max: 15.0, vol: 0 },
-        tk_od_center: { name: "TK CENTRAL OD", type: 'od', max: 30.0, vol: 0 },
+        tk_od_center: { name: "TK 08 OD CENTRAL", type: 'od', max: 30.0, vol: 0 },
         tk13: { name: "TK 13 Oleo Sujo (Dirty Oil)", type: 'do', max: 4.8, vol: 0 },
         tk14: { name: "TK 14 Agua de Porao (Bilge)", type: 'bilge', max: 4.8, vol: 0 },
         tk15: { name: "TK 15 OL15W40 Armazenamento", type: 'lo_15w40', max: 2.0, vol: 0 },

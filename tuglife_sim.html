@@ -104,7 +104,7 @@
                 <div class="slot type-fifi area-fifi" id="ui-fifi-hull" onclick="openModal('fifi', 'fifi')">FIFI ONE<br><span class="capacity" id="ui-fifi-status-hull">OFF</span><span class="capacity" id="ui-fifi-flow-hull" style="font-size:0.5rem;">0 m³/h</span></div>
                 <div class="slot type-engine area-mcp-sb" id="ui-mcp-sb-hull" onclick="openModal('mcp', 'mcp_sb')">MCP BE<br><span class="capacity" id="ui-mcp-sb-rpm-hull">OFF</span><span class="capacity" id="ui-mcp-sb-carter-hull" style="color:#ffc107;font-size:0.5rem;">LO:0%</span></div>
 
-                <div class="slot type-od area-tk-od" onclick="openModal('tank', 'tk_od_center')"><div class="slot-fill" id="fill-tk_od_center"></div>TK CENTRAL OD<br><span class="capacity" id="cap-tk_od_center">0.0</span></div>
+                <div class="slot type-od area-tk-od" onclick="openModal('tank', 'tk_od_center')"><div class="slot-fill" id="fill-tk_od_center"></div>TK 08 OD CENTRAL<br><span class="capacity" id="cap-tk_od_center">0.0</span></div>
                 <div class="slot type-tank area-tk11" onclick="openModal('tank', 'tk11')"><div class="slot-fill" id="fill-tk11"></div>TK 11 BB<br><span class="capacity" id="cap-tk11">0.0</span></div>
                 <div class="slot type-tank area-tk13" onclick="openModal('tank', 'tk13')"><div class="slot-fill" id="fill-tk13"></div>DO 13<br><span class="capacity" id="cap-tk13">0.0</span></div>
                 <div class="slot type-tank area-tk14" onclick="openModal('tank', 'tk14')"><div class="slot-fill" id="fill-tk14"></div>BILGE 14<br><span class="capacity" id="cap-tk14">0.0</span></div>
@@ -170,7 +170,7 @@
                         <option value="tk07">TK 07 FO BE (23.8 m³)</option>
                         <option value="tk11">TK 11 AFT BB (15.0 m³)</option>
                         <option value="tk12">TK 12 AFT BE (15.0 m³)</option>
-                        <option value="tk_od_center">TK CENTRAL OD (30.0 m³)</option>
+                        <option value="tk_od_center">TK 08 OD CENTRAL (30.0 m³)</option>
                     </select>
                     <button id="btn-pump-bunker" class="control-btn" disabled>INICIAR BOMBA</button>
                 </div>
@@ -268,7 +268,7 @@
                     <option value="tk07">TK 07 FO BE</option>
                     <option value="tk11">TK 11 AFT BB</option>
                     <option value="tk12">TK 12 AFT BE</option>
-                    <option value="tk_od_center">TK CENTRAL OD</option>
+                    <option value="tk_od_center">TK 08 OD CENTRAL</option>
                 </select>
                 <label class="panel-label">Destino (Header / Serviço):</label>
                 <select id="select-transfer-dest" class="control-select">
@@ -313,6 +313,21 @@
                     <span style="color:#888;">Vol: <span id="ui-tk03-vol" style="font-family:monospace; color:var(--accent-red);">0.00 m³</span></span>
                     <span style="color:#888;">Nível: <span id="ui-tk03-pct" style="font-family:monospace; color:var(--accent-red);">0.0%</span></span>
                     <span style="color:#888;">Máx: 2.0 m³</span>
+                </div>
+                <div class="system-strip" style="margin-bottom:12px;">
+                    <span class="system-strip-title">RETORNO POR GRAVIDADE</span>
+                    <span id="ui-tk03-gravity-status" class="system-strip-value">SEM VOLUME</span>
+                    <span id="ui-tk03-gravity-rate" class="system-strip-badge">0.00 m³/t</span>
+                </div>
+                <div class="meter-grid" style="grid-template-columns:1fr 1fr; margin-bottom:12px;">
+                    <div class="meter">
+                        <div id="ui-tk03-central-vol" class="meter-val" style="color:#ffb74d;">0.00</div>
+                        <div class="meter-label">TK 08 OD CENTRAL m³</div>
+                    </div>
+                    <div class="meter">
+                        <div id="ui-tk03-gravity-line" class="meter-val" style="color:#90caf9;">BLOQ.</div>
+                        <div class="meter-label">Linha Gravidade</div>
+                    </div>
                 </div>
                 <button id="btn-transfer-tk03-purifier" class="control-btn" style="margin-bottom:0; padding:10px; background:#2a0a00; border-color:var(--accent-red);">TRANSFERIR TK03 PARA HDR</button>
             </div>

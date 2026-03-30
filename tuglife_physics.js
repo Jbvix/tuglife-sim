@@ -411,11 +411,11 @@ function runSimulationTick() {
     if (tk03.vol >= tk03.max) {
         gameState.bunker.isPumping = false;
         gameState.transfer.isPumping = false;
-        triggerAlarm("CRÍTICO: TK03 OVERFLOW CHEIO - TODAS AS BOMBAS PARADAS! TRANSFERIR VIA PURIFICADOR URGENTE!");
+        triggerAlarm("CRÍTICO: TK03 OVERFLOW CHEIO - TODAS AS BOMBAS PARADAS! ALIVIAR PARA TK 08 OD CENTRAL E TRANSFERIR VIA PURIFICADOR.");
     } else if (tk03Pct >= 80 && !gameState.isAlarmActive) {
-        triggerAlarm(`CRÍTICO: TK03 OVERFLOW a ${tk03Pct.toFixed(0)}% - TRANSFERIR VIA PURIFICADOR IMEDIATAMENTE!`);
+        triggerAlarm(`CRÍTICO: TK03 OVERFLOW a ${tk03Pct.toFixed(0)}% - CONFIRMAR RETORNO PARA TK 08 OD CENTRAL E TRANSFERIR VIA PURIFICADOR!`);
     } else if (tk03Pct >= 50 && tk03Pct < 80 && !gameState.isAlarmActive) {
-        triggerAlarm(`AVISO: TK03 OVERFLOW a ${tk03Pct.toFixed(0)}% - TRANSFERIR VIA PURIFICADOR EM BREVE.`);
+        triggerAlarm(`AVISO: TK03 OVERFLOW a ${tk03Pct.toFixed(0)}% - RETORNO POR GRAVIDADE PARA TK 08 OD CENTRAL EM CURSO.`);
     }
 
     let breakersClosed = 0;

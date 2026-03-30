@@ -374,11 +374,25 @@ function renderView() {
     document.getElementById('ui-tk03-pct').innerText = `${tk03Pct2.toFixed(1)}%`;
     document.getElementById('ui-tk03-alarm-badge').style.display = tk03Pct2 >= 50 ? 'inline-block' : 'none';
     const tk03TransferBtn = document.getElementById('btn-transfer-tk03-purifier');
+    const tkCentralOd = gameState.tanks.tk_od_center;
     const tk03TransferDest = ['tk04', 'tk05'].includes(gameState.transfer.destTank) ? gameState.transfer.destTank : 'tk04';
     const tk03TransferDestName = tk03TransferDest === 'tk04' ? 'HDR 04' : 'HDR 05';
     const tk03PurifierActive = gameState.transfer.isPumping && gameState.transfer.sourceTank === 'tk03' && ['tk04', 'tk05'].includes(gameState.transfer.destTank);
+    const gravityAvailable = tk03p.vol > 0 && tkCentralOd.vol < tkCentralOd.max;
+    const gravityBlockedByCentral = tk03p.vol > 0 && tkCentralOd.vol >= tkCentralOd.max;
+    const gravityStatus = gravityAvailable
+        ? 'EM CURSO PARA TK 08'
+        : gravityBlockedByCentral
+            ? 'BLOQUEADA - TK 08 CHEIO'
+            : 'SEM VOLUME';
     tk03TransferBtn.innerText = tk03PurifierActive ? `PARAR TRANSFERÊNCIA PARA ${tk03TransferDestName}` : `TRANSFERIR TK03 PARA ${tk03TransferDestName}`;
     tk03TransferBtn.classList.toggle('pump-on', tk03PurifierActive);
+    document.getElementById('ui-tk03-gravity-status').innerText = gravityStatus;
+    document.getElementById('ui-tk03-gravity-status').style.color = gravityAvailable ? 'var(--accent-green)' : gravityBlockedByCentral ? 'var(--accent-red)' : '#888';
+    document.getElementById('ui-tk03-gravity-rate').innerText = `${gravityAvailable ? '0.08' : '0.00'} m³/t`;
+    document.getElementById('ui-tk03-central-vol').innerText = tkCentralOd.vol.toFixed(2);
+    document.getElementById('ui-tk03-gravity-line').innerText = gravityAvailable ? 'ALINHADA' : gravityBlockedByCentral ? 'SATURADA' : 'PRONTA';
+    document.getElementById('ui-tk03-gravity-line').style.color = gravityAvailable ? 'var(--accent-green)' : gravityBlockedByCentral ? 'var(--accent-red)' : '#90caf9';
 
     const busStatus = document.getElementById('ui-busbar-status');
     if (gameState.power.isLive) {
