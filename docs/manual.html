@@ -303,6 +303,7 @@
                 <a href="#caracteristicas">Características da Simulação</a>
                 <a href="#modulos">Módulos do Simulador</a>
                 <a href="#operacao">Lógica Operacional</a>
+                <a href="#ar-acoplamento">Ar de Acoplamento</a>
                 <a href="#estabilidade">Trim e Estabilidade</a>
                 <a href="#glossario">Glossário Técnico e Naval</a>
             </nav>
@@ -360,6 +361,11 @@
                                     <td>Geração</td>
                                     <td>2 MCAs com QEP, barramento e disjuntores.</td>
                                 </tr>
+                                <tr>
+                                    <td>Ar de acoplamento</td>
+                                    <td>Configuração</td>
+                                    <td>2 compressores elétricos, 1 em serviço e 1 em standby, alimentando as garrafas BB e BE.</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -411,6 +417,10 @@
                                 <tr><td>FiFi One</td><td>Motor diesel + bomba de incêndio + 2 canhões</td><td>Cárter 80 L / sucção mar / descarga para canhões</td></tr>
                                 <tr><td>Z-Drive BB</td><td>Propulsor azimutal</td><td>Caixa 1.800 L / Governo 60 L</td></tr>
                                 <tr><td>Z-Drive BE</td><td>Propulsor azimutal</td><td>Caixa 1.800 L / Governo 60 L</td></tr>
+                                <tr><td>Compressor de Ar BB</td><td>Compressor elétrico de acoplamento</td><td>Automático / serviço ou standby</td></tr>
+                                <tr><td>Compressor de Ar BE</td><td>Compressor elétrico de acoplamento</td><td>Automático / serviço ou standby</td></tr>
+                                <tr><td>Garrafa de ar BB</td><td>Reserva pneumática de acoplamento</td><td>14 bar máx. / caixa de controle até 13 bar</td></tr>
+                                <tr><td>Garrafa de ar BE</td><td>Reserva pneumática de acoplamento</td><td>14 bar máx. / caixa de controle até 13 bar</td></tr>
                                 <tr><td>Guincho de proa</td><td>Sistema hidráulico</td><td>Reservatório OH32 400 L</td></tr>
                                 <tr><td>Recebimento por tambor</td><td>Lubrificantes e OH32</td><td>33 tambores de 200 L</td></tr>
                             </tbody>
@@ -436,6 +446,7 @@
                                 <tr><td>Z-Drive BE</td><td>OL150: 0,2 L/s</td><td>~2 h 30 min com caixa cheia</td></tr>
                                 <tr><td>Governo Z-Drive BB</td><td>OH32: 0,1 L/s + 0,5 L/comando</td><td>~10 min em uso contínuo</td></tr>
                                 <tr><td>Governo Z-Drive BE</td><td>OH32: 0,1 L/s + 0,5 L/comando</td><td>~10 min em uso contínuo</td></tr>
+                                <tr><td>Compressor em serviço</td><td>Elétrico / entra com 10 bar e corta com 14 bar</td><td>Depende do QEP energizado</td></tr>
                                 <tr><td>Guincho de proa</td><td>Sem consumo contínuo modelado</td><td>Reserva presente, autonomia ainda não calculada</td></tr>
                             </tbody>
                         </table>
@@ -466,6 +477,10 @@
                             <p>MCPs, MCAs, auxiliares, acoplamento de Z-Drive e telegráfo de comando.</p>
                         </div>
                         <div class="card">
+                            <div class="card-title">Ar de Acoplamento</div>
+                            <p>Painel dedicado com compressor ativo, compressor em standby, enchimento das garrafas e estados operacionais do sistema pneumático.</p>
+                        </div>
+                        <div class="card">
                             <div class="card-title">Visual 3D</div>
                             <p>Rebocador na água com vetores de força, calado, trim, adernamento e amarração.</p>
                         </div>
@@ -479,6 +494,23 @@
                         <li>Tanques de serviço, armazenamento e overflow reagem a recebimento, consumo e transferência.</li>
                         <li>Os Z-Drives dependem de lubrificação e governo hidráulico para operação consistente.</li>
                         <li>Alarmes e bloqueios ajudam a representar condições inseguras ou indisponibilidade de sistemas.</li>
+                    </ul>
+                </section>
+
+                <section class="section" id="ar-acoplamento">
+                    <h2>Ar de Acoplamento</h2>
+                    <p>
+                        O simulador agora inclui uma planta dedicada de ar de acoplamento para os Z-Drives. O sistema
+                        foi modelado com dois compressores elétricos, um em serviço e outro em standby, alimentando as
+                        garrafas BB e BE e suas respectivas caixas de controle.
+                    </p>
+                    <ul>
+                        <li>Os compressores são elétricos e só funcionam com o QEP energizado.</li>
+                        <li>O compressor em serviço entra automaticamente com 10 bar e corta com 14 bar.</li>
+                        <li>As garrafas de ar são carregadas até 14 bar e as caixas de controle trabalham até 13 bar.</li>
+                        <li>O acoplamento do Z-Drive exige pressão mínima de 12 bar na caixa de controle.</li>
+                        <li>É possível alternar manualmente qual compressor fica em serviço, deixando o outro em standby.</li>
+                        <li>O painel mostra estados simplificados de operação: standby, enchendo e pressão normal.</li>
                     </ul>
                 </section>
 

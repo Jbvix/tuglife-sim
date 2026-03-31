@@ -7,6 +7,7 @@ Simulador estático de rebocador `Damen ASD 2411`, com:
 - transferência FO/LO
 - QEP e motores
 - Z-Drives com intertravamentos
+- sistema de ar de acoplamento dos propulsores
 - visual 3D do rebocador com propulsão vetorial
 
 ## Publicação
@@ -41,3 +42,14 @@ Como alternativa, o arquivo `netlify.toml` já define o publish em `.`.
 Abra `tuglife_sim.html` no navegador.
 
 Para a melhor compatibilidade do visual 3D e carregamento dos scripts, prefira rodar o projeto publicado online.
+
+## Atualizações recentes
+
+- painel de propulsão reorganizado para melhor uso em mobile
+- aba dedicada para `Ar Acopl.` no módulo de propulsão
+- compressores de ar modelados como equipamentos elétricos
+- compressores só operam com o QEP energizado
+- um compressor em serviço alimenta simultaneamente as garrafas BB e BE
+- alternância manual entre compressor BB e compressor BE, com o outro em `standby`
+- lógica automática de carga com entrada em `10 bar` e corte em `14 bar`
+- acoplamento do Z-Drive exigindo pressão mínima de ar na caixa de controle
