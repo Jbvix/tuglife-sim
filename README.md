@@ -19,6 +19,7 @@ O projeto é estático e pode ser publicado diretamente no GitHub + Netlify, sem
 - `index.html`: apresentação e ponto de entrada do projeto
 - `tuglife_sim.html`: entrada principal do simulador
 - `docs/manual.html`: manual do projeto
+- `docs/implementation-tags.md`: rastreabilidade por TAG das implementacoes e correcoes
 - `src/styles/`: estilos da aplicação
 - `src/scripts/core/`: estado global, utilitários e bootstrap
 - `src/scripts/ui/`: renderização e eventos da interface
