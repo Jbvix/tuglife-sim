@@ -303,6 +303,7 @@
                 <a href="#caracteristicas">Características da Simulação</a>
                 <a href="#modulos">Módulos do Simulador</a>
                 <a href="#operacao">Lógica Operacional</a>
+                <a href="#combustivel">Sistema de Combustível</a>
                 <a href="#ar-acoplamento">Ar de Acoplamento</a>
                 <a href="#estabilidade">Trim e Estabilidade</a>
                 <a href="#glossario">Glossário Técnico e Naval</a>
@@ -494,6 +495,19 @@
                         <li>Tanques de serviço, armazenamento e overflow reagem a recebimento, consumo e transferência.</li>
                         <li>Os Z-Drives dependem de lubrificação e governo hidráulico para operação consistente.</li>
                         <li>Alarmes e bloqueios ajudam a representar condições inseguras ou indisponibilidade de sistemas.</li>
+                    </ul>
+                </section>
+
+                <section class="section" id="combustivel">
+                    <h2>Sistema de Combustível (FO)</h2>
+                    <p>
+                        A simulação incorpora uma rotina física rigorosa para simular a circulação viva na tubulação, demandando atenção para isolamento de redundâncias (aderente às normativas da Sociedade Classificadora) e expondo o operador a riscos orgânicos de transbordamento (Overflow).
+                    </p>
+                    <ul>
+                        <li><b>Sucção e Retorno:</b> Cada motor ativo reboca um volume bruto 3x superior ao seu regime queima. O volume limpo remanescente (~2x de sobra), essencial para controle de dilatação da flauta e pré-aquecimento, é então descartado de volta na respectiva Válvula de Retorno selecionada.</li>
+                        <li><b>Painel de Alimentação de Motores:</b> Localizado no slide FO/LO, este painel abriga os comutadores para selecionar instantaneamente de qual tubo o motor vai buscar (Sucção) e para onde vai devolver o excesso (Retorno). Disponível para os motores principais (MCP) e auxiliares (MCA).</li>
+                        <li><b>Ameaça de Transbordo (Overflow):</b> Caso a Sucção extraia combustível de um tanque (ex. HDR BB) e retorne os excedentes fluidos para um tanque não comunicável no momento (ex. HDR BE), ocorrerá enchimento desequilibrado rápido. Isso deflacionará a pressão do motor até um shut-down por avaria seca, e causará o despache contínuo da pressão residual do outro tanque para o Cárter de Alarme do TK 03 (Overflow).</li>
+                        <li><b>Válvula de Cruzamento Físico (Crossover):</b> O equalizador principal de linha entre os tanques de serviço 04 BB e 05 BE. Aberta na aba respectiva de Cross-feed, esta passagem passiva equilibra o volume gravitacional em ambas as faces (Lei dos Vasos Comunicantes), estancando transbordos isolados e garantindo um regime de cofre único para a planta.</li>
                     </ul>
                 </section>
 
