@@ -429,16 +429,25 @@ function runSimulationTick() {
     if (gameState.transfer.isPumping && gameState.transfer.sourceTank && gameState.transfer.destTank) {
         const src = gameState.tanks[gameState.transfer.sourceTank];
         const dst = gameState.tanks[gameState.transfer.destTank];
-        if (src.vol > 0 && dst.vol < dst.max) {
-            const trans = Math.min(gameState.transfer.flowRate, src.vol, dst.max - dst.vol);
-            src.vol -= trans;
-            dst.vol += trans;
+        const isRecirculation = gameState.transfer.sourceTank === gameState.transfer.destTank;
+        
+        if (src.vol > 0 && (isRecirculation || dst.vol < dst.max)) {
+            if (!isRecirculation) {
+                const trans = Math.min(gameState.transfer.flowRate, src.vol, dst.max - dst.vol);
+                src.vol -= trans;
+                dst.vol += trans;
+            }
             stateChanged = true;
         } else {
             gameState.transfer.isPumping = false;
-            if (gameState.transfer.sourceTank === 'tk03' && ['tk04', 'tk05'].includes(gameState.transfer.destTank)) {
+            // Apenas lança alarme se não for recirculação (visto que na recirculação a bomba só para por falta de volume na origem)
+            if (!isRecirculation && gameState.transfer.sourceTank === 'tk03' && ['tk04', 'tk05'].includes(gameState.transfer.destTank)) {
                 if (src.vol <= 0) triggerAlarm(`TRANSFERÊNCIA CONCLUÍDA: TK03 ENVIADO VIA PURIFICADOR PARA ${dst.name}.`);
                 else if (dst.vol >= dst.max) triggerAlarm(`STOP AUTO: ${dst.name} CHEIO. TRANSFERÊNCIA DO TK03 INTERROMPIDA.`);
+            } else if (!isRecirculation && src.vol <= 0) {
+                triggerAlarm(`STOP AUTO: TK de origem vazio.`);
+            } else if (!isRecirculation && dst.vol >= dst.max) {
+                triggerAlarm(`STOP AUTO: ${dst.name} CHEIO.`);
             }
         }
     }
