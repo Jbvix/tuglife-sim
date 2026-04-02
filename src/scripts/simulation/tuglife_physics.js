@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Física e evolução da simulação.
  */
 function refillZDriveFluid(side, fluidType) {
@@ -265,8 +265,16 @@ function updateMcpPhysics(mcpKey) {
             triggerAlarm(`TRIP SEIZURE PROTECTION ${mcp.name}: CARTER VAZIO!`);
             stateChanged = true;
         } else {
-            const consumption = 0.05 + (mcp.telegraph / 100) * 0.15;
-            fuelTank.vol = Math.max(0, fuelTank.vol - consumption);
+            const netConsumption = 0.05 + (mcp.telegraph / 100) * 0.15;
+            const grossSuction = netConsumption * 3.0; // Simulando bomba circulante 3x maior
+            const returnTank = gameState.tanks[mcp.fuelReturn];
+            
+            const actualSuction = Math.min(fuelTank.vol, grossSuction);
+            const actualReturn = Math.max(0, actualSuction - netConsumption);
+            
+            fuelTank.vol -= actualSuction;
+            returnTank.vol += actualReturn;
+            
             mcp.carter.vol = Math.max(0, mcp.carter.vol - mcp.loConsumption);
 
             if ((mcp.carter.vol / mcp.carter.max) < 0.20 && !gameState.isAlarmActive) {
@@ -531,8 +539,16 @@ function runSimulationTick() {
         }
 
         if (gen.status === 'RUNNING') {
-            if (fuelTk.vol >= gen.consumption) {
-                fuelTk.vol -= gen.consumption;
+            const netConsumption = gen.consumption;
+            const grossSuction = netConsumption * 3.0;
+            const returnTank = gameState.tanks[gen.fuelReturn];
+
+            if (fuelTk.vol >= netConsumption) {
+                const actualSuction = Math.min(fuelTk.vol, grossSuction);
+                const actualReturn = Math.max(0, actualSuction - netConsumption);
+                fuelTk.vol -= actualSuction;
+                returnTank.vol += actualReturn;
+                
                 gen.v = 440 + (Math.random() * 2 - 1);
                 gen.hz = 60.0 + (Math.random() * 0.2 - 0.1);
             } else {

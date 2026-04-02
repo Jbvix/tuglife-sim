@@ -273,6 +273,17 @@ function fillCarter(engKey) {
     const needed = eng.carter.max - eng.carter.vol;
     const toTransfer = Math.min(needed, tk15.vol);
 
+    if (toTransfer > 0) {
+        // Disparo cinético visual: jorro de óleo lubrificante amarelo do TK15 pro motor!
+        if (typeof window.spawnFlowParticle === 'function') {
+            for (let i = 0; i < 6; i++) {
+                setTimeout(() => {
+                    window.spawnFlowParticle('tk15', engKey, 0xffc107);
+                }, i * 250);
+            }
+        }
+    }
+
     eng.carter.vol += toTransfer;
     tk15.vol -= toTransfer;
     renderView();
@@ -415,6 +426,7 @@ function bindEventListeners() {
     document.getElementById('btn-pump-bunker').addEventListener('click', () => {
         if (!gameState.bunker.hoseConnected || !gameState.bunker.selectedTank) return;
         gameState.bunker.isPumping = !gameState.bunker.isPumping;
+        if (gameState.bunker.isPumping) closeModal();
         renderView();
     });
 
@@ -477,7 +489,24 @@ function bindEventListeners() {
     document.getElementById('btn-pump-water').addEventListener('click', () => {
         if (!gameState.waterBunkering.hoseConnected || !gameState.waterBunkering.selectedTank) return;
         gameState.waterBunkering.isPumping = !gameState.waterBunkering.isPumping;
+        if (gameState.waterBunkering.isPumping) closeModal();
         renderView();
+    });
+
+    ['mcp_ps', 'mcp_sb', 'mca_ps', 'mca_sb'].forEach(engine => {
+        ['suction', 'return'].forEach(type => {
+            const el = document.getElementById(`sel-${engine}-${type}`);
+            if (el) {
+                el.addEventListener('change', (e) => {
+                    if (type === 'suction') {
+                        gameState.machinery[engine].fuelSource = e.target.value;
+                    } else {
+                        gameState.machinery[engine].fuelReturn = e.target.value;
+                    }
+                    renderView();
+                });
+            }
+        });
     });
 
     document.getElementById('select-transfer-source').addEventListener('change', (e) => {
@@ -495,6 +524,7 @@ function bindEventListeners() {
     document.getElementById('btn-pump-transfer').addEventListener('click', () => {
         if (!gameState.transfer.sourceTank || !gameState.transfer.destTank) return;
         gameState.transfer.isPumping = !gameState.transfer.isPumping;
+        if (gameState.transfer.isPumping) closeModal();
         renderView();
     });
 

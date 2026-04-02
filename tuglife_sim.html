@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -36,6 +36,7 @@
     -->
 
     <link rel="stylesheet" href="src/styles/tuglife_sim.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
 </head>
 <body>
 
@@ -63,68 +64,7 @@
              ========================================================= -->
         <div id="screen-build" class="screen active">
             <div class="screen-title">Praça de Máquinas (Toque para Inspecionar)</div>
-            <div class="hull-container">
-                <div class="slot type-tank area-peak-fwd" onclick="openModal('tank', 'tk_peak_fwd')"><div class="slot-fill" id="fill-tk_peak_fwd"></div>PEAK VANTE FW<br><span class="capacity" id="cap-tk_peak_fwd">0.0</span></div>
-                <div class="slot type-winch area-winch" onclick="openModal('winch','winch')">
-                    GUINCHO PROA<br>
-                    <span id="ui-winch-status" style="font-size:0.55rem;color:#aaa;">PARADO</span>
-                    <span id="ui-winch-press" style="font-size:0.45rem;color:#888;">0 bar</span>
-                </div>
-                <div class="slot type-hyd area-tk-hyd" onclick="openModal('tank','tk_hyd')">
-                    <div class="slot-fill" id="fill-tk_hyd"></div>
-                    TK HID<br>
-                    <span class="capacity" id="cap-tk_hyd">0.20</span>
-                </div>
-                <div class="slot type-chiller area-chiller" onclick="openModal('chiller','chiller')">
-                    AC PROA<br>
-                    <span id="ui-chiller-status" style="font-size:0.55rem;color:#aaa;">OFF</span>
-                    <span id="ui-chiller-temp" style="font-size:0.5rem;color:#00bcd4;">--°C</span>
-                </div>
-                <div class="slot area-manifold" onclick="openModal('manifold', 'manifold')">MANIFOLD</div>
-                <div class="slot type-tank area-tk02" onclick="openModal('tank', 'tk02')"><div class="slot-fill" id="fill-tk02"></div>TK 02 FW<br><span class="capacity" id="cap-tk02">0.0</span></div>
-
-                <div class="slot type-tank area-tk06" onclick="openModal('tank', 'tk06')"><div class="slot-fill" id="fill-tk06"></div>TK 06 BB<br><span class="capacity" id="cap-tk06">0.0</span></div>
-                <div class="slot type-engine area-mca-ps" id="ui-mca-ps-hull" onclick="openModal('mca','mca_ps')">
-                    MCA 1 BB<br>
-                    <span id="ui-mca-ps-rpm" style="font-size:0.55rem;color:#aaa;">OFF</span>
-                    <span id="ui-mca-ps-carter-hull" style="color:#ffc107;font-size:0.45rem;">LO:0%</span>
-                </div>
-                <div class="slot type-engine area-mca-sb" id="ui-mca-sb-hull" onclick="openModal('mca','mca_sb')">
-                    MCA 2 BE<br>
-                    <span id="ui-mca-sb-rpm" style="font-size:0.55rem;color:#aaa;">OFF</span>
-                    <span id="ui-mca-sb-carter-hull" style="color:#ffc107;font-size:0.45rem;">LO:0%</span>
-                </div>
-                <div class="slot type-tank area-tk07" onclick="openModal('tank', 'tk07')"><div class="slot-fill" id="fill-tk07"></div>TK 07 BE<br><span class="capacity" id="cap-tk07">0.0</span></div>
-
-                <div class="slot type-tank area-tk04" onclick="openModal('tank', 'tk04')"><div class="slot-fill" id="fill-tk04"></div>HDR 04<br><span class="capacity" id="cap-tk04">0.0</span></div>
-                <div class="slot type-tank area-tk05" onclick="openModal('tank', 'tk05')"><div class="slot-fill" id="fill-tk05"></div>HDR 05<br><span class="capacity" id="cap-tk05">0.0</span></div>
-                <div class="slot type-overflow area-tk03" onclick="openModal('tank', 'tk03')"><div class="slot-fill" id="fill-tk03"></div>TK 03 OF<br><span class="capacity" id="cap-tk03">0.0</span></div>
-
-                <div class="slot type-engine area-mcp-ps" id="ui-mcp-ps-hull" onclick="openModal('mcp', 'mcp_ps')">MCP BB<br><span class="capacity" id="ui-mcp-ps-rpm-hull">OFF</span><span class="capacity" id="ui-mcp-ps-carter-hull" style="color:#ffc107;font-size:0.5rem;">LO:0%</span></div>
-                <div class="slot type-fifi area-fifi" id="ui-fifi-hull" onclick="openModal('fifi', 'fifi')">FIFI ONE<br><span class="capacity" id="ui-fifi-status-hull">OFF</span><span class="capacity" id="ui-fifi-flow-hull" style="font-size:0.5rem;">0 m³/h</span></div>
-                <div class="slot type-engine area-mcp-sb" id="ui-mcp-sb-hull" onclick="openModal('mcp', 'mcp_sb')">MCP BE<br><span class="capacity" id="ui-mcp-sb-rpm-hull">OFF</span><span class="capacity" id="ui-mcp-sb-carter-hull" style="color:#ffc107;font-size:0.5rem;">LO:0%</span></div>
-
-                <div class="slot type-od area-tk-od" onclick="openModal('tank', 'tk_od_center')"><div class="slot-fill" id="fill-tk_od_center"></div>TK 08 OD CENTRAL<br><span class="capacity" id="cap-tk_od_center">0.0</span></div>
-                <div class="slot type-tank area-tk11" onclick="openModal('tank', 'tk11')"><div class="slot-fill" id="fill-tk11"></div>TK 11 BB<br><span class="capacity" id="cap-tk11">0.0</span></div>
-                <div class="slot type-tank area-tk13" onclick="openModal('tank', 'tk13')"><div class="slot-fill" id="fill-tk13"></div>DO 13<br><span class="capacity" id="cap-tk13">0.0</span></div>
-                <div class="slot type-tank area-tk14" onclick="openModal('tank', 'tk14')"><div class="slot-fill" id="fill-tk14"></div>BILGE 14<br><span class="capacity" id="cap-tk14">0.0</span></div>
-                <div class="slot type-tank area-tk12" onclick="openModal('tank', 'tk12')"><div class="slot-fill" id="fill-tk12"></div>TK 12 BE<br><span class="capacity" id="cap-tk12">0.0</span></div>
-
-                <div class="slot type-lo area-tk15" onclick="openModal('tank', 'tk15')"><div class="slot-fill" id="fill-tk15"></div><span style="color:#ffc107; font-weight:bold;">TK 15 OL15W40</span><span class="capacity" id="cap-tk15" style="color:#ffc107; font-size:0.6rem; margin-left:6px;">1.40 m³</span></div>
-                <div class="slot type-lo area-tk16" onclick="openModal('tank', 'tk16')"><div class="slot-fill" id="fill-tk16"></div><span style="color:#ffb74d; font-weight:bold;">TK 16 OL150</span><span class="capacity" id="cap-tk16" style="color:#ffb74d; font-size:0.6rem; margin-left:6px;">3.60 m³</span></div>
-                <div class="slot type-tank area-peak-aft" onclick="openModal('tank', 'tk_peak_aft')"><div class="slot-fill" id="fill-tk_peak_aft"></div>PEAK RÉ FW<br><span class="capacity" id="cap-tk_peak_aft">0.0</span></div>
-
-                <div class="slot type-propeller area-zd-ps" id="ui-zd-ps-hull" onclick="openModal('zdrive','zd_ps')">
-                    Z-DRIVE BB<br>
-                    <span id="ui-zd-ps-hull-status" style="font-size:0.55rem;color:#aaa;">FREE</span>
-                    <span id="ui-zd-ps-hull-az" style="font-size:0.45rem;color:#ce93d8;">0°</span>
-                </div>
-                <div class="slot type-propeller area-zd-sb" id="ui-zd-sb-hull" onclick="openModal('zdrive','zd_sb')">
-                    Z-DRIVE BE<br>
-                    <span id="ui-zd-sb-hull-status" style="font-size:0.55rem;color:#aaa;">FREE</span>
-                    <span id="ui-zd-sb-hull-az" style="font-size:0.45rem;color:#ce93d8;">0°</span>
-                </div>
-            </div>
+            <div id="pixi-hull-container"></div>
             <button class="quick-panel-btn" onclick="openModal('stability','vessel')">PAINEL DE BANDA E TRIM</button>
         </div>
 
@@ -250,10 +190,71 @@
         <div id="screen-fuel" class="screen">
             <div class="screen-title">Sistema de FO/LO (Transferência)</div>
             <div class="drawer-tab-row">
+                <button class="drawer-tab-btn" data-screen="fuel" data-tab="engines" onclick="setDrawerTab('fuel','engines')">Alimentação</button>
                 <button class="drawer-tab-btn" data-screen="fuel" data-tab="purifier" onclick="setDrawerTab('fuel','purifier')">Purificador</button>
                 <button class="drawer-tab-btn" data-screen="fuel" data-tab="crossfeed" onclick="setDrawerTab('fuel','crossfeed')">Cross-feed</button>
                 <button class="drawer-tab-btn" data-screen="fuel" data-tab="overflow" onclick="setDrawerTab('fuel','overflow')">Overflow</button>
             </div>
+
+            <!-- ALIMENTAÇÃO OD (SUCÇÃO E RETORNO) -->
+            <div class="drawer-tab-panel" data-screen="fuel" data-tab="engines">
+            <div class="control-panel">
+                <div style="border-bottom:1px solid #333; padding-bottom:8px; margin-bottom:12px;">
+                    <span style="font-size:0.9rem; color:var(--accent-orange); font-weight:bold;">&#9881; ALIMENTAÇÃO OD MOTORES</span>
+                </div>
+                
+                <div style="background:#2a2a2a; padding:10px; border-radius:6px; margin-bottom:10px;">
+                    <span style="font-size:0.8rem; color:#fff; font-weight:bold; display:block; margin-bottom:5px;">MCP BB</span>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div>
+                            <label class="panel-label">Válvula de Sucção:</label>
+                            <select id="sel-mcp_ps-suction" class="control-select"><option value="tk04">TK 04 HDR BB</option><option value="tk05">TK 05 HDR BE</option></select>
+                        </div>
+                        <div>
+                            <label class="panel-label" style="color:#ffb74d;">Válvula de Retorno:</label>
+                            <select id="sel-mcp_ps-return" class="control-select"><option value="tk04">TK 04 HDR BB</option><option value="tk05">TK 05 HDR BE</option><option value="tk03">TK 03 OVERFLOW</option></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background:#2a2a2a; padding:10px; border-radius:6px; margin-bottom:10px;">
+                    <span style="font-size:0.8rem; color:#fff; font-weight:bold; display:block; margin-bottom:5px;">MCP BE</span>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div>
+                            <label class="panel-label">Válvula de Sucção:</label>
+                            <select id="sel-mcp_sb-suction" class="control-select"><option value="tk04">TK 04 HDR BB</option><option value="tk05">TK 05 HDR BE</option></select>
+                        </div>
+                        <div>
+                            <label class="panel-label" style="color:#ffb74d;">Válvula de Retorno:</label>
+                            <select id="sel-mcp_sb-return" class="control-select"><option value="tk04">TK 04 HDR BB</option><option value="tk05">TK 05 HDR BE</option><option value="tk03">TK 03 OVERFLOW</option></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background:#2a2a2a; padding:10px; border-radius:6px; margin-bottom:10px;">
+                    <span style="font-size:0.8rem; color:#00bcd4; font-weight:bold; display:block; margin-bottom:5px;">MCA BB & BE</span>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div>
+                            <label class="panel-label">Sucção MCA 1 BB:</label>
+                            <select id="sel-mca_ps-suction" class="control-select"><option value="tk04">TK 04 HDR BB</option><option value="tk05">TK 05 HDR BE</option></select>
+                        </div>
+                        <div>
+                            <label class="panel-label" style="color:#ffb74d;">Retorno MCA 1 BB:</label>
+                            <select id="sel-mca_ps-return" class="control-select"><option value="tk04">TK 04 HDR BB</option><option value="tk05">TK 05 HDR BE</option><option value="tk03">TK 03 OVERFLOW</option></select>
+                        </div>
+                        <div>
+                            <label class="panel-label">Sucção MCA 2 BE:</label>
+                            <select id="sel-mca_sb-suction" class="control-select"><option value="tk04">TK 04 HDR BB</option><option value="tk05">TK 05 HDR BE</option></select>
+                        </div>
+                        <div>
+                            <label class="panel-label" style="color:#ffb74d;">Retorno MCA 2 BE:</label>
+                            <select id="sel-mca_sb-return" class="control-select"><option value="tk04">TK 04 HDR BB</option><option value="tk05">TK 05 HDR BE</option><option value="tk03">TK 03 OVERFLOW</option></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+
 
             <!-- PURIFICADOR DE OD -->
             <div class="drawer-tab-panel" data-screen="fuel" data-tab="purifier">
@@ -775,6 +776,7 @@
          ===================================================================== -->
     <script src="src/scripts/core/tuglife_state.js"></script>
     <script src="src/scripts/core/tuglife_utils.js"></script>
+    <script src="src/scripts/ui/tuglife_pixi.js"></script>
     <script src="src/scripts/ui/tuglife_render.js"></script>
     <script src="src/scripts/ui/tuglife_controls.js"></script>
     <script src="src/scripts/simulation/tuglife_physics.js"></script>

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Renderização do modal e da interface principal.
  */
 function renderModalContent() {
@@ -9,13 +9,42 @@ function renderModalContent() {
     let html = "";
 
     if (gameState.modal.type === 'manifold') {
-        titleEl.innerText = 'MANIFOLD DE RECEBIMENTO';
+        const doTanks = Object.entries(gameState.tanks).filter(([k, t]) => ['fo', 'fo_hdr', 'od'].includes(t.type));
+        let optionsHtml = '<option value="">-- SELECIONE --</option>';
+        doTanks.forEach(([k, t]) => {
+            optionsHtml += `<option value="${k}" ${gameState.transfer.sourceTank === k ? 'selected' : ''}>${t.name} (${t.vol.toFixed(1)} m³)</option>`;
+        });
+        let destOptionsHtml = '<option value="">-- SELECIONE --</option>';
+        doTanks.forEach(([k, t]) => {
+            destOptionsHtml += `<option value="${k}" ${gameState.transfer.destTank === k ? 'selected' : ''}>${t.name} (${t.vol.toFixed(1)} m³)</option>`;
+        });
+
+        titleEl.innerText = 'MANIFOLD & TRANSFERÊNCIA FO';
         html = `
-            <div class="modal-data-row"><span class="modal-data-label">Função:</span><span class="modal-data-value">Recebimento FO</span></div>
+            <div style="font-size:0.75rem; color:#00bcd4; font-weight:bold; margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid #333;">&#9981; RECEBIMENTO DE TERRA</div>
             <div class="modal-data-row"><span class="modal-data-label">Conexão:</span><span class="modal-data-value">${gameState.bunker.hoseConnected ? '<span style="color:var(--accent-green)">MANGOTE LIGADO</span>' : 'DESLIGADO'}</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Caminhão:</span><span class="modal-data-value">${gameState.bunker.truckVolume.toFixed(1)} m³</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Estado Bomba:</span><span class="modal-data-value" style="color:${gameState.bunker.isPumping ? 'var(--accent-orange)' : '#888'}">${gameState.bunker.isPumping ? 'A BOMBEAR' : 'PARADA'}</span></div>
-            <div class="modal-data-row"><span class="modal-data-label">Receb. Água:</span><span class="modal-data-value" style="color:${gameState.waterBunkering.isPumping ? 'var(--accent-blue)' : '#888'}">${gameState.waterBunkering.isPumping ? 'ATIVO' : 'PARADO'}</span></div>
+            
+            <div style="font-size:0.75rem; color:#ff9800; font-weight:bold; margin:16px 0 8px; padding-bottom:4px; border-bottom:1px solid #333;">&#8644; BOMBA DE TRANSFERÊNCIA DE ÓLEO DIESEL</div>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.8rem; color:#aaa;">SUCÇÃO:</span>
+                    <select onchange="gameState.transfer.sourceTank = this.value; gameState.transfer.isPumping = false; renderView();" style="background:#222; color:#fff; border:1px solid #555; padding:4px; width:65%; border-radius:4px;">
+                        ${optionsHtml}
+                    </select>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.8rem; color:#aaa;">DESCARGA:</span>
+                    <select onchange="gameState.transfer.destTank = this.value; gameState.transfer.isPumping = false; renderView();" style="background:#222; color:#fff; border:1px solid #555; padding:4px; width:65%; border-radius:4px;">
+                        ${destOptionsHtml}
+                    </select>
+                </div>
+            </div>
+            <div class="modal-data-row"><span class="modal-data-label">Bba Transf. D.O.:</span><span class="modal-data-value" style="color:${gameState.transfer.isPumping ? 'var(--accent-green)' : '#888'}">${gameState.transfer.isPumping ? 'TRANSFERINDO' : 'PARADA'}</span></div>
+            <button onclick="if(gameState.transfer.sourceTank && gameState.transfer.destTank && gameState.transfer.sourceTank !== gameState.transfer.destTank) { gameState.transfer.isPumping = !gameState.transfer.isPumping; renderView(); } else { alert('Selecione tanques válidos e diferentes.'); }" class="control-btn" style="margin-top:8px; padding:10px; background:${gameState.transfer.isPumping ? '#444' : 'var(--accent-orange)'};">
+                ${gameState.transfer.isPumping ? 'PARAR TRANSFERÊNCIA' : 'INICIAR BOMBA D.O.'}
+            </button>
         `;
     } else if (gameState.modal.type === 'tank') {
         const tk = gameState.tanks[gameState.modal.entityKey];
@@ -367,6 +396,13 @@ function renderView() {
         if (button) button.classList.toggle('active', gameState.transfer.flowRateMode === mode);
     });
 
+    ['mcp_ps', 'mcp_sb', 'mca_ps', 'mca_sb'].forEach(engine => {
+        const suc = document.getElementById(`sel-${engine}-suction`);
+        const ret = document.getElementById(`sel-${engine}-return`);
+        if (suc) suc.value = gameState.machinery[engine].fuelSource;
+        if (ret) ret.value = gameState.machinery[engine].fuelReturn;
+    });
+
     const cfOpen = gameState.transfer.crossFeedValve.isOpen;
     document.getElementById('btn-crossfeed-valve').innerText = cfOpen ? 'FECHAR VÁLVULA CROSS-FEED' : 'ABRIR VÁLVULA CROSS-FEED';
     document.getElementById('btn-crossfeed-valve').classList.toggle('active', cfOpen);
@@ -427,8 +463,7 @@ function renderView() {
         document.getElementById(`ui-mca-${prefix}-v-meter`).style.color = color;
         document.getElementById(`ui-mca-${prefix}-hz-meter`).innerText = gen.hz.toFixed(1);
         document.getElementById(`ui-mca-${prefix}-hz-meter`).style.color = color;
-        document.getElementById(`ui-mca-${prefix}-rpm`).innerText = gen.status === 'RUNNING' ? `${gen.rpm} RPM` : gen.status;
-        document.getElementById(`ui-mca-${prefix}-hull`).style.backgroundColor = gen.status === 'RUNNING' ? 'rgba(76, 175, 80, 0.2)' : 'transparent';
+
         document.getElementById(`ui-mca-${prefix}-carter-val`).innerText = gen.carter.vol.toFixed(3);
         document.getElementById(`ui-mca-${prefix}-carter-val`).style.color = acColor;
         document.getElementById(`ui-mca-${prefix}-carter-pct`).innerText = `${acPct.toFixed(0)}%`;
@@ -436,7 +471,6 @@ function renderView() {
         document.getElementById(`ui-mca-${prefix}-carter-bar`).style.height = `${Math.min(acPct, 100)}%`;
         document.getElementById(`ui-mca-${prefix}-carter-bar2`).style.height = `${Math.min(acPct, 100)}%`;
         document.getElementById(`btn-mca-${prefix}-fill-carter`).disabled = gen.status === 'RUNNING';
-        document.getElementById(`ui-mca-${prefix}-carter-hull`).innerText = `LO:${acPct.toFixed(0)}%`;
         document.getElementById(`ui-mca-${prefix}-oil-meter`).innerText = gen.oilPress.toFixed(1);
         document.getElementById(`ui-mca-${prefix}-oil-meter`).style.color = color;
         document.getElementById(`ui-mca-${prefix}-pf-meter`).innerText = gen.status === 'RUNNING' ? gen.powerFactor.toFixed(2) : '0.00';
@@ -456,24 +490,10 @@ function renderView() {
         btnBreaker.className = gen.breakerClosed ? "breaker-btn closed" : "breaker-btn";
     });
 
-    const winch = gameState.machinery.winch;
-    const totalPress = MCP_KEYS.reduce((sum, key) => sum + gameState.machinery[key].hydraulicPressure, 0);
-    document.getElementById('ui-winch-status').innerText = winch.isActive ? winch.direction : 'PARADO';
-    document.getElementById('ui-winch-status').style.color = winch.isActive ? 'var(--accent-orange)' : '#aaa';
-    document.getElementById('ui-winch-press').innerText = `${Math.round(totalPress / 2)} bar`;
 
-    const chiller = gameState.machinery.chiller;
-    document.getElementById('ui-chiller-status').innerText = chiller.isOn ? 'ON' : 'OFF';
-    document.getElementById('ui-chiller-status').style.color = chiller.isOn ? 'var(--accent-blue)' : '#aaa';
-    document.getElementById('ui-chiller-temp').innerText = `${chiller.actualTemp.toFixed(1)}°C`;
 
     const fifi = gameState.machinery.fifi;
-    document.getElementById('ui-fifi-hull').style.backgroundColor = fifi.engineStatus === 'RUNNING' ? 'rgba(244, 67, 54, 0.16)' : 'transparent';
-    document.getElementById('ui-fifi-status-hull').innerText = fifi.engineStatus === 'RUNNING' ? `${fifi.pumpPressure.toFixed(1)} bar` : 'OFF';
-    document.getElementById('ui-fifi-status-hull').style.color = fifi.engineStatus === 'RUNNING' ? '#ff8a80' : '#aaa';
-    document.getElementById('ui-fifi-flow-hull').innerText = fifi.monitorOpenPct > 0 || fifi.monitorsCommandOpen
-        ? `CANHÕES ${fifi.monitorOpenPct.toFixed(0)}%`
-        : `${fifi.flowRate.toFixed(0)} m³/h`;
+
 
     const threeDPanel = document.querySelector('#screen-visual3d .three-d-panel');
     if (threeDPanel) {
@@ -578,7 +598,6 @@ function renderView() {
         document.getElementById(`ui-mcp-${side}-carter-bar`).style.height = `${Math.min(mcPct, 100)}%`;
         document.getElementById(`ui-mcp-${side}-carter-bar2`).style.height = `${Math.min(mcPct, 100)}%`;
         document.getElementById(`btn-mcp-${side}-fill-carter`).disabled = mcp.status === 'RUNNING';
-        document.getElementById(`ui-mcp-${side}-carter-hull`).innerText = `LO:${mcPct.toFixed(0)}%`;
 
         const btnStart = document.getElementById(`btn-mcp-${side}-start`);
         btnStart.disabled = !(mcp.preLubeOn && mcp.coolingOn && gameState.tanks[mcp.fuelSource].vol > 0 && (mcp.carter.vol / mcp.carter.max) >= 0.30);
@@ -645,38 +664,13 @@ function renderView() {
         zdSlider.disabled = !mcp.clutchEngaged || zd.steeringHyd.vol <= 0;
         zdSlider.value = zd.azimuth;
 
-        const zdHullEl = document.getElementById(`ui-zd-${side}-hull`);
-        const zdHullStatEl = document.getElementById(`ui-zd-${side}-hull-status`);
-        zdHullEl.style.backgroundColor = zd.status === 'DRIVING' ? 'rgba(76,175,80,0.15)' : zd.status === 'ENGAGED' ? 'rgba(156,39,176,0.15)' : zd.status === 'FAULT' ? 'rgba(244,67,54,0.15)' : 'transparent';
-        zdHullStatEl.innerText = zd.status;
-        zdHullStatEl.style.color = zd.status === 'DRIVING' ? 'var(--accent-green)' : zd.status === 'ENGAGED' ? '#ce93d8' : zd.status === 'FAULT' ? 'var(--accent-red)' : '#aaa';
-        document.getElementById(`ui-zd-${side}-hull-az`).innerText = `${zd.azimuth}°`;
 
-        document.getElementById(`ui-mcp-${side}-hull`).style.backgroundColor = mcp.status === 'RUNNING' ? 'rgba(255, 152, 0, 0.2)' : 'transparent';
-        document.getElementById(`ui-mcp-${side}-rpm-hull`).innerText = mcp.status === 'RUNNING' ? `${mcp.rpm} RPM` : mcp.status;
+
+
     });
 
-    for (const [key, tank] of Object.entries(gameState.tanks)) {
-        const fillLayer = document.getElementById(`fill-${key}`);
-        const capText = document.getElementById(`cap-${key}`);
-        if (!fillLayer || !capText) continue;
-
-        const perc = (tank.vol / tank.max) * 100;
-        let visualPerc = perc;
-
-        // Keep the paired LO storage tanks visually comparable on the plant.
-        if (key === 'tk15' || key === 'tk16') {
-            const pairedMax = Math.max(gameState.tanks.tk15.max, gameState.tanks.tk16.max);
-            visualPerc = (tank.vol / pairedMax) * 100;
-        }
-
-        fillLayer.style.height = `${visualPerc}%`;
-        capText.innerText = ['tk15', 'tk16'].includes(key) ? `${tank.vol.toFixed(2)} m³` : `${tank.vol.toFixed(1)}`;
-
-        if (key === 'tk15') fillLayer.style.backgroundColor = perc >= 90 ? "rgba(244,67,54,0.5)" : "rgba(255,193,7,0.35)";
-        else if (key === 'tk16') fillLayer.style.backgroundColor = perc >= 90 ? "rgba(244,67,54,0.5)" : "rgba(255,183,77,0.35)";
-        else if (key === 'tk03') fillLayer.style.backgroundColor = perc >= 80 ? "rgba(244,67,54,0.6)" : "rgba(255,152,0,0.4)";
-        else fillLayer.style.backgroundColor = perc >= 90 ? "rgba(244, 67, 54, 0.5)" : "rgba(0, 188, 212, 0.25)";
+    if (typeof updatePixiView === 'function') {
+        updatePixiView(gameState);
     }
 
     renderModalContent();

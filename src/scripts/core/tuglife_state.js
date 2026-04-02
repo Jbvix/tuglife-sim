@@ -140,10 +140,10 @@ const gameState = {
         tk_hyd: { name: "TK HID OH32", type: 'oh32', max: 0.6, vol: 0 }
     },
     machinery: {
-        mca_ps: { name: "MCA 1 (BOMBORDO)", status: 'OFF', rpm: 0, v: 0, hz: 0, breakerClosed: false, fuelSource: 'tk04', consumption: 0.01, oilPress: 0, coolTemp: 30, carter: { vol: 0, max: 0.015 }, loConsumption: 0.0000033333, current: 0, power: 0, powerFactor: 0.85 },
-        mca_sb: { name: "MCA 2 (BORESTE)", status: 'OFF', rpm: 0, v: 0, hz: 0, breakerClosed: false, fuelSource: 'tk05', consumption: 0.01, oilPress: 0, coolTemp: 30, carter: { vol: 0, max: 0.015 }, loConsumption: 0.0000033333, current: 0, power: 0, powerFactor: 0.85 },
-        mcp_ps: { name: "MCP BB (Motor Principal)", status: 'OFF', rpm: 0, targetRpm: 0, telegraph: 0, preLubeOn: false, coolingOn: false, oilPress: 0, coolTemp: 30, fuelSource: 'tk04', clutchEngaged: false, carter: { vol: 0, max: 0.8 }, loConsumption: 0.0001666667, hydraulicPressure: 0, hydraulicPumpCoupled: true },
-        mcp_sb: { name: "MCP BE (Motor Principal)", status: 'OFF', rpm: 0, targetRpm: 0, telegraph: 0, preLubeOn: false, coolingOn: false, oilPress: 0, coolTemp: 30, fuelSource: 'tk05', clutchEngaged: false, carter: { vol: 0, max: 0.8 }, loConsumption: 0.0001666667, hydraulicPressure: 0, hydraulicPumpCoupled: true },
+        mca_ps: { name: "MCA 1 (BOMBORDO)", status: 'OFF', rpm: 0, v: 0, hz: 0, breakerClosed: false, fuelSource: 'tk04', fuelReturn: 'tk04', consumption: 0.01, oilPress: 0, coolTemp: 30, carter: { vol: 0, max: 0.015 }, loConsumption: 0.0000033333, current: 0, power: 0, powerFactor: 0.85 },
+        mca_sb: { name: "MCA 2 (BORESTE)", status: 'OFF', rpm: 0, v: 0, hz: 0, breakerClosed: false, fuelSource: 'tk05', fuelReturn: 'tk05', consumption: 0.01, oilPress: 0, coolTemp: 30, carter: { vol: 0, max: 0.015 }, loConsumption: 0.0000033333, current: 0, power: 0, powerFactor: 0.85 },
+        mcp_ps: { name: "MCP BB (Motor Principal)", status: 'OFF', rpm: 0, targetRpm: 0, telegraph: 0, preLubeOn: false, coolingOn: false, oilPress: 0, coolTemp: 30, fuelSource: 'tk04', fuelReturn: 'tk04', clutchEngaged: false, carter: { vol: 0, max: 0.8 }, loConsumption: 0.0001666667, hydraulicPressure: 0, hydraulicPumpCoupled: true },
+        mcp_sb: { name: "MCP BE (Motor Principal)", status: 'OFF', rpm: 0, targetRpm: 0, telegraph: 0, preLubeOn: false, coolingOn: false, oilPress: 0, coolTemp: 30, fuelSource: 'tk05', fuelReturn: 'tk05', clutchEngaged: false, carter: { vol: 0, max: 0.8 }, loConsumption: 0.0001666667, hydraulicPressure: 0, hydraulicPumpCoupled: true },
         fifi: {
             name: "FiFi One",
             engineStatus: 'OFF',
