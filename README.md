@@ -1,6 +1,6 @@
 # TugLife Sim
 
-Simulador estático de rebocador `Damen ASD 2411`, com:
+Simulador estático de rebocador, com:
 
 - planta interativa
 - recebimento de óleo e água
