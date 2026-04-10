@@ -417,10 +417,12 @@ if (stage && typeof window !== 'undefined' && window.gameState && window.THREE) 
             fore: makeAnchorPoint(tugGroup, new THREE.Vector3(tugAnchorPositions.fore.x, tugAnchorPositions.fore.z, tugAnchorPositions.fore.y), 'tug_fore', 'fore', 'tug', 0x4dd9ff),
             aft: makeAnchorPoint(tugGroup, new THREE.Vector3(tugAnchorPositions.aft.x, tugAnchorPositions.aft.z, tugAnchorPositions.aft.y), 'tug_aft', 'aft', 'tug', 0x7cff8d)
         };
+        Object.values(tugAnchorMarkers).forEach((m) => { m.visible = false; });
         const dockAnchorMarkers = {
             fore: makeAnchorPoint(scene, new THREE.Vector3(-4.2, 1.8, -4.7), 'dock_fore', 'fore', 'dock', 0xffd36e),
             aft: makeAnchorPoint(scene, new THREE.Vector3(-4.2, 1.8, 4.7), 'dock_aft', 'aft', 'dock', 0xffd36e)
         };
+        Object.values(dockAnchorMarkers).forEach((m) => { m.visible = false; });
 
         function updateAnchorPanelStatus(text, color) {
             if (!hud.anchorSaveStatus) return;

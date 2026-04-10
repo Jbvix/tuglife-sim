@@ -650,7 +650,7 @@
             <div class="drawer-tab-row">
                 <button class="drawer-tab-btn" data-screen="visual3d" data-tab="scene" onclick="setDrawerTab('visual3d','scene')">Cena</button>
                 <button class="drawer-tab-btn" data-screen="visual3d" data-tab="drive" onclick="setDrawerTab('visual3d','drive')">Propulsão</button>
-                <button class="drawer-tab-btn" data-screen="visual3d" data-tab="anchor" onclick="setDrawerTab('visual3d','anchor')">Pontos</button>
+                <button class="drawer-tab-btn" data-screen="visual3d" data-tab="anchor" onclick="setDrawerTab('visual3d','anchor')" style="display:none;">Pontos</button>
             </div>
             <div class="three-d-panel">
                 <div class="three-d-stage" id="three-d-stage"></div>
@@ -690,8 +690,8 @@
                     Use as manetes na tela Motores para testar a propulsão. Arraste para orbitar a câmera e use a roda do mouse para zoom. Clique no cabeço de proa ou popa do rebocador e depois em um cabeço do cais para amarrar. Clique em um ponto já conectado para soltar.
                 </div>
                 </div>
-                <button id="btn-3d-anchor-panel" class="control-btn three-d-btn three-d-config-btn drawer-tab-hidden-toggle">AJUSTAR PONTOS DO TUG</button>
-                <button id="btn-3d-drive-panel" class="control-btn three-d-btn three-d-config-btn drawer-tab-hidden-toggle">PAINEL DE PROPULSÃO 3D</button>
+                <button id="btn-3d-anchor-panel" class="control-btn three-d-btn three-d-config-btn drawer-tab-hidden-toggle" style="display:none;">AJUSTAR PONTOS DO TUG</button>
+                <button id="btn-3d-drive-panel" class="control-btn three-d-btn three-d-config-btn drawer-tab-hidden-toggle" style="display:none;">PAINEL DE PROPULSÃO 3D</button>
                 <div class="drawer-tab-panel" data-screen="visual3d" data-tab="drive">
                 <div id="three-d-drive-panel" class="three-d-anchor-panel" style="display:none;">
                     <div class="three-d-anchor-header">
