@@ -404,6 +404,85 @@ function handleTabSelection(targetTab) {
     }
 }
 
+function triggerEmergencyStop() {
+    if (gameState.safety.emergencyStopPumpsActive) return; // already active
+
+    gameState.safety.emergencyStopPumpsActive = true;
+    gameState.bunker.isPumping = false;
+    gameState.transfer.isPumping = false;
+    gameState.waterBunkering.isPumping = false;
+    
+    // Stop all ventilation
+    Object.keys(gameState.safety.ventilation).forEach(fanKey => {
+        gameState.safety.ventilation[fanKey].isOn = false;
+    });
+
+    triggerAlarm("⚠ PARADA DE EMERGÊNCIA ATIVADA: BOMBAS E VENTILAÇÃO DESLIGADAS!");
+    renderView();
+}
+
+function pullFuelCutLever() {
+    if (gameState.safety.fuelCutLeverTriggered) return;
+
+    gameState.safety.fuelCutLeverTriggered = true;
+
+    // Fechar flaps
+    Object.keys(gameState.safety.ventilation).forEach(fanKey => {
+        gameState.safety.ventilation[fanKey].flapOpen = false;
+    });
+
+    // Cortar combustível - Simular fechamento válvulas mudando o source para null
+    // ou apenas desativar a planta (motores desligarão por falta de comb)
+    ['mcp_ps', 'mcp_sb', 'mca_ps', 'mca_sb'].forEach(eng => {
+        if (gameState.machinery[eng].status === 'RUNNING') {
+            gameState.machinery[eng].status = 'OFF';
+            if (gameState.machinery[eng].targetRpm) gameState.machinery[eng].targetRpm = 0;
+            if (eng.startsWith('mca')) {
+                gameState.machinery[eng].breakerClosed = false;
+            } else {
+                gameState.machinery[eng].telegraph = 0;
+            }
+        }
+    });
+
+    triggerAlarm("🛑 CORTE RÁPIDO DE COMBUSTÍVEL E FECHAMENTO DE FLAPS ACIONADO!");
+    renderView();
+}
+
+function toggleVentFan(fanKey) {
+    const fan = gameState.safety.ventilation[fanKey];
+    if (!fan) return;
+    
+    if (gameState.safety.fireAlarmActive || !fan.flapOpen) {
+        return triggerAlarm(`INTERLOCK: NÃO É POSSÍVEL LIGAR ${fan.name} MODO DE INCÊNDIO (FLAP FECHADO).`);
+    }
+
+    if (!gameState.power.isLive && !fan.isOn) {
+        return triggerAlarm(`INTERLOCK: QEP SEM ENERGIA PARA LIGAR ${fan.name}.`);
+    }
+
+    fan.isOn = !fan.isOn;
+    renderView();
+}
+
+function testFireSensor(sensorKey) {
+    const sensor = gameState.safety.sensors[sensorKey];
+    if (!sensor) return;
+
+    sensor.state = 'FOGO';
+    gameState.safety.fireAlarmActive = true;
+    
+    // Lógica automática - o sistema detectou fogo, então tomamos medidas passivas
+    Object.keys(gameState.safety.ventilation).forEach(fanKey => {
+        gameState.safety.ventilation[fanKey].isOn = false;
+        gameState.safety.ventilation[fanKey].flapOpen = false;
+    });
+    gameState.transfer.isPumping = false;
+
+    triggerAlarm("🔥 INCÊNDIO DETECTADO (" + sensor.name + ") 🔥 EVACUAÇÃO, VENTILAÇÃO CORTADA!");
+    renderView();
+}
+
 function bindEventListeners() {
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -553,4 +632,13 @@ function bindEventListeners() {
         document.getElementById(`telegraph-${side}`).addEventListener('input', (e) => handleTelegraph(`mcp_${side}`, e.target.value));
         document.getElementById(`btn-clutch-${side}`).addEventListener('click', () => toggleClutch(`mcp_${side}`));
     });
+
+    // Vent / Safety Bindings
+    document.getElementById('btn-vent-ps-supply').addEventListener('click', () => toggleVentFan('supply_ps'));
+    document.getElementById('btn-vent-sb-supply').addEventListener('click', () => toggleVentFan('supply_sb'));
+    document.getElementById('btn-vent-ps-exhaust').addEventListener('click', () => toggleVentFan('exhaust_ps'));
+    document.getElementById('btn-vent-sb-exhaust').addEventListener('click', () => toggleVentFan('exhaust_sb'));
+    
+    document.getElementById('btn-emergency-stop').addEventListener('click', triggerEmergencyStop);
+    document.getElementById('div-fuel-cut-lever').addEventListener('click', pullFuelCutLever);
 }

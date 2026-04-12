@@ -14,6 +14,23 @@ const gameState = {
         propulsion: 'mcp_ps',
         visual3d: 'scene'
     },
+    safety: {
+        fireAlarmActive: false,
+        fuelCutLeverTriggered: false,
+        emergencyStopPumpsActive: false,
+        sensors: {
+            mcp_ps: { name: 'Sensor MCP BB', state: 'NORMAL' },
+            mcp_sb: { name: 'Sensor MCP BE', state: 'NORMAL' },
+            zd_ps:  { name: 'Sensor Z-DRIVE BB', state: 'NORMAL' },
+            zd_sb:  { name: 'Sensor Z-DRIVE BE', state: 'NORMAL' }
+        },
+        ventilation: {
+            supply_ps:  { name: 'Insuflamento BB', isOn: false, flapOpen: true },
+            supply_sb:  { name: 'Insuflamento BE', isOn: false, flapOpen: true },
+            exhaust_ps: { name: 'Exaustão BB', isOn: false, flapOpen: true },
+            exhaust_sb: { name: 'Exaustão BE', isOn: false, flapOpen: true }
+        }
+    },
     isAlarmActive: false,
     activeAlarmMessage: "",
     modal: { isOpen: false, type: null, entityKey: null, subtab: null },

@@ -173,13 +173,16 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 .breaker-btn:hover:not(:disabled) { background: #333; border-color: #888; }
 .breaker-btn.closed { background: rgba(76, 175, 80, 0.2); border-color: var(--accent-green); color: var(--accent-green); }
 .breaker-btn.closed:hover:not(:disabled) { background: rgba(76, 175, 80, 0.35); }
-
 .telegraph-container { margin-top: 15px; background: #222; padding: 15px; border-radius: 8px; border: 1px solid #444; }
 .telegraph-slider { -webkit-appearance: none; width: 100%; height: 10px; border-radius: 5px; background: #555; outline: none; transition: opacity .2s; margin-top: 10px; }
 .telegraph-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 25px; height: 35px; border-radius: 4px; background: var(--accent-orange); cursor: pointer; border: 2px solid #fff; }
 .telegraph-slider:disabled { opacity: 0.3; cursor: not-allowed;}
 
-
+.fan-blade { font-size: 2rem; color: #888; display: inline-block; margin: 4px; transition: color 0.3s; }
+.fan-blade.spinning { color: #4caf50; animation: spin 0.8s linear infinite; }
+.fan-blade.exhaust.spinning { color: #ff9800; animation: spin 0.8s linear infinite backwards; }
+.blink-red { animation: blink-fast-red 0.5s infinite alternate; }
+@keyframes blink-fast-red { 0% { color: #ff1744; text-shadow: 0 0 5px #ff1744; } 100% { color: #aa0000; text-shadow: none; } }
 .aux-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
 .aux-btn { padding: 10px 5px; background: #333; border: 1px solid #555; color: #888; font-size: 0.8rem; border-radius: 4px; cursor: pointer; transition: 0.3s; font-weight: bold;}
 .aux-btn:hover:not(:disabled) { background: #444; border-color: #777; color: #bbb; }

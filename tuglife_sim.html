@@ -346,9 +346,10 @@
                 <div id="ui-busbar-status" class="busbar-status dead">DEAD BUS (0V)</div>
             </div>
 
-            <div class="drawer-tab-row tab-row-2">
+            <div class="drawer-tab-row">
                 <button class="drawer-tab-btn" data-screen="power" data-tab="mca_ps" onclick="setDrawerTab('power','mca_ps')">MCA BB</button>
                 <button class="drawer-tab-btn" data-screen="power" data-tab="mca_sb" onclick="setDrawerTab('power','mca_sb')">MCA BE</button>
+                <button class="drawer-tab-btn" data-screen="power" data-tab="safety" onclick="setDrawerTab('power','safety')">Seg, Fogo & Vent</button>
             </div>
 
             <div class="control-panel">
@@ -425,6 +426,75 @@
                     <button id="btn-mca-sb-breaker" class="breaker-btn" disabled>DISJUNTOR: ABERTO</button>
                 </div>
                 </div>
+                </div>
+
+                <!-- Aba Ventilação e Segurança -->
+                <div class="drawer-tab-panel" data-screen="power" data-tab="safety">
+                <div class="generator-box" style="border-color: #ff5722;">
+                    <div class="gen-header"><span class="gen-title" style="color:#ff5722;">VENTILAÇÃO PRAÇA MÁQUINAS</span><span id="ui-safety-vent-status" class="gen-status">OFF</span></div>
+                    
+                    <div class="meter-grid" style="grid-template-columns:1fr 1fr; margin-bottom:12px;">
+                        <button id="btn-vent-ps-supply" class="control-btn" style="margin:0; padding:6px; background:#1e1e1e;">INSUFL BB</button>
+                        <button id="btn-vent-sb-supply" class="control-btn" style="margin:0; padding:6px; background:#1e1e1e;">INSUFL BE</button>
+                        <button id="btn-vent-ps-exhaust" class="control-btn" style="margin:0; padding:6px; background:#1e1e1e;">EXAUST BB</button>
+                        <button id="btn-vent-sb-exhaust" class="control-btn" style="margin:0; padding:6px; background:#1e1e1e;">EXAUST BE</button>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-around; align-items:center; margin-bottom:15px;">
+                        <div class="fan-container" style="text-align:center;">
+                            <span style="font-size:0.6rem; color:#888;">INSUFL BB</span>
+                            <div class="fan-blade" id="ui-fan-supply-ps">⚙</div>
+                            <span id="ui-flap-supply-ps" style="font-size:0.6rem; font-weight:bold; color:#4caf50;">FLAP ABERTO</span>
+                        </div>
+                        <div class="fan-container" style="text-align:center;">
+                            <span style="font-size:0.6rem; color:#888;">INSUFL BE</span>
+                            <div class="fan-blade" id="ui-fan-supply-sb">⚙</div>
+                            <span id="ui-flap-supply-sb" style="font-size:0.6rem; font-weight:bold; color:#4caf50;">FLAP ABERTO</span>
+                        </div>
+                        <div class="fan-container" style="text-align:center;">
+                            <span style="font-size:0.6rem; color:#888;">EXAUST BB</span>
+                            <div class="fan-blade" id="ui-fan-exhaust-ps">⚙</div>
+                            <span id="ui-flap-exhaust-ps" style="font-size:0.6rem; font-weight:bold; color:#4caf50;">FLAP ABERTO</span>
+                        </div>
+                        <div class="fan-container" style="text-align:center;">
+                            <span style="font-size:0.6rem; color:#888;">EXAUST BE</span>
+                            <div class="fan-blade" id="ui-fan-exhaust-sb">⚙</div>
+                            <span id="ui-flap-exhaust-sb" style="font-size:0.6rem; font-weight:bold; color:#4caf50;">FLAP ABERTO</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generator-box" style="border-color: #f44336; margin-top:15px; padding-bottom: 20px;">
+                    <div class="gen-header"><span class="gen-title" style="color:#f44336;">ALARMES DE FOGO (CGA)</span><span id="ui-cga-status" class="gen-status" style="display:none; color: #ff1744;">FOGO</span></div>
+                    
+                    <div style="background:#0a0000; border:1px solid #ff1744; border-radius:4px; padding:10px; margin-bottom:12px;">
+                        <div style="font-size:0.75rem; color:#ff8a80; font-weight:bold; margin-bottom:8px; text-align:center;">DISPLAY SENSORES (PORÃO)</div>
+                        <div class="meter-grid" style="grid-template-columns:1fr 1fr;">
+                            <div class="meter" style="border-color:#444;"><div id="ui-sensor-mcp-ps" class="meter-val" style="color:#4caf50; font-size:0.85rem;">NORMAL</div><div class="meter-label">MCP BB</div></div>
+                            <div class="meter" style="border-color:#444;"><div id="ui-sensor-mcp-sb" class="meter-val" style="color:#4caf50; font-size:0.85rem;">NORMAL</div><div class="meter-label">MCP BE</div></div>
+                            <div class="meter" style="border-color:#444;"><div id="ui-sensor-zd-ps" class="meter-val" style="color:#4caf50; font-size:0.85rem;">NORMAL</div><div class="meter-label">Z-DRIVE BB</div></div>
+                            <div class="meter" style="border-color:#444;"><div id="ui-sensor-zd-sb" class="meter-val" style="color:#4caf50; font-size:0.85rem;">NORMAL</div><div class="meter-label">Z-DRIVE BE</div></div>
+                        </div>
+                    </div>
+
+                    <div style="font-size:0.7rem; color:#888; text-align:center; margin-bottom:6px;">TESTE POR GÁS (SPRAY MANUAL)</div>
+                    <div class="meter-grid" style="grid-template-columns:1fr 1fr; margin-bottom:15px; gap:6px;">
+                        <button class="breaker-btn" style="color:#ffcc80;" id="btn-test-mcp-ps" onclick="testFireSensor('mcp_ps')">TESTAR MCP BB</button>
+                        <button class="breaker-btn" style="color:#ffcc80;" id="btn-test-mcp-sb" onclick="testFireSensor('mcp_sb')">TESTAR MCP BE</button>
+                        <button class="breaker-btn" style="color:#ffcc80;" id="btn-test-zd-ps" onclick="testFireSensor('zd_ps')">TESTAR Z-DRIVE BB</button>
+                        <button class="breaker-btn" style="color:#ffcc80;" id="btn-test-zd-sb" onclick="testFireSensor('zd_sb')">TESTAR Z-DRIVE BE</button>
+                    </div>
+
+                    <div style="border-top:1px dashed #555; padding-top:12px; display:flex; flex-direction:column; gap:8px;">
+                        <button id="btn-emergency-stop" class="control-btn" style="padding:12px; background:#7f0000; border:2px solid #ff1744; color:#fff; font-size:0.9rem;">&#9888; PARADA EMERGÊNCIA (BOMBAS E VENTS)</button>
+                        <div class="carter-meter" style="background:#1a0000; border-color:#e53935; cursor:pointer;" id="div-fuel-cut-lever">
+                            <div class="meter-label" style="text-align:center; font-size:0.8rem; color:#ffcdd2; margin-bottom:5px;">ALAVANCA CORTA CHAMA / CORTE COMB.</div>
+                            <div id="ui-fuel-lever" style="font-size:1.5rem; font-weight:bold; color:var(--accent-red); margin: 0 auto;">P U X A R</div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+
             </div>
         </div>
 

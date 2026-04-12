@@ -669,6 +669,85 @@ function renderView() {
 
     });
 
+    // Safety & Ventilation Rendering
+    let anyVentOn = false;
+    Object.keys(gameState.safety.ventilation).forEach(fanKey => {
+        const fan = gameState.safety.ventilation[fanKey];
+        if (fan.isOn) anyVentOn = true;
+        
+        // As keys no state sao: supply_ps
+        // No HTML, o botão é btn-vent-ps-supply, e a ui-fan e ui-flap sao supply-ps
+        const parts = fanKey.split('_'); // [supply, ps]
+        const btnId = `btn-vent-${parts[1]}-${parts[0]}`;
+        const suffix = `${parts[0]}-${parts[1]}`;
+        
+        const btn = document.getElementById(btnId);
+        if (btn) {
+            btn.classList.toggle('pump-on', fan.isOn);
+            btn.style.color = fan.isOn ? 'black' : 'white';
+        }
+        
+        const fanIcon = document.getElementById(`ui-fan-${suffix}`);
+        if (fanIcon) {
+            if (fan.isOn) {
+                fanIcon.classList.add('spinning');
+                if (parts[0] === 'exhaust') {
+                    fanIcon.classList.add('exhaust');
+                }
+            } else {
+                fanIcon.classList.remove('spinning', 'exhaust');
+                fanIcon.style.color = '#888';
+            }
+        }
+        
+        const flapText = document.getElementById(`ui-flap-${suffix}`);
+        if (flapText) {
+            flapText.innerText = fan.flapOpen ? "FLAP ABERTO" : "FLAP FECHADO";
+            flapText.style.color = fan.flapOpen ? "#4caf50" : "#f44336";
+        }
+    });
+
+    const ventStatus = document.getElementById('ui-safety-vent-status');
+    if (ventStatus) {
+        ventStatus.innerText = anyVentOn ? "ON" : "OFF";
+        ventStatus.className = anyVentOn ? "gen-status running" : "gen-status";
+    }
+
+    const cgaStatus = document.getElementById('ui-cga-status');
+    if (cgaStatus) {
+        cgaStatus.style.display = gameState.safety.fireAlarmActive ? 'inline-block' : 'none';
+        cgaStatus.className = gameState.safety.fireAlarmActive ? "gen-status blink-red" : "gen-status";
+    }
+
+    Object.keys(gameState.safety.sensors).forEach(sensorKey => {
+        const sensor = gameState.safety.sensors[sensorKey];
+        const uiKey = sensorKey.replace('_', '-');
+        const sensorEl = document.getElementById(`ui-sensor-${uiKey}`);
+        if (sensorEl) {
+            sensorEl.innerText = sensor.state;
+            sensorEl.style.color = sensor.state === 'NORMAL' ? '#4caf50' : '#f44336';
+            if (sensor.state === 'FOGO') sensorEl.classList.add('blink-red');
+            else sensorEl.classList.remove('blink-red');
+        }
+    });
+
+    const triggerBtn = document.getElementById('btn-emergency-stop');
+    if (triggerBtn) {
+        if (gameState.safety.emergencyStopPumpsActive) {
+            triggerBtn.style.background = '#4a0000';
+            triggerBtn.style.color = '#ff8a80';
+            triggerBtn.innerText = "⚠ PARADA ACIONADA";
+        }
+    }
+
+    const fuelLever = document.getElementById('ui-fuel-lever');
+    if (fuelLever) {
+        if (gameState.safety.fuelCutLeverTriggered) {
+            fuelLever.innerText = "P U X A D O";
+            fuelLever.style.color = "#ff1744";
+        }
+    }
+
     if (typeof updatePixiView === 'function') {
         updatePixiView(gameState);
     }
