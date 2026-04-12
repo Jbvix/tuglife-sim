@@ -300,6 +300,8 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
         width: 100%;
         max-width: 1180px;
         
+        height: calc(100vh - 70px);
+        
         margin: 0 auto;
         padding: 4px 12px 8px;
         display: grid;
@@ -488,6 +490,8 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
     #main-display.desktop-layout {
         width: 100%;
         max-width: 1500px;
+        
+        height: calc(100vh - 70px);
         
         margin: 0 auto;
         padding: 0 12px 8px;
@@ -742,6 +746,8 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
     .three-d-anchor-header { align-items:flex-start; flex-direction:column; }
     .three-d-drive-grid { grid-template-columns:1fr; }
 }
+
+
 
 
 
