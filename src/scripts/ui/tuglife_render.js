@@ -21,12 +21,12 @@ function renderModalContent() {
 
         titleEl.innerText = 'MANIFOLD & TRANSFERÊNCIA FO';
         html = `
-            <div style="font-size:0.75rem; color:#00bcd4; font-weight:bold; margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid #333;">&#9981; RECEBIMENTO DE TERRA</div>
+            <div style="font-size:0.75rem; color:#00bcd4; font-weight:bold; margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid #333; display:flex; align-items:center; gap:6px;"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M3 2v6h14V2Z"/><path d="M6 8v14h8V8"/><path d="M14 4h7v4h-7"/><path d="M21 8v5a2 2 0 0 1-2 2h-1"/></svg> RECEBIMENTO DE TERRA</div>
             <div class="modal-data-row"><span class="modal-data-label">Conexão:</span><span class="modal-data-value">${gameState.bunker.hoseConnected ? '<span style="color:var(--accent-green)">MANGOTE LIGADO</span>' : 'DESLIGADO'}</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Caminhão:</span><span class="modal-data-value">${gameState.bunker.truckVolume.toFixed(1)} m³</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Estado Bomba:</span><span class="modal-data-value" style="color:${gameState.bunker.isPumping ? 'var(--accent-orange)' : '#888'}">${gameState.bunker.isPumping ? 'A BOMBEAR' : 'PARADA'}</span></div>
             
-            <div style="font-size:0.75rem; color:#ff9800; font-weight:bold; margin:16px 0 8px; padding-bottom:4px; border-bottom:1px solid #333;">&#8644; BOMBA DE TRANSFERÊNCIA DE ÓLEO DIESEL</div>
+            <div style="font-size:0.75rem; color:#ff9800; font-weight:bold; margin:16px 0 8px; padding-bottom:4px; border-bottom:1px solid #333; display:flex; align-items:center; gap:6px;"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 3l4 4-4 4"></path><path d="M3 7h18"></path><path d="M7 21l-4-4 4-4"></path><path d="M21 17H3"></path></svg> BOMBA DE TRANSFERÊNCIA DE ÓLEO DIESEL</div>
             <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <span style="font-size:0.8rem; color:#aaa;">SUCÇÃO:</span>
@@ -83,7 +83,7 @@ function renderModalContent() {
         } else if (gameState.modal.type === 'mcp') {
             titleEl.innerText = eng.name;
             html = `
-                <div style="font-size:0.75rem; color:#ff9800; font-weight:bold; margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid #333;">&#9881; MOTOR PRINCIPAL</div>
+                <div style="font-size:0.75rem; color:#ff9800; font-weight:bold; margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid #333; display:flex; align-items:center; gap:6px;"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> MOTOR PRINCIPAL</div>
                 <div class="modal-data-row"><span class="modal-data-label">Estado:</span><span class="modal-data-value" style="color:${statusColor}">${eng.status}</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Rotação:</span><span class="modal-data-value">${eng.rpm} RPM</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Pressão Óleo:</span><span class="modal-data-value">${eng.oilPress.toFixed(1)} Bar</span></div>
@@ -97,13 +97,13 @@ function renderModalContent() {
         } else {
             titleEl.innerText = eng.name;
             html = `
-                <div style="font-size:0.75rem; color:#ff9800; font-weight:bold; margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid #333;">&#9881; MOTOR</div>
+                <div style="font-size:0.75rem; color:#ff9800; font-weight:bold; margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid #333; display:flex; align-items:center; gap:6px;"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> MOTOR</div>
                 <div class="modal-data-row"><span class="modal-data-label">Estado:</span><span class="modal-data-value" style="color:${statusColor}">${eng.status}</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Rotação:</span><span class="modal-data-value">${eng.rpm} RPM</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Pressão Óleo:</span><span class="modal-data-value">${eng.oilPress.toFixed(1)} Bar</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Temp. ELC:</span><span class="modal-data-value">${eng.coolTemp.toFixed(1)} °C</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Carter OL15W40:</span><span class="modal-data-value" style="color:${carterColor}">${eng.carter.vol.toFixed(3)} m³ (${carterPct}%)</span></div>
-                <div style="font-size:0.75rem; color:#00bcd4; font-weight:bold; margin:10px 0 8px; padding-bottom:4px; border-bottom:1px solid #333;">&#9889; GERADOR</div>
+                <div style="font-size:0.75rem; color:#00bcd4; font-weight:bold; margin:10px 0 8px; padding-bottom:4px; border-bottom:1px solid #333; display:flex; align-items:center; gap:6px;"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> GERADOR</div>
                 <div class="modal-data-row"><span class="modal-data-label">Tensão:</span><span class="modal-data-value">${eng.v.toFixed(0)} V</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Frequência:</span><span class="modal-data-value">${eng.hz.toFixed(1)} Hz</span></div>
                 <div class="modal-data-row"><span class="modal-data-label">Corrente:</span><span class="modal-data-value">${eng.current} A</span></div>
@@ -194,8 +194,8 @@ function renderModalContent() {
             <div class="modal-data-row"><span class="modal-data-label">Consumo:</span><span class="modal-data-value">${chiller.isOn ? chiller.power + ' kW' : '0 kW'}</span></div>
             <div class="modal-data-row"><span class="modal-data-label">Bus:</span><span class="modal-data-value" style="color:${gameState.power.isLive ? 'var(--accent-green)' : 'var(--accent-red)'}">${gameState.power.isLive ? 'ENERGIZADO' : 'SEM ENERGIA'}</span></div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
-                <button onclick="chillerTemp(-1)" class="control-btn" style="padding:8px;">&#9660; TEMP</button>
-                <button onclick="chillerTemp(+1)" class="control-btn" style="padding:8px;">&#9650; TEMP</button>
+                <button onclick="chillerTemp(-1)" class="control-btn" style="padding:8px; display:flex; align-items:center; justify-content:center; gap:4px;"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="6 9 12 15 18 9"></polyline></svg> TEMP</button>
+                <button onclick="chillerTemp(+1)" class="control-btn" style="padding:8px; display:flex; align-items:center; justify-content:center; gap:4px;"><svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none"><polyline points="18 15 12 9 6 15"></polyline></svg> TEMP</button>
             </div>
             <button onclick="toggleChiller()" class="control-btn" style="margin-top:8px; padding:10px; background:${chiller.isOn ? 'var(--accent-blue)' : '#444'}; ${!gameState.power.isLive ? 'opacity:0.4;' : ''}" ${!gameState.power.isLive ? 'disabled' : ''}>
                 ${chiller.isOn ? 'DESLIGAR AC' : 'LIGAR AC'}
