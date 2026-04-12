@@ -1,5 +1,5 @@
-/**
- * Ações do usuário e binding de eventos.
+﻿/**
+ * AÃ§Ãµes do usuÃ¡rio e binding de eventos.
  */
 function triggerAlarm(message) {
     gameState.isAlarmActive = true;
@@ -100,11 +100,11 @@ function receiveLoDrum() {
     if (!targetTank) return;
 
     if (gameState.loReceiving.drumsAvailable <= 0) {
-        return triggerAlarm("SEM TAMBORES DE 200 L DISPONÍVEIS PARA RECEBIMENTO.");
+        return triggerAlarm("SEM TAMBORES DE 200 L DISPONÃVEIS PARA RECEBIMENTO.");
     }
 
     if (targetTank.vol >= targetTank.max) {
-        return triggerAlarm(`${targetTank.name} CHEIO. SEM CAPACIDADE PARA RECEBER ÓLEO LUBRIFICANTE.`);
+        return triggerAlarm(`${targetTank.name} CHEIO. SEM CAPACIDADE PARA RECEBER Ã“LEO LUBRIFICANTE.`);
     }
 
     const transfer = Math.min(gameState.loReceiving.drumVolume, targetTank.max - targetTank.vol);
@@ -118,7 +118,7 @@ function toggleTk03PurifierTransfer() {
     const sameTransfer = gameState.transfer.sourceTank === 'tk03' && gameState.transfer.destTank === hdrDestination;
 
     if (gameState.transfer.isPumping && !sameTransfer) {
-        return triggerAlarm("INTERLOCK: PURIFICADOR JÁ ESTÁ EM USO EM OUTRA TRANSFERÊNCIA.");
+        return triggerAlarm("INTERLOCK: PURIFICADOR JÃ ESTÃ EM USO EM OUTRA TRANSFERÃŠNCIA.");
     }
 
     if (!sameTransfer) {
@@ -159,7 +159,7 @@ function toggleAuxiliary(mcpKey, type) {
 
     const mcp = gameState.machinery[mcpKey];
     if (type === 'lube') {
-        if (!mcp.preLubeOn && mcp.carter.vol <= 0) return triggerAlarm(`INTERLOCK: CARTER ${mcp.name} VAZIO - SEM LO PARA PRÉ-LUBRIFICAÇÃO.`);
+        if (!mcp.preLubeOn && mcp.carter.vol <= 0) return triggerAlarm(`INTERLOCK: CARTER ${mcp.name} VAZIO - SEM LO PARA PRÃ‰-LUBRIFICAÃ‡ÃƒO.`);
         mcp.preLubeOn = !mcp.preLubeOn;
     }
     if (type === 'cool') mcp.coolingOn = !mcp.coolingOn;
@@ -184,10 +184,10 @@ function toggleFifiMonitors() {
 
     if (!fifi.monitorsCommandOpen) {
         if (fifi.engineStatus !== 'RUNNING') {
-            return triggerAlarm("INTERLOCK FIFI: PARTIR O MOTOR ANTES DE COMANDAR OS CANHÕES.");
+            return triggerAlarm("INTERLOCK FIFI: PARTIR O MOTOR ANTES DE COMANDAR OS CANHÃ•ES.");
         }
         if (!fifi.seawaterChestOpen || !fifi.shellValveOpen) {
-            return triggerAlarm("INTERLOCK FIFI: ABRIR CAIXA DE MAR E VÁLVULA DE COSTADO.");
+            return triggerAlarm("INTERLOCK FIFI: ABRIR CAIXA DE MAR E VÃLVULA DE COSTADO.");
         }
         fifi.monitorDelaySeconds = 0;
     }
@@ -201,13 +201,13 @@ function startFifiSweetening() {
     const fifi = gameState.machinery.fifi;
 
     if (fifi.engineStatus !== 'OFF') {
-        return triggerAlarm("INTERLOCK FIFI: PARAR O MOTOR DIESEL ANTES DE ADOÇAR A REDE.");
+        return triggerAlarm("INTERLOCK FIFI: PARAR O MOTOR DIESEL ANTES DE ADOÃ‡AR A REDE.");
     }
     if (fifi.seawaterChestOpen) {
-        return triggerAlarm("INTERLOCK FIFI: FECHAR A CAIXA DE MAR ANTES DE ADOÇAR.");
+        return triggerAlarm("INTERLOCK FIFI: FECHAR A CAIXA DE MAR ANTES DE ADOÃ‡AR.");
     }
     if (gameState.tanks.tk02.vol <= 0) {
-        return triggerAlarm("SEM ÁGUA DOCE NO TK 02 PARA ADOÇAR A REDE FIFI.");
+        return triggerAlarm("SEM ÃGUA DOCE NO TK 02 PARA ADOÃ‡AR A REDE FIFI.");
     }
 
     fifi.sweeteningActive = !fifi.sweeteningActive;
@@ -227,7 +227,7 @@ function handleFifiStart() {
             return triggerAlarm("INTERLOCK FIFI: ENCHER CARTER COM OL15W40 ANTES DA PARTIDA.");
         }
         if (fuelTank.vol <= 0) {
-            return triggerAlarm(`INTERLOCK FIFI: ${fuelTank.name} SEM ÓLEO DIESEL.`);
+            return triggerAlarm(`INTERLOCK FIFI: ${fuelTank.name} SEM Ã“LEO DIESEL.`);
         }
         fifi.engineStatus = 'RUNNING';
         fifi.targetRpm = 1800;
@@ -246,9 +246,9 @@ function handleMcpStart(mcpKey) {
 
     if (mcp.status === 'OFF') {
         if ((mcp.carter.vol / mcp.carter.max) < 0.30) return triggerAlarm(`INTERLOCK: CARTER ${mcp.name} < 30% - ENCHER CARTER ANTES DE ARRANCAR.`);
-        if (!mcp.preLubeOn) return triggerAlarm("INTERLOCK: LIGUE A BOMBA PRÉ-LUBRIFICAÇÃO.");
-        if (!mcp.coolingOn) return triggerAlarm("INTERLOCK: LIGUE A BOMBA DE ÁGUA DE CIRCULAÇÃO.");
-        if (gameState.tanks[mcp.fuelSource].vol <= 0) return triggerAlarm(`FALTA GASÓLEO NO ${mcp.fuelSource}.`);
+        if (!mcp.preLubeOn) return triggerAlarm("INTERLOCK: LIGUE A BOMBA PRÃ‰-LUBRIFICAÃ‡ÃƒO.");
+        if (!mcp.coolingOn) return triggerAlarm("INTERLOCK: LIGUE A BOMBA DE ÃGUA DE CIRCULAÃ‡ÃƒO.");
+        if (gameState.tanks[mcp.fuelSource].vol <= 0) return triggerAlarm(`FALTA GASÃ“LEO NO ${mcp.fuelSource}.`);
 
         mcp.status = 'RUNNING';
         mcp.targetRpm = SIM_CONFIG.mcpIdleRpm;
@@ -267,14 +267,14 @@ function fillCarter(engKey) {
     const eng = gameState.machinery[engKey];
     const tk15 = gameState.tanks.tk15;
 
-    if (eng.status === 'RUNNING') return triggerAlarm(`INTERLOCK: NÃO TRANSFERIR OL15W40 PARA ${eng.name} EM MARCHA!`);
-    if (tk15.vol <= 0) return triggerAlarm("FALTA OL15W40: TK 15 VAZIO! REABASTECER ÓLEO LUBRIFICANTE.");
+    if (eng.status === 'RUNNING') return triggerAlarm(`INTERLOCK: NÃƒO TRANSFERIR OL15W40 PARA ${eng.name} EM MARCHA!`);
+    if (tk15.vol <= 0) return triggerAlarm("FALTA OL15W40: TK 15 VAZIO! REABASTECER Ã“LEO LUBRIFICANTE.");
 
     const needed = eng.carter.max - eng.carter.vol;
     const toTransfer = Math.min(needed, tk15.vol);
 
     if (toTransfer > 0) {
-        // Disparo cinético visual: jorro de óleo lubrificante amarelo do TK15 pro motor!
+        // Disparo cinÃ©tico visual: jorro de Ã³leo lubrificante amarelo do TK15 pro motor!
         if (typeof window.spawnFlowParticle === 'function') {
             for (let i = 0; i < 6; i++) {
                 setTimeout(() => {
@@ -310,7 +310,7 @@ function toggleClutch(mcpKey) {
     if (mcp.status !== 'RUNNING') return;
 
     if (mcp.rpm > 650 || mcp.telegraph > 0) {
-        triggerAlarm("INTERLOCK (CAIXA REDUTORA): REDUZA O TELÉGRAFO PARA IDLE ANTES DE ACOPLAR!");
+        triggerAlarm("INTERLOCK (CAIXA REDUTORA): REDUZA O TELÃ‰GRAFO PARA IDLE ANTES DE ACOPLAR!");
         return;
     }
 
@@ -321,7 +321,7 @@ function toggleClutch(mcpKey) {
         }
 
         if (airSystem.controlPressure < airSystem.couplingMin) {
-            triggerAlarm(`INTERLOCK ${airSystem.name}: CAIXA DE CONTROLE SEM PRESSÃO DE ACOPLAMENTO (${airSystem.controlPressure.toFixed(1)} BAR).`);
+            triggerAlarm(`INTERLOCK ${airSystem.name}: CAIXA DE CONTROLE SEM PRESSÃƒO DE ACOPLAMENTO (${airSystem.controlPressure.toFixed(1)} BAR).`);
             return;
         }
 
@@ -337,7 +337,7 @@ function winchControl(dir) {
     const winch = gameState.machinery.winch;
     const anyPress = MCP_KEYS.some(key => gameState.machinery[key].hydraulicPressure > 0);
 
-    if (dir !== 'STOP' && !anyPress) return triggerAlarm("INTERLOCK: SEM PRESSÃO HIDRÁULICA - INICIAR MCP!");
+    if (dir !== 'STOP' && !anyPress) return triggerAlarm("INTERLOCK: SEM PRESSÃƒO HIDRÃULICA - INICIAR MCP!");
 
     winch.isActive = dir !== 'STOP';
     winch.direction = dir;
@@ -366,14 +366,14 @@ function zdAzimuth(side, val) {
     const zd = gameState.machinery[`zd_${side}`];
 
     if (zd.steeringHyd.vol <= 0) {
-        triggerAlarm(`INTERLOCK ${zd.name}: SEM ÓLEO HIDRÁULICO DE GOVERNO!`);
+        triggerAlarm(`INTERLOCK ${zd.name}: SEM Ã“LEO HIDRÃULICO DE GOVERNO!`);
         renderView();
         return;
     }
 
     zd.azimuth = parseInt(val);
     const valEl = document.getElementById(`ui-zd-${side}-azimuth-val`);
-    if (valEl) valEl.innerText = `${val}°`;
+    if (valEl) valEl.innerText = `${val}Â°`;
 
     zd.steeringHyd.vol = Math.max(0, zd.steeringHyd.vol - SIM_CONFIG.zDriveSteeringCommandConsumption);
     renderView();
@@ -417,7 +417,7 @@ function triggerEmergencyStop() {
         gameState.safety.ventilation[fanKey].isOn = false;
     });
 
-    triggerAlarm("⚠ PARADA DE EMERGÊNCIA ATIVADA: BOMBAS E VENTILAÇÃO DESLIGADAS!");
+    triggerAlarm("âš  PARADA DE EMERGÃŠNCIA ATIVADA: BOMBAS E VENTILAÃ‡ÃƒO DESLIGADAS!");
     renderView();
 }
 
@@ -431,8 +431,8 @@ function pullFuelCutLever() {
         gameState.safety.ventilation[fanKey].flapOpen = false;
     });
 
-    // Cortar combustível - Simular fechamento válvulas mudando o source para null
-    // ou apenas desativar a planta (motores desligarão por falta de comb)
+    // Cortar combustÃ­vel - Simular fechamento vÃ¡lvulas mudando o source para null
+    // ou apenas desativar a planta (motores desligarÃ£o por falta de comb)
     ['mcp_ps', 'mcp_sb', 'mca_ps', 'mca_sb'].forEach(eng => {
         if (gameState.machinery[eng].status === 'RUNNING') {
             gameState.machinery[eng].status = 'OFF';
@@ -445,7 +445,7 @@ function pullFuelCutLever() {
         }
     });
 
-    triggerAlarm("🛑 CORTE RÁPIDO DE COMBUSTÍVEL E FECHAMENTO DE FLAPS ACIONADO!");
+    triggerAlarm("ðŸ›‘ CORTE RÃPIDO DE COMBUSTÃVEL E FECHAMENTO DE FLAPS ACIONADO!");
     renderView();
 }
 
@@ -454,7 +454,7 @@ function toggleVentFan(fanKey) {
     if (!fan) return;
     
     if (gameState.safety.fireAlarmActive || !fan.flapOpen) {
-        return triggerAlarm(`INTERLOCK: NÃO É POSSÍVEL LIGAR ${fan.name} MODO DE INCÊNDIO (FLAP FECHADO).`);
+        return triggerAlarm(`INTERLOCK: NÃƒO Ã‰ POSSÃVEL LIGAR ${fan.name} MODO DE INCÃŠNDIO (FLAP FECHADO).`);
     }
 
     if (!gameState.power.isLive && !fan.isOn) {
@@ -472,18 +472,19 @@ function testFireSensor(sensorKey) {
     sensor.state = 'FOGO';
     gameState.safety.fireAlarmActive = true;
     
-    // Lógica automática - o sistema detectou fogo, então tomamos medidas passivas
+    // LÃ³gica automÃ¡tica - o sistema detectou fogo, entÃ£o tomamos medidas passivas
     Object.keys(gameState.safety.ventilation).forEach(fanKey => {
         gameState.safety.ventilation[fanKey].isOn = false;
         gameState.safety.ventilation[fanKey].flapOpen = false;
     });
     gameState.transfer.isPumping = false;
 
-    triggerAlarm("🔥 INCÊNDIO DETECTADO (" + sensor.name + ") 🔥 EVACUAÇÃO, VENTILAÇÃO CORTADA!");
+    triggerAlarm("ðŸ”¥ INCÃŠNDIO DETECTADO (" + sensor.name + ") ðŸ”¥ EVACUAÃ‡ÃƒO, VENTILAÃ‡ÃƒO CORTADA!");
     renderView();
 }
 
 function bindEventListeners() {
+    window.addEventListener('resize', renderView);
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             handleTabSelection(btn.getAttribute('data-target'));
@@ -642,3 +643,4 @@ function bindEventListeners() {
     document.getElementById('btn-emergency-stop').addEventListener('click', triggerEmergencyStop);
     document.getElementById('div-fuel-cut-lever').addEventListener('click', pullFuelCutLever);
 }
+
