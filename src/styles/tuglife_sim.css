@@ -1,4 +1,4 @@
-﻿/* =====================================================================
+/* =====================================================================
    ESTILOS CSS - MOBILE FIRST & TEMA DARK
    ===================================================================== */
 :root {
@@ -295,7 +295,7 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
     font-size: 1rem;
     line-height: 1.15;
 }
-@media (min-width: 900px) and (max-width: 1279px) and (orientation: landscape) {
+@media (min-width: 1024px) and (max-width: 1279px) {
     #main-display.desktop-layout {
         width: 100%;
         max-width: 1180px;
