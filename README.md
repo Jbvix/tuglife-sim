@@ -153,3 +153,14 @@ As entregas técnicas são registradas em [`docs/implementation-tags.md`](docs/i
 - **Retorno por gravidade** — TK03 overflow drena automaticamente para TK central OD
 - **Estrutura modular de scripts** — domínios separados: `core`, `simulation`, `ui`, `visual3d`
 - **Tela de apresentação** — glassmorphism HUD com animação de balanço do rebocador e fontes Inter/Outfit
+
+## Licença e Copyright
+
+**Copyright (c) 2026 Jossian Brito**
+
+Este projeto é licenciado sob a **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**.
+
+- Uso comercial não é permitido sem autorização expressa prévia do autor.
+- A atribuição ao autor original é obrigatória.
+
+O texto completo da licença está no arquivo [LICENSE](LICENSE).
